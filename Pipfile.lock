@@ -1,12 +1,10 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a3af294980ceee0d2b3a7e34e15a365a88e30474376647b5d06fb27bcb7ac7a8"
+            "sha256": "774cfb0e8aa5daf76421395bc66338f5826913b1caff08629595ddda4b6be5da"
         },
         "pipfile-spec": 6,
-        "requires": {
-            "python_version": "3.6"
-        },
+        "requires": {},
         "sources": [
             {
                 "name": "pypi",
@@ -22,13 +20,22 @@
         }
     },
     "develop": {
-        "wheel": {
+        "invoke": {
             "hashes": [
-                "sha256:9515fe0a94e823fd90b08d22de45d7bde57c90edce705b22f5e1ecf7e1b653c8",
-                "sha256:e721e53864f084f956f40f96124a74da0631ac13fbbd1ba99e8e2b5e9cafdf64"
+                "sha256:21274204515dca62206470b088bbcf9d41ffda82b3715b90e01d71b7a4681921",
+                "sha256:4a4cc031db311cbfb3fdd8ec93a06c892533c27b931f4be14b24c97cd042b14e",
+                "sha256:621b6564f992c37166e16090d7e7cccb3b922e03a58e980dfa5e543a931b652f"
             ],
             "index": "pypi",
-            "version": "==0.30.0"
+            "version": "==1.0.0"
+        },
+        "wheel": {
+            "hashes": [
+                "sha256:0a2e54558a0628f2145d2fc822137e322412115173e8a2ddbe1c9024338ae83c",
+                "sha256:80044e51ec5bbf6c894ba0bc48d26a8c20a9ba629f4ca19ea26ecfcf87685f5f"
+            ],
+            "index": "pypi",
+            "version": "==0.31.1"
         }
     }
 }
