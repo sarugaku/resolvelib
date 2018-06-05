@@ -7,7 +7,5 @@ name = "pypi"
 resolvelib = {path = ".", editable = true}
 
 [dev-packages]
+invoke = "*"
 wheel = "*"
-
-[requires]
-python_version = "3.6"
