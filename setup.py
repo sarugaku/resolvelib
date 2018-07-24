@@ -1,3 +1,4 @@
+import ast
 import os
 
 from setuptools import find_packages, setup
@@ -6,10 +7,14 @@ from setuptools import find_packages, setup
 def read_version():
     version_txt = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        'src', 'resolvelib', 'version.txt',
+        'src', 'resolvelib', '__version__.py',
     )
     with open(version_txt) as f:
-        return f.read().strip()
+        for line in f:
+            if not line.startswith('__version__'):
+                continue
+            return ast.literal_eval(line.split('=', 1)[-1].strip())
+    raise RuntimeError('failed to read package version')
 
 
 # Put everything in setup.cfg, except those that don't actually work?
@@ -20,7 +25,7 @@ setup(
 
     # I don't know how to specify an empty key in setup.cfg.
     package_data={
-        '': ['version.txt', 'LICENSE*', 'README*'],
+        '': ['LICENSE*', 'README*'],
     },
 
     # I need this to be dynamic.
