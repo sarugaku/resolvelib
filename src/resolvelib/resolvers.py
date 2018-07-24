@@ -10,4 +10,7 @@ class Resolver(object):
     def resolve(self, requirements):
         """Take a collection of constraints, spit out the resolution result.
         """
+        # TODO: I want to implement this to resolve into a graph structure,
+        # not a flat dict like pip-tools, but Python doesn't have a built-in
+        # graph type, so this would require additional work.
         raise NotImplementedError
