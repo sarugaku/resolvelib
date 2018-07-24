@@ -67,19 +67,19 @@ any Version is acceptable.
 Candidate
 ---------
 
-A combination of a Package and a Version, i.e. a “concrete requirement”. Python
-people sometimes call this a “locked” or “pinned” dependency. Both of
-“requirement” and “dependency”, however, SHOULD NOT be used when describing a
+A combination of a Package and a Version, i.e. a "concrete requirement". Python
+people sometimes call this a "locked" or "pinned" dependency. Both of
+"requirement" and "dependency", however, SHOULD NOT be used when describing a
 Candidate, to avoid confusion.
 
-Some resolver architectures (e.g. Molinillo) refer this as a “specicifation”,
+Some resolver architectures (e.g. Molinillo) refer this as a "specicifation",
 but this is not chosen to avoid confusion with a *Specifier*.
 
 Requirement
 -----------
 
-An intention to acquire a needed package, i.e. an “abstract requirement”. A
-“dependency”, if not clarified otherwise, also refers to this concept.
+An intention to acquire a needed package, i.e. an "abstract requirement". A
+"dependency", if not clarified otherwise, also refers to this concept.
 
 A Requiremnt should specify two things: a Package, and a Specifier.
 
