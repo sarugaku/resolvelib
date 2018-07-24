@@ -12,5 +12,8 @@ class Resolver(object):
         """
         # TODO: I want to implement this to resolve into a graph structure,
         # not a flat dict like pip-tools, but Python doesn't have a built-in
-        # graph type, so this would require additional work.
+        # graph type, so this would require additional work. We also need a way
+        # to trace each entry in the resolution to what resulted it being
+        # included, so we can add appropriate environment markers to it for
+        # the installation process.
         raise NotImplementedError

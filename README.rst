@@ -83,14 +83,6 @@ An intention to acquire a needed package, i.e. an “abstract requirement”. A
 
 A Requiremnt should specify two things: a Package, and a Specifier.
 
-.. note::
-
-    For Python packaging specifically, the Requirement may also contain an
-    expression of environment markers, specifying in what circumstances this
-    requirement should be installed. This is not used anywhere in the
-    resolving process, but should be somehow propagated from the Requirement to
-    the Specification it generates, to later specify whether the Specification
-    should actually be installed.
 
 Dependency
 ----------
