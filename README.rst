@@ -1,6 +1,6 @@
-============================================================
-ResolveLib: Resolve abstract dependencies into concrete ones
-============================================================
+==========
+ResolveLib
+==========
 
 ResolveLib at the highest level provides a `Resolver` class that includes
 dependency resolution logic. You give it some things, and a little information
