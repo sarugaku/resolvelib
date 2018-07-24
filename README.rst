@@ -15,7 +15,7 @@ Intended Usage
     # Things I want to resolve.
     requirements = [...]
 
-    # Implement logic so the resolver understands your requirements.
+    # Implement logic so the resolver understands the requirement format.
     class MyProvider:
         ...
 
