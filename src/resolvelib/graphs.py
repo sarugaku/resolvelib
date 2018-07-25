@@ -24,9 +24,17 @@ class GraphAcyclicError(ValueError):
 
 class DirectedAcyclicGraph(object):
 
-    def __init__(self):
-        self.vertices = {}  # <key> -> Any
-        self.edges = {}     # <key> -> Set[<key>]
+    def __init__(self, graph=None):
+        if graph is None:
+            self.vertices = {}  # <key> -> Any
+            self.edges = {}     # <key> -> Set[<key>]
+        elif isinstance(graph, DirectedAcyclicGraph):
+            self.vertices = dict(graph.vertices)
+            self.edges = {k: list(v) for k, v in graph.edges.items()}
+        else:
+            raise TypeError('DirectedAcyclicGraph expected, not {}'.format(
+                type(graph).__name__),
+            )
 
     def __iter__(self):
         return iter(self.vertices)
@@ -40,11 +48,11 @@ class DirectedAcyclicGraph(object):
     def __getitem__(self, key):
         return self.vertices[key]
 
+    def __setitem__(self, key, value):
+        self.vertices[key] = value
+
     def has_edge(self, from_key, to_key):
         return from_key in self.edges and to_key in self.edges[from_key]
-
-    def add_vertex(self, key, value):
-        self.vertices[key] = value
 
     def add_edge(self, from_key, to_key):
         # Make sure both ends are in the graph.
