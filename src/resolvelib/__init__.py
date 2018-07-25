@@ -3,7 +3,7 @@ __all__ = [
     'AbstractProvider', 'Resolver',
 ]
 
-__version__ = '0.0.0dev0'
+__version__ = '0.0.0.dev0'
 
 
 from .providers import AbstractProvider

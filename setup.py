@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 def read_version():
     version_txt = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        'src', 'resolvelib', '__version__.py',
+        'src', 'resolvelib', '__init__.py',
     )
     with open(version_txt) as f:
         for line in f:
