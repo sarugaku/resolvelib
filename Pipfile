@@ -8,4 +8,5 @@ resolvelib = {path = ".", editable = true}
 
 [dev-packages]
 invoke = "*"
+pytest = "*"
 wheel = "*"
