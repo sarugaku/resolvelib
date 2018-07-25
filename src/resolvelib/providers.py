@@ -15,7 +15,7 @@ class AbstractProvider(object):
         """Sort requirements based on preference.
 
         The preference is defined as "I think this requirement should be
-        resolved first". The most preferred item should be pu FIRST. This
+        resolved first". The most preferred item should be put FIRST. This
         preference could depend on a various of issues, including (not
         necessarily in this order):
 
