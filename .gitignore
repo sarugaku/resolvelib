@@ -1,8 +1,10 @@
-.venv
 __pycache__
+*.py[co]
+
+.pytest_cache
+.venv
 
 build
 dist
 
 *.egg-info
-*.py[co]
