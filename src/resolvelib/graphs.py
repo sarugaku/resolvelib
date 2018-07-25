@@ -40,11 +40,8 @@ class DirectedAcyclicGraph(object):
     def __getitem__(self, key):
         return self.vertices[key]
 
-    def __eq__(self, other):
-        return (
-            self.vertices == other.vertices and
-            self.edges == other.edges
-        )
+    def has_edge(self, from_key, to_key):
+        return from_key in self.edges and to_key in self.edges[from_key]
 
     def add_vertex(self, key, value):
         self.vertices[key] = value
@@ -56,7 +53,7 @@ class DirectedAcyclicGraph(object):
                 raise KeyError(v)
 
         # We're good if this edge already exists.
-        if from_key in self.edges and to_key in self.edges[from_key]:
+        if self.has_edge(from_key, to_key):
             return
 
         # Make sure this new edge won't make the graph cyclic.
