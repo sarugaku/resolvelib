@@ -1,6 +1,6 @@
 import pytest
 
-from resolvelib.graphs import DirectedAcyclicGraph, GraphAcyclicError
+from resolvelib.structs import DirectedAcyclicGraph, CyclicError
 
 
 @pytest.fixture()
@@ -35,5 +35,5 @@ def test_acyclic_simple(graph):
     graph['c'] = 'C'
     graph.add_edge('a', 'b')
     graph.add_edge('b', 'c')
-    with pytest.raises(GraphAcyclicError):
+    with pytest.raises(CyclicError):
         graph.add_edge('c', 'a')

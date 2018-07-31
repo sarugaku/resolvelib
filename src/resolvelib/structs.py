@@ -1,3 +1,6 @@
+import collections
+
+
 def _recursive_check_cyclic(edges, key, visited):
     """Walk a graph to check if an edge set is cyclic.
 
@@ -18,7 +21,7 @@ def _recursive_check_cyclic(edges, key, visited):
     )
 
 
-class GraphAcyclicError(ValueError):
+class CyclicError(ValueError):
     pass
 
 
@@ -66,10 +69,28 @@ class DirectedAcyclicGraph(object):
 
         # Make sure this new edge won't make the graph cyclic.
         if _recursive_check_cyclic(self.edges, to_key, {from_key}):
-            raise GraphAcyclicError(from_key, to_key)
+            raise CyclicError(from_key, to_key)
 
         # Add the edge.
         if from_key not in self.edges:
             self.edges[from_key] = {to_key}
         else:
             self.edges[from_key].add(to_key)
+
+
+class BidirectionalMultiDictionary(object):
+
+    def __init__(self, mapping=None):
+        if mapping is None:
+            self.data = collections.defaultdict(set)
+        else:
+            self.data = collections.defaultdict(set, {
+                k: set(v) for k, v in mapping.data.items()
+            })
+
+    def __contains__(self, a, b):
+        return b in self.data[a]
+
+    def add(self, a, b):
+        self.data[a].add(b)
+        self.data[b].add(a)

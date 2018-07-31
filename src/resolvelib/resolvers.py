@@ -1,6 +1,6 @@
 import collections
 
-from .graphs import DirectedAcyclicGraph
+from .structs import DirectedAcyclicGraph
 
 
 Save = collections.namedtuple('Save', 'candidates graph conflicts')
