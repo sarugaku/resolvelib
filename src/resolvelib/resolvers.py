@@ -92,44 +92,43 @@ class Resolution(object):
             dep = Dependency.from_requirment(self._p, requirement, parent)
         self._dependencies[name] = dep
 
-    def _pin_matching_dependency(self, name, dependency):
-        candidates = list(dependency.candidates)
-        while candidates:
-            candidate_to_pin = candidates.pop()
-            subdeps = self._p.get_dependencies(candidate_to_pin)
-            backup = self._dependencies.copy()
+    def _check_pinnability(self, candidate):
+        subdeps = self._p.get_dependencies(candidate)
+        backup = self._dependencies.copy()
+        try:
+            for subdep in subdeps:
+                self._add_constraint(subdep, parent=candidate)
+        except RequirementsConflicted:
+            self._dependencies = backup
+            return False
+        return True
+
+    def _pin_dependencies(self):
+        graph = self._resolved[-1]
+        for name, dependency in list(self._dependencies.items()):
             try:
-                for subdep in subdeps:
-                    self._add_constraint(subdep, parent=candidate_to_pin)
-            except RequirementsConflicted:
-                self._dependencies = backup
-                continue
+                pin = graph[name]
+            except KeyError:
+                satisfied = False
             else:
-                graph = self._resolved[-1]
-                graph[name] = candidate_to_pin
+                satisfied = all(
+                    self._p.is_satisfied_by(r, pin)
+                    for r in dependency.iter_requirement()
+                )
+            if satisfied:   # If the current pin already works...
+                continue
+            candidates = list(dependency.candidates)
+            while candidates:
+                candidate = candidates.pop()
+                if not self._check_pinnability(candidate):
+                    continue
+                graph[name] = candidate
                 for parent in dependency.iter_parent():
                     if parent:
                         graph.add_edge(self._p.identify(parent), name)
-                return
-        raise ResolutionImpossible  # Is this OK?
-
-    def _pin_dependencies(self):
-        # A copy is needed because we're going to add things into the dict.
-        for name, dependency in list(self._dependencies.items()):
-            try:
-                pinned_candidate = self._resolved[-1][name]
-            except KeyError:
-                # Nobody claimed this dependency yet, we can just pin.
-                satisfied = True
-            else:
-                # Someone was already here; we need to use that candidate.
-                satisfied = all(
-                    self._p.is_satisfied_by(r, pinned_candidate)
-                    for r in dependency.iter_requirement()
-                )
-            if not satisfied:
-                continue
-            self._pin_matching_dependency(name, dependency)
+                break
+            else:   # All candidates tried, nothing works. Give up?
+                raise ResolutionImpossible
 
     def resolve(self, requirements, max_rounds=20):
         if self._resolved:
