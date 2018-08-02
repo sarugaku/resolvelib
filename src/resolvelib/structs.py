@@ -1,4 +1,65 @@
-import collections
+class DirectedGraph(object):
+    """A graph structure with directed edges.
+    """
+    def __init__(self, graph=None):
+        if graph is None:
+            self._vertices = {}     # <key> -> Any
+            self._edges = {}        # <key> -> Set[<key>]
+        elif isinstance(graph, type(self)):
+            self._vertices = dict(graph._vertices)
+            self._edges = {k: list(v) for k, v in graph._edges.items()}
+        else:
+            raise TypeError('DirectedAcyclicGraph expected, not {}'.format(
+                type(graph).__name__),
+            )
+
+    def __iter__(self):
+        return iter(self._vertices)
+
+    def __len__(self):
+        return len(self._vertices)
+
+    def __contains__(self, key):
+        return key in self._vertices
+
+    def __getitem__(self, key):
+        return self._vertices[key]
+
+    def __setitem__(self, key, value):
+        self._vertices[key] = value
+
+    def keys(self):
+        return self._vertices.keys()
+
+    def values(self):
+        return self._vertices.values()
+
+    def iter_edge(self):
+        for f, es in self._edges.items():
+            for t in es:
+                yield (f, t)
+
+    def has_edge(self, from_key, to_key):
+        return from_key in self._edges and to_key in self._edges[from_key]
+
+    def _validate_edge_params(self, f, t):
+        # Make sure both ends are in the graph.
+        for v in (f, t):
+            if v not in self._vertices:
+                raise KeyError(v)
+
+    def add_edge(self, from_key, to_key):
+        # We're good if this edge already exists.
+        if self.has_edge(from_key, to_key):
+            return
+
+        self._validate_edge_params(from_key, to_key)
+
+        # Add the edge.
+        if from_key not in self._edges:
+            self._edges[from_key] = {to_key}
+        else:
+            self._edges[from_key].add(to_key)
 
 
 def _recursive_check_cyclic(edges, key, visited):
@@ -25,72 +86,10 @@ class CyclicError(ValueError):
     pass
 
 
-class DirectedAcyclicGraph(object):
-
-    def __init__(self, graph=None):
-        if graph is None:
-            self.vertices = {}  # <key> -> Any
-            self.edges = {}     # <key> -> Set[<key>]
-        elif isinstance(graph, DirectedAcyclicGraph):
-            self.vertices = dict(graph.vertices)
-            self.edges = {k: list(v) for k, v in graph.edges.items()}
-        else:
-            raise TypeError('DirectedAcyclicGraph expected, not {}'.format(
-                type(graph).__name__),
-            )
-
-    def __iter__(self):
-        return iter(self.vertices)
-
-    def __len__(self):
-        return len(self.vertices)
-
-    def __contains__(self, key):
-        return key in self.vertices
-
-    def __getitem__(self, key):
-        return self.vertices[key]
-
-    def __setitem__(self, key, value):
-        self.vertices[key] = value
-
-    def has_edge(self, from_key, to_key):
-        return from_key in self.edges and to_key in self.edges[from_key]
-
-    def add_edge(self, from_key, to_key):
-        # Make sure both ends are in the graph.
-        for v in (from_key, to_key):
-            if v not in self.vertices:
-                raise KeyError(v)
-
-        # We're good if this edge already exists.
-        if self.has_edge(from_key, to_key):
-            return
-
+class DirectedAcyclicGraph(DirectedGraph):
+    """A directed graph that ensures edges don't form loops.
+    """
+    def _validate_edge_params(self, f, t):
         # Make sure this new edge won't make the graph cyclic.
-        if _recursive_check_cyclic(self.edges, to_key, {from_key}):
-            raise CyclicError(from_key, to_key)
-
-        # Add the edge.
-        if from_key not in self.edges:
-            self.edges[from_key] = {to_key}
-        else:
-            self.edges[from_key].add(to_key)
-
-
-class BidirectionalMultiDictionary(object):
-
-    def __init__(self, mapping=None):
-        if mapping is None:
-            self.data = collections.defaultdict(set)
-        else:
-            self.data = collections.defaultdict(set, {
-                k: set(v) for k, v in mapping.data.items()
-            })
-
-    def __contains__(self, a, b):
-        return b in self.data[a]
-
-    def add(self, a, b):
-        self.data[a].add(b)
-        self.data[b].add(a)
+        if _recursive_check_cyclic(self._edges, t, {f}):
+            raise CyclicError(f, t)

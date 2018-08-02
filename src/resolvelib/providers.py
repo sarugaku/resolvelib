@@ -11,27 +11,6 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
-    def sorted_by_preference(self, requirements, resolution, conflicts):
-        """Sort requirements based on preference.
-
-        The preference is defined as "I think this requirement should be
-        resolved first". The most preferred item should be put FIRST. This
-        preference could depend on a various of issues, including (not
-        necessarily in this order):
-
-        * Is this package specified in the current resolution result?
-        * How relaxed is the requirement? Stricter ones should probably be
-          worked on first? (I don't know, actually.)
-        * How many possibilities are there to satisfy this requirement? Those
-          with few left should likely be worked on first, I guess?
-        * Are there any known conflicts for this requirement? We should
-          probably work on those with the most known conflicts.
-
-        A new list should be returned. It should contain all the same entries
-        of `requirements`, but with proper ordering.
-        """
-        raise NotImplementedError
-
     def find_matches(self, requirement):
         """Find all possible candidates that satisfy a requirement.
 
@@ -61,34 +40,3 @@ class AbstractProvider(object):
         specifies as its dependencies.
         """
         raise NotImplementedError
-
-
-class RequirementsLibSpecificationProvider(AbstractProvider):
-    """Provider implementation to interface with `requirementslib.Requirement`.
-    """
-    def __init__(self):
-        # TODO: Provide additional context for this provider, e.g. index URLs,
-        # whether to allow prereleases, etc.
-        pass
-
-    def identify(self, dependency):
-        # Treat a package with extra(s) as distinct from the package without
-        # extras. `requests` is distinct from `requests[soc]`, and
-        # `requests[soc]` is also distinct from both `requests[security]`
-        # and `requests[security,soc]`.
-        # TODO: Do we need to normalize package and extra names?
-        if not dependency.extras:
-            return dependency.name
-        return '{}[{}]'.format(dependency.name, ','.join(dependency.extras))
-
-    # TODO: ...
-
-    def get_dependencies(self, candidate):
-        # This should ask opinions of:
-        # * Cached resolution results (unless explicitly disabled).
-        # * Cached wheel (both the Simple or JSON API know what wheel to use).
-        # * The JSON API.
-        # * Downloaded wheel specified by the Simple API.
-        # * Built source distribution, either specified by the Simple API, or
-        #   the requirement directly (in VCS or archive requirements).
-        raise NotImplementedError('TODO')
