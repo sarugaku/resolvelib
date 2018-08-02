@@ -42,14 +42,11 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
             name, ican.version, extras=extras, markers=markers,
         ))) for ican in icans]
 
-    def filter_satisfied(self, candidates, requirement):
-        if requirement.specifiers:
-            specifier = requirement.ireq.specifier
-            candidates = (
-                c for c in candidates
-                if next(specifier.filter([c.get_specifier().version]), None)
-            )
-        return list(candidates)
+    def is_satisfied_by(self, requirement, candidate):
+        specifier = requirement.ireq.specifier
+        for _ in specifier.filter([candidate.get_specifier().version]):
+            return True
+        return False
 
     def get_dependencies(self, candidate):
         return [
@@ -84,7 +81,7 @@ class StdOutReporter(BaseReporter):
 
     def ending(self, state):
         print('=' * 30)
-        print('\nStable Pins:')
+        print('\nSTABLE PINS:')
         for node in state.graph.values():
             print('{:>30}'.format(node.as_line()))
         print()

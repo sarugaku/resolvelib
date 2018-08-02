@@ -25,11 +25,11 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
-    def filter_satisfied(self, candidates, requirement):
-        """Filter given candidates, return those satisfying the requirement.
+    def is_satisfied_by(self, requirement, candidate):
+        """Whether the given requirement can be satisfied by a candidate.
 
-        The returned candidates should keep the preference ordering, i.e. best
-        first, as returned by `get_candidates`.
+        A boolean should be retuened to indicate whether `candidate` is a
+        viable solution to the requirement.
         """
         raise NotImplementedError
 

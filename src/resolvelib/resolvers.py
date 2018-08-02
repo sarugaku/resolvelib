@@ -40,7 +40,10 @@ class Dependency(object):
         """
         infos = list(self._req_infos)
         infos.append(RequirementInformation(requirement, parent))
-        candidates = provider.filter_satisfied(self.candidates, requirement)
+        candidates = [
+            c for c in self.candidates
+            if provider.is_satisfied_by(requirement, c)
+        ]
         if not candidates:
             raise RequirementsConflicted
         return type(self)(candidates, infos)
@@ -121,7 +124,7 @@ class Resolution(object):
             else:
                 # Someone was already here; we need to use that candidate.
                 satisfied = all(
-                    self._p.filter_satisfied([pinned_candidate], r)
+                    self._p.is_satisfied_by(r, pinned_candidate)
                     for r in dependency.iter_requirement()
                 )
             if not satisfied:
