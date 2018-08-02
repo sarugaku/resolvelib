@@ -85,18 +85,18 @@ class Resolution(object):
 
     def _add_constraint(self, requirement, parent):
         name = self._p.identify(requirement)
-        if name in self._dependencies:
+        try:
             dep = self._dependencies[name]
-            dep = dep.merged_with(self._p, requirement, parent)
-        else:
+        except KeyError:
             dep = Dependency.from_requirment(self._p, requirement, parent)
+        else:
+            dep = dep.merged_with(self._p, requirement, parent)
         self._dependencies[name] = dep
 
     def _check_pinnability(self, candidate):
-        subdeps = self._p.get_dependencies(candidate)
         backup = self._dependencies.copy()
         try:
-            for subdep in subdeps:
+            for subdep in self._p.get_dependencies(candidate):
                 self._add_constraint(subdep, parent=candidate)
         except RequirementsConflicted:
             self._dependencies = backup
