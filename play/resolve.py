@@ -10,6 +10,7 @@ Recommended cases to test:
 * "requests" "urllib3<1.21.1"
 * "pylint==1.9" "pylint-quotes==0.1.9"
 * "aiogremlin" "pyyaml"
+* Giant blob from pypa/pipenv#1974 (need to modify a bit)
 
 """
 
@@ -117,9 +118,9 @@ except NoVersionsAvailable as e:
     print('\nCANNOT RESOLVE. NO CANDIDATES FOUND FOR:')
     print('{:>30}'.format(e.requirement.as_line()))
     if e.parent:
-        print('{:>30}'.format('(from {})'.format(e.parent.as_line())))
+        print('{:>31}'.format('(from {})'.format(e.parent.as_line())))
     else:
-        print('{:>30}'.format('(root dependency)'))
+        print('{:>31}'.format('(root dependency)'))
 except ResolutionImpossible as e:
     print('\nCANNOT RESOLVE.\nOFFENDING REQUIREMENTS:')
     for r in e.requirements:
