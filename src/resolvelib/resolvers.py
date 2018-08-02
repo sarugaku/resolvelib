@@ -8,8 +8,17 @@ RequirementInformation = collections.namedtuple('RequirementInformation', [
 ])
 
 
+class NoVersionsAvailable(Exception):
+    def __init__(self, requirement, parent):
+        super(NoVersionsAvailable, self).__init__()
+        self.requirement = requirement
+        self.parent = parent
+
+
 class RequirementsConflicted(Exception):
-    pass
+    def __init__(self, dependency):
+        super(RequirementsConflicted, self).__init__()
+        self.dependency = dependency
 
 
 class Dependency(object):
@@ -24,6 +33,8 @@ class Dependency(object):
         """Build an instance from a requirement.
         """
         candidates = provider.find_matches(requirement)
+        if not candidates:
+            raise NoVersionsAvailable(requirement, parent)
         return cls(
             candidates=candidates,
             req_infos=[RequirementInformation(requirement, parent)],
@@ -45,7 +56,7 @@ class Dependency(object):
             if provider.is_satisfied_by(requirement, c)
         ]
         if not candidates:
-            raise RequirementsConflicted
+            raise RequirementsConflicted(self)
         return type(self)(candidates, infos)
 
 
@@ -54,11 +65,15 @@ class ResolutionError(Exception):
 
 
 class ResolutionImpossible(ResolutionError):
-    pass
+    def __init__(self, requirements):
+        super(ResolutionImpossible, self).__init__()
+        self.requirements = requirements
 
 
 class ResolutionTooDeep(ResolutionError):
-    pass
+    def __init__(self, round_count):
+        super(ResolutionTooDeep, self).__init__(round_count)
+        self.round_count = round_count
 
 
 class Resolution(object):
@@ -128,17 +143,18 @@ class Resolution(object):
                         graph.add_edge(self._p.identify(parent), name)
                 break
             else:   # All candidates tried, nothing works. Give up?
-                raise ResolutionImpossible
+                raise ResolutionImpossible(list(dependency.iter_requirement()))
 
-    def resolve(self, requirements, max_rounds=20):
+    def resolve(self, requirements, max_rounds):
         if self._resolved:
             raise RuntimeError('already resolved')
 
-        try:    # If initial dependencies conflict, nothing would ever work.
-            for requirement in requirements:
+        for requirement in requirements:
+            try:
                 self._add_constraint(requirement, parent=None)
-        except RequirementsConflicted:
-            raise ResolutionImpossible
+            except RequirementsConflicted as e:
+                # If initial dependencies conflict, nothing would ever work.
+                raise ResolutionImpossible(e.requirements + [requirement])
 
         last_result = None
         self._r.starting(self)
@@ -165,11 +181,19 @@ class Resolver(object):
         self.provider = provider
         self.reporter = reporter
 
-    def resolve(self, requirements):
+    def resolve(self, requirements, max_rounds=20):
         """Take a collection of constraints, spit out the resolution result.
 
-        Raises `ResolutionImpossible` if a resolution cannot be found.
+        May raise the following exceptions if a resolution cannot be found:
+
+        * `NoVersionsAvailable`: A requirement has no available candidates.
+        * `ResolutionImpossible`: A resolution cannot be found for the given
+            combination of requirements.
+        * `ResolutionTooDeep`: The dependency tree is too deeply nested and
+            the resolver gave up. This is usually caused by a circular
+            dependency, but you can try to resolve this by increasing the
+            `max_rounds` argument.
         """
         resolution = Resolution(self.provider, self.reporter)
-        resolution.resolve(requirements)
+        resolution.resolve(requirements, max_rounds=max_rounds)
         return resolution

@@ -8,6 +8,9 @@ Recommended cases to test:
 
 * "oslo.utils==1.4.0"
 * "requests" "urllib3<1.21.1"
+* "pylint==1.9" "pylint-quotes==0.1.9"
+* "aiogremlin" "pyyaml"
+
 """
 
 import argparse
@@ -16,7 +19,10 @@ import operator
 from requirementslib import Requirement
 from requirementslib.models.utils import make_install_requirement
 
-from resolvelib import AbstractProvider, BaseReporter, Resolver
+from resolvelib import (
+    AbstractProvider, BaseReporter, Resolver,
+    NoVersionsAvailable, ResolutionImpossible,
+)
 
 
 parser = argparse.ArgumentParser()
@@ -31,6 +37,7 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
     """
     def __init__(self):
         self.sources = None
+        self.invalid_candidates = set()
 
     def identify(self, dependency):
         return dependency.normalized_name
@@ -48,8 +55,19 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
         ))) for ican in icans]
 
     def is_satisfied_by(self, requirement, candidate):
+        if not requirement.specifiers:  # Short circuit for speed.
+            return True
+        candidate_line = candidate.as_line()
+        if candidate_line in self.invalid_candidates:
+            return False
+        try:
+            version = candidate.get_specifier().version
+        except ValueError:
+            print('ignoring invalid version {}'.format(candidate_line))
+            self.invalid_candidates.add(candidate_line)
+            return False
         specifier = requirement.ireq.specifier
-        for _ in specifier.filter([candidate.get_specifier().version]):
+        for _ in specifier.filter([version]):
             return True
         return False
 
@@ -93,4 +111,17 @@ class StdOutReporter(BaseReporter):
 
 
 r = Resolver(RequirementsLibSpecificationProvider(), StdOutReporter())
-r.resolve(requirements)
+try:
+    r.resolve(requirements)
+except NoVersionsAvailable as e:
+    print('\nCANNOT RESOLVE. NO CANDIDATES FOUND FOR:')
+    print('{:>30}'.format(e.requirement.as_line()))
+    if e.parent:
+        print('{:>30}'.format('(from {})'.format(e.parent.as_line())))
+    else:
+        print('{:>30}'.format('(root dependency)'))
+except ResolutionImpossible as e:
+    print('\nCANNOT RESOLVE.\nOFFENDING REQUIREMENTS:')
+    for r in e.requirements:
+        print('{:>30}'.format(r.as_line()))
+        print()
