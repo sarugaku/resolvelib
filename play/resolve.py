@@ -2,7 +2,12 @@
 
 The `requirementslib.Requirement` interface is used for both requirements and
 candidates. A candidate is simply a Requirement instance that guarentees to be
-pinned with `==`.
+pinned with ``==``.
+
+Recommended cases to test:
+
+* "oslo.utils==1.4.0"
+* "requests" "urllib3<1.21.1"
 """
 
 import argparse
