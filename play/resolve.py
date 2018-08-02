@@ -1,3 +1,10 @@
+"""Implementation to try out the resolver against RequirementsLib.
+
+The `requirementslib.Requirement` interface is used for both requirements and
+candidates. A candidate is simply a Requirement instance that guarentees to be
+pinned with `==`.
+"""
+
 import argparse
 import operator
 
