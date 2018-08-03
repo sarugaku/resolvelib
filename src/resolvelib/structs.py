@@ -34,6 +34,9 @@ class DirectedGraph(object):
     def values(self):
         return self._vertices.values()
 
+    def items(self):
+        return self._vertices.items()
+
     def iter_edge(self):
         for f, es in self._edges.items():
             for t in es:

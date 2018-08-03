@@ -17,7 +17,7 @@ Recommended cases to test:
 import argparse
 import operator
 
-from requirementslib import Requirement
+from requirementslib import Pipfile, Requirement
 from requirementslib.models.utils import make_install_requirement
 
 from resolvelib import (
@@ -27,10 +27,20 @@ from resolvelib import (
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('packages', metavar='PACKAGE', nargs='+')
+parser.add_argument('packages', metavar='PACKAGE', nargs='*')
+parser.add_argument('--project')
+parser.add_argument('--dev', action='store_true', default=False)
 options = parser.parse_args()
 
+
 requirements = [Requirement.from_line(line) for line in options.packages]
+if options.project:
+    pipfile = Pipfile.load(options.project)
+    requirements.extend(pipfile.packages.requirements)
+    if options.dev:
+        requirements.extend(pipfile.dev_packages.requirements)
+elif options.dev:
+    print('--dev is not useful without --project')
 
 
 class RequirementsLibSpecificationProvider(AbstractProvider):
@@ -94,8 +104,13 @@ class StdOutReporter(BaseReporter):
         curr = state.graph
         if self._prev is None:
             difference = set(curr.keys())
+            changed = set()
         else:
             difference = set(curr.keys()) - set(self._prev.keys())
+            changed = set(
+                k for k, v in curr.items()
+                if k in self._prev and self._prev[k] != v
+            )
         self._prev = curr
 
         if difference:
@@ -104,6 +119,11 @@ class StdOutReporter(BaseReporter):
                 print('{:>30}'.format(state.graph[k].as_line()))
         else:
             print('No New Packages.')
+        print()
+        if changed:
+            print('Changed Pins:')
+            for k in changed:
+                print('{:>30}'.format(state.graph[k].as_line()))
         print()
 
     def ending(self, state):

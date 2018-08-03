@@ -170,19 +170,19 @@ class Resolution(object):
                 # If initial dependencies conflict, nothing would ever work.
                 raise ResolutionImpossible(e.requirements + [requirement])
 
-        last_result = None
+        last = None
         self._r.starting(self)
         for round_index in range(max_rounds):
             self._r.starting_round(round_index, self)
-            self._resolved.append(DirectedGraph(last_result))
+            self._resolved.append(DirectedGraph(last))
             self._pin_dependencies()
-            current_result = self._resolved[-1]
-            if last_result and len(current_result) == len(last_result):
+            curr = self._resolved[-1]
+            if last is not None and len(curr) == len(last):
                 # Nothing new added. Done! Remove the duplicated entry.
                 self._resolved.pop()
                 self._r.ending(self)
                 return
-            last_result = current_result
+            last = curr
             self._r.ending_round(round_index, self)
 
         raise ResolutionTooDeep(max_rounds)
