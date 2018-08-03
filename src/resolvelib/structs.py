@@ -4,10 +4,12 @@ class DirectedGraph(object):
     def __init__(self, graph=None):
         if graph is None:
             self._vertices = {}     # <key> -> Any
-            self._edges = {}        # <key> -> Set[<key>]
+            self._fowards = {}      # <key> -> Set[<key>]
+            self._backwards = {}
         elif isinstance(graph, type(self)):
             self._vertices = dict(graph._vertices)
-            self._edges = {k: list(v) for k, v in graph._edges.items()}
+            self._fowards = {k: list(v) for k, v in graph._fowards.items()}
+            self._backwards = {k: list(v) for k, v in graph._backwards.items()}
         else:
             raise TypeError('DirectedAcyclicGraph expected, not {}'.format(
                 type(graph).__name__),
@@ -38,12 +40,18 @@ class DirectedGraph(object):
         return self._vertices.items()
 
     def iter_edge(self):
-        for f, es in self._edges.items():
+        for f, es in self._fowards.items():
             for t in es:
                 yield (f, t)
 
+    def iter_parent(self, k):
+        return iter(self._backwards.get(k, set()))
+
+    def iter_child(self, k):
+        return iter(self._fowards.get(k, set()))
+
     def has_edge(self, from_key, to_key):
-        return from_key in self._edges and to_key in self._edges[from_key]
+        return from_key in self._fowards and to_key in self._fowards[from_key]
 
     def _validate_edge_params(self, f, t):
         # Make sure both ends are in the graph.
@@ -59,10 +67,14 @@ class DirectedGraph(object):
         self._validate_edge_params(from_key, to_key)
 
         # Add the edge.
-        if from_key not in self._edges:
-            self._edges[from_key] = {to_key}
+        if from_key not in self._fowards:
+            self._fowards[from_key] = {to_key}
         else:
-            self._edges[from_key].add(to_key)
+            self._fowards[from_key].add(to_key)
+        if to_key not in self._backwards:
+            self._backwards[to_key] = {from_key}
+        else:
+            self._backwards[to_key].add(from_key)
 
 
 def _recursive_check_cyclic(edges, key, visited):
