@@ -10,13 +10,15 @@ Recommended cases to test:
 * "requests" "urllib3<1.21.1"
 * "pylint==1.9" "pylint-quotes==0.1.9"
 * "aiogremlin" "pyyaml"
-* Giant blob from pypa/pipenv#1974 (need to modify a bit)
+* Pipfile from pypa/pipenv#1974 (need to modify a bit)
+* Pipfile from pypa/pipenv#2529-410209718
 
 """
 
 import argparse
 import operator
 
+from packaging.markers import InvalidMarker, Marker
 from requirementslib import Pipfile, Requirement
 from requirementslib.models.utils import make_install_requirement
 
@@ -85,10 +87,21 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
             return True
         return False
 
+    def _filter_needed(self, requirement):
+        if not requirement.markers:
+            return True
+        try:
+            marker = Marker(requirement.markers)
+        except InvalidMarker:   # Can't understand the marker, assume true...
+            return True
+        return marker.evaluate()
+
     def get_dependencies(self, candidate):
         return [
-            Requirement.from_line(d)
-            for d in candidate.get_dependencies(sources=self.sources)
+            r for r in (
+                Requirement.from_line(d)
+                for d in candidate.get_dependencies(sources=self.sources)
+            ) if self._filter_needed(r)
         ]
 
 
@@ -97,6 +110,15 @@ class StdOutReporter(BaseReporter):
     """
     def starting(self, state):
         self._prev = None
+
+    def _print_dependency(self, graph, key):
+        print('{:>30}'.format(graph[key].as_line()))
+        has = False
+        for parent in graph.iter_parent(key):
+            print('{:>31}'.format('(from {})'.format(graph[parent].as_line())))
+            has = True
+        if not has:
+            print('{:>31}'.format('(root dependency)'))
 
     def ending_round(self, index, state):
         print('\n{:=^30}\n'.format(' Round {} '.format(index)))
@@ -116,14 +138,15 @@ class StdOutReporter(BaseReporter):
         if difference:
             print('New Packages: ')
             for k in difference:
-                print('{:>30}'.format(state.graph[k].as_line()))
+                self._print_dependency(state.graph, k)
         else:
             print('No New Packages.')
         print()
+
         if changed:
             print('Changed Pins:')
             for k in changed:
-                print('{:>30}'.format(state.graph[k].as_line()))
+                self._print_dependency(state.graph, k)
         print()
 
     def ending(self, state):
