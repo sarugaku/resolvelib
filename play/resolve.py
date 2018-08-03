@@ -43,6 +43,9 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
     def identify(self, dependency):
         return dependency.normalized_name
 
+    def get_preference(self, resolution, candidates, information):
+        return len(candidates)
+
     def find_matches(self, requirement):
         name = requirement.normalized_name
         markers = requirement.ireq.markers

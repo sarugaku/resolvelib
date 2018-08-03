@@ -24,9 +24,9 @@ class RequirementsConflicted(Exception):
 class Dependency(object):
     """Internal representation of a dependency.
     """
-    def __init__(self, candidates, req_infos):
+    def __init__(self, candidates, information):
         self.candidates = candidates
-        self._req_infos = req_infos
+        self.information = information
 
     @classmethod
     def from_requirment(cls, provider, requirement, parent):
@@ -37,19 +37,19 @@ class Dependency(object):
             raise NoVersionsAvailable(requirement, parent)
         return cls(
             candidates=candidates,
-            req_infos=[RequirementInformation(requirement, parent)],
+            information=[RequirementInformation(requirement, parent)],
         )
 
     def iter_requirement(self):
-        return (i.requirement for i in self._req_infos)
+        return (i.requirement for i in self.information)
 
     def iter_parent(self):
-        return (i.parent for i in self._req_infos)
+        return (i.parent for i in self.information)
 
     def merged_with(self, provider, requirement, parent):
         """Build a new instance from this and a new requirement.
         """
-        infos = list(self._req_infos)
+        infos = list(self.information)
         infos.append(RequirementInformation(requirement, parent))
         candidates = [
             c for c in self.candidates
@@ -108,6 +108,16 @@ class Resolution(object):
             dep = dep.merged_with(self._p, requirement, parent)
         self._dependencies[name] = dep
 
+    def _get_dependency_item_preference(self, item):
+        name, dependency = item
+        try:
+            pinned = self._resolved[-1][name]
+        except (IndexError, KeyError):
+            pinned = None
+        return self._p.get_preference(
+            pinned, dependency.candidates, dependency.information,
+        )
+
     def _check_pinnability(self, candidate):
         backup = self._dependencies.copy()
         try:
@@ -120,7 +130,11 @@ class Resolution(object):
 
     def _pin_dependencies(self):
         graph = self._resolved[-1]
-        for name, dependency in list(self._dependencies.items()):
+        dependency_items = sorted(
+            self._dependencies.items(),
+            key=self._get_dependency_item_preference,
+        )
+        for name, dependency in dependency_items:
             try:
                 pin = graph[name]
             except KeyError:

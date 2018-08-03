@@ -11,6 +11,40 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
+    def get_preference(self, resolution, candidates, information):
+        """Produce a sort key for given specification based on preference.
+
+        The preference is defined as "I think this requirement should be
+        resolved first". The lower the return value is, the more preferred
+        this group of arguments is.
+
+        :param resolution: Currently pinned candidate, or `None`.
+        :param candidates: A list of possible candidates.
+        :param information: A list of requirement information.
+
+        Each information instance is a named tuple with two entries:
+
+        * `requirement` specifies a requirement contributing to the current
+          candidate list
+        * `parent` specifies the candidate that provids (dependend on) the
+          requirement, or `None` to indicate a root requirement.
+
+        The preference could depend on a various of issues, including (not
+        necessarily in this order):
+
+        * Is this package pinned in the current resolution result?
+        * How relaxed is the requirement? Stricter ones should probably be
+          worked on first? (I don't know, actually.)
+        * How many possibilities are there to satisfy this requirement? Those
+          with few left should likely be worked on first, I guess?
+        * Are there any known conflicts for this requirement? We should
+          probably work on those with the most known conflicts.
+
+        A new list should be returned. It should contain all the same entries
+        of `requirements`, but with proper ordering.
+        """
+        raise NotImplementedError
+
     def find_matches(self, requirement):
         """Find all possible candidates that satisfy a requirement.
 
