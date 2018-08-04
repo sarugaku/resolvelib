@@ -18,7 +18,6 @@ Recommended cases to test:
 import argparse
 import operator
 
-from packaging.markers import InvalidMarker, Marker
 from requirementslib import Pipfile, Requirement
 from requirementslib.models.utils import make_install_requirement
 
@@ -90,11 +89,7 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
     def _filter_needed(self, requirement):
         if not requirement.markers:
             return True
-        try:
-            marker = Marker(requirement.markers)
-        except InvalidMarker:   # Can't understand the marker, assume true...
-            return True
-        return marker.evaluate()
+        return requirement.ireq.match_markers()
 
     def get_dependencies(self, candidate):
         return [
