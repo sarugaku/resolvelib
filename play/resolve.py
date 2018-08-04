@@ -44,6 +44,12 @@ elif options.dev:
     print('--dev is not useful without --project')
 
 
+def _filter_needed(requirement):
+    if not requirement.markers:
+        return True
+    return requirement.ireq.match_markers()
+
+
 class RequirementsLibSpecificationProvider(AbstractProvider):
     """Provider implementation to interface with `requirementslib.Requirement`.
     """
@@ -86,18 +92,21 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
             return True
         return False
 
-    def _filter_needed(self, requirement):
-        if not requirement.markers:
-            return True
-        return requirement.ireq.match_markers()
-
     def get_dependencies(self, candidate):
         return [
             r for r in (
                 Requirement.from_line(d)
                 for d in candidate.get_dependencies(sources=self.sources)
-            ) if self._filter_needed(r)
+            ) if _filter_needed(r)
         ]
+
+
+def _print_title(text):
+    print('\n{:=^84}\n'.format(text))
+
+
+def _print_requirement(r, end='\n'):
+    print('{:>40}'.format(r.as_line()), end=end)
 
 
 def _key_sort(name):
@@ -107,7 +116,7 @@ def _key_sort(name):
 
 
 def _print_dependency(state, key):
-    print('{:>40}'.format(state.mapping[key].as_line()), end='')
+    _print_requirement(state.mapping[key], end='')
     parents = sorted(state.graph.iter_parents(key), key=_key_sort)
     for i, p in enumerate(parents):
         if p is None:
@@ -128,7 +137,7 @@ class StdOutReporter(BaseReporter):
         self._prev = None
 
     def ending_round(self, index, state):
-        print('\n{:=^84}\n'.format(' Round {} '.format(index)))
+        _print_title(' Round {} '.format(index))
         mapping = state.mapping
         if self._prev is None:
             difference = set(mapping.keys())
@@ -142,25 +151,26 @@ class StdOutReporter(BaseReporter):
         self._prev = mapping
 
         if difference:
-            print('New Packages: ')
+            print('New pins: ')
             for k in difference:
                 _print_dependency(state, k)
-        else:
-            print('No New Packages.')
         print()
 
         if changed:
-            print('Changed Pins:')
+            print('Changed pins:')
             for k in changed:
                 _print_dependency(state, k)
         print()
 
     def ending(self, state):
-        print('=' * 84)
-        print('\nSTABLE PINS:')
+        _print_title(' STABLE PINS ')
         for k in sorted(state.mapping):
             _print_dependency(state, k)
-        print()
+
+
+_print_title('User requirements')
+for r in requirements:
+    _print_requirement(r)
 
 
 r = Resolver(RequirementsLibSpecificationProvider(), StdOutReporter())
@@ -176,5 +186,6 @@ except NoVersionsAvailable as e:
 except ResolutionImpossible as e:
     print('\nCANNOT RESOLVE.\nOFFENDING REQUIREMENTS:')
     for r in e.requirements:
-        print('{:>40}'.format(r.as_line()))
-        print()
+        _print_requirement(r)
+
+print()

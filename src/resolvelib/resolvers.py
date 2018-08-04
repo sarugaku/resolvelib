@@ -124,9 +124,6 @@ class Resolution(object):
             raise AttributeError('state')
 
     def _add_constraint(self, requirement, parent):
-        # Only resolve dependencies with valid markers
-        if not self._p._filter_needed(requirement):
-            return
         name = self._p.identify(requirement)
         try:
             dep = self._dependencies[name]
