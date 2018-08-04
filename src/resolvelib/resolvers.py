@@ -29,7 +29,7 @@ class Dependency(object):
         self.information = information
 
     @classmethod
-    def from_requirment(cls, provider, requirement, parent):
+    def from_requirement(cls, provider, requirement, parent):
         """Build an instance from a requirement.
         """
         candidates = provider.find_matches(requirement)
@@ -103,7 +103,7 @@ class Resolution(object):
         try:
             dep = self._dependencies[name]
         except KeyError:
-            dep = Dependency.from_requirment(self._p, requirement, parent)
+            dep = Dependency.from_requirement(self._p, requirement, parent)
         else:
             dep = dep.merged_with(self._p, requirement, parent)
         self._dependencies[name] = dep
