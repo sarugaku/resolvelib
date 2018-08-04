@@ -87,10 +87,7 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
             print('ignoring invalid version {}'.format(candidate_line))
             self.invalid_candidates.add(candidate_line)
             return False
-        specifier = requirement.ireq.specifier
-        for _ in specifier.filter([version]):
-            return True
-        return False
+        return requirement.ireq.specifier.contains(version)
 
     def get_dependencies(self, candidate):
         return [
