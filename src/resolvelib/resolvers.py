@@ -60,6 +60,34 @@ class Dependency(object):
         return type(self)(candidates, infos)
 
 
+class State(object):
+    """Hold th resolution state in a round.
+    """
+    def __init__(self, other=None):
+        if other is None:
+            self.mapping = {}
+            self.graph = DirectedGraph()
+        else:
+            self.mapping = dict(other.mapping)
+            self.graph = DirectedGraph(other.graph)
+        self.graph.add(None)    # Root dependency.
+
+    def get_candidate(self, name):
+        return self.mapping[name]
+
+    def iter_children(self, name):
+        return self.graph.iter_children(name)
+
+    def iter_parents(self, name):
+        return self.graph.iter_parents(name)
+
+    def pin(self, candidate, name, parents):
+        self.mapping[name] = candidate
+        self.graph.add(name)
+        for parent in parents:
+            self.graph.connect(parent, name)
+
+
 class ResolutionError(Exception):
     pass
 
@@ -86,17 +114,14 @@ class Resolution(object):
         self._p = provider
         self._r = reporter
         self._dependencies = {}
-        self._resolved = []     # Resolution state after each round.
+        self._states = []
 
     @property
-    def dependencies(self):
-        return list(self._dependencies.values())
-
-    @property
-    def graph(self):
-        if not self._resolved:
-            raise AttributeError('graph')
-        return self._resolved[-1]
+    def state(self):
+        try:
+            return self._states[-1]
+        except IndexError:
+            raise AttributeError('state')
 
     def _add_constraint(self, requirement, parent):
         # Only resolve dependencies with valid markers
@@ -114,7 +139,7 @@ class Resolution(object):
     def _get_dependency_item_preference(self, item):
         name, dependency = item
         try:
-            pinned = self._resolved[-1][name]
+            pinned = self._states[-1].mapping[name]
         except (IndexError, KeyError):
             pinned = None
         return self._p.get_preference(
@@ -132,14 +157,14 @@ class Resolution(object):
         return True
 
     def _pin_dependencies(self):
-        graph = self._resolved[-1]
+        state = self._states[-1]
         dependency_items = sorted(
             self._dependencies.items(),
             key=self._get_dependency_item_preference,
         )
         for name, dependency in dependency_items:
             try:
-                pin = graph[name]
+                pin = state.mapping[name]
             except KeyError:
                 satisfied = False
             else:
@@ -154,41 +179,44 @@ class Resolution(object):
                 candidate = candidates.pop()
                 if not self._check_pinnability(candidate):
                     continue
-                graph[name] = candidate
-                for parent in dependency.iter_parent():
-                    if parent:
-                        graph.add_edge(self._p.identify(parent), name)
+                parents = [
+                    None if parent is None else self._p.identify(parent)
+                    for parent in dependency.iter_parent()
+                ]
+                state.pin(candidate, name, parents)
                 break
             else:   # All candidates tried, nothing works. Give up?
                 raise ResolutionImpossible(list(dependency.iter_requirement()))
 
     def resolve(self, requirements, max_rounds):
-        if self._resolved:
+        if self._states:
             raise RuntimeError('already resolved')
 
         for requirement in requirements:
-            # Only resolve requirements with valid markers.
-            if self._p._filter_needed(requirement):
-                try:
-                    self._add_constraint(requirement, parent=None)
-                except RequirementsConflicted as e:
-                    # If initial dependencies conflict, nothing would ever work.
-                    raise ResolutionImpossible(e.requirements + [requirement])
+            try:
+                self._add_constraint(requirement, parent=None)
+            except RequirementsConflicted as e:
+                # If initial dependencies conflict, nothing would ever work.
+                raise ResolutionImpossible(e.requirements + [requirement])
 
         last = None
-        self._r.starting(self)
+        self._r.starting()
+
         for round_index in range(max_rounds):
-            self._r.starting_round(round_index, self)
-            self._resolved.append(DirectedGraph(last))
+            self._r.starting_round(round_index)
+
+            self._states.append(State(last))
             self._pin_dependencies()
-            curr = self._resolved[-1]
-            if last is not None and len(curr) == len(last):
+
+            curr = self._states[-1]
+            if last is not None and len(curr.mapping) == len(last.mapping):
                 # Nothing new added. Done! Remove the duplicated entry.
-                self._resolved.pop()
-                self._r.ending(self)
+                self._states.pop()
+                self._r.ending(last)
                 return
             last = curr
-            self._r.ending_round(round_index, self)
+
+            self._r.ending_round(round_index, curr)
 
         raise ResolutionTooDeep(max_rounds)
 

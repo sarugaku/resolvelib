@@ -1,11 +1,11 @@
 class BaseReporter(object):
     """Delegate class to provider progress reporting for the resolver.
     """
-    def starting(self, state):
+    def starting(self):
         """Called before the resolution actually starts.
         """
 
-    def starting_round(self, index, state):
+    def starting_round(self, index):
         """Called before each round of resolution starts.
         """
 

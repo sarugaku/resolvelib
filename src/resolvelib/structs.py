@@ -3,16 +3,16 @@ class DirectedGraph(object):
     """
     def __init__(self, graph=None):
         if graph is None:
-            self._vertices = {}     # <key> -> Any
-            self._fowards = {}      # <key> -> Set[<key>]
-            self._backwards = {}
+            self._vertices = set()
+            self._forwards = {}      # <key> -> Set[<key>]
+            self._backwards = {}    # <key> -> Set[<key>]
         elif isinstance(graph, type(self)):
-            self._vertices = dict(graph._vertices)
-            self._fowards = {k: list(v) for k, v in graph._fowards.items()}
-            self._backwards = {k: list(v) for k, v in graph._backwards.items()}
+            self._vertices = set(graph._vertices)
+            self._forwards = {k: set(v) for k, v in graph._forwards.items()}
+            self._backwards = {k: set(v) for k, v in graph._backwards.items()}
         else:
-            raise TypeError('DirectedAcyclicGraph expected, not {}'.format(
-                type(graph).__name__),
+            raise TypeError('{} expected, not {}'.format(
+                type(self).__name__, type(graph).__name__),
             )
 
     def __iter__(self):
@@ -24,57 +24,36 @@ class DirectedGraph(object):
     def __contains__(self, key):
         return key in self._vertices
 
-    def __getitem__(self, key):
-        return self._vertices[key]
+    def add(self, key):
+        self._vertices.add(key)
+        self._forwards[key] = set()
+        self._backwards[key] = set()
 
-    def __setitem__(self, key, value):
-        self._vertices[key] = value
+    def iter_edges(self):
+        for f, children in self._forwards.items():
+            for t in children:
+                yield f, t
 
-    def keys(self):
-        return self._vertices.keys()
+    def iter_children(self, key):
+        return iter(self._forwards[key])
 
-    def values(self):
-        return self._vertices.values()
+    def iter_parents(self, key):
+        return iter(self._backwards[key])
 
-    def items(self):
-        return self._vertices.items()
-
-    def iter_edge(self):
-        for f, es in self._fowards.items():
-            for t in es:
-                yield (f, t)
-
-    def iter_parent(self, k):
-        return iter(self._backwards.get(k, set()))
-
-    def iter_child(self, k):
-        return iter(self._fowards.get(k, set()))
-
-    def has_edge(self, from_key, to_key):
-        return from_key in self._fowards and to_key in self._fowards[from_key]
+    def connected(self, f, t):
+        return f in self._forwards and t in self._forwards[f]
 
     def _validate_edge_params(self, f, t):
-        # Make sure both ends are in the graph.
-        for v in (f, t):
+        for v in (f, t):    # Make sure both ends are in the graph.
             if v not in self._vertices:
                 raise KeyError(v)
 
-    def add_edge(self, from_key, to_key):
-        # We're good if this edge already exists.
-        if self.has_edge(from_key, to_key):
+    def connect(self, f, t):
+        if self.connected(f, t):
             return
-
-        self._validate_edge_params(from_key, to_key)
-
-        # Add the edge.
-        if from_key not in self._fowards:
-            self._fowards[from_key] = {to_key}
-        else:
-            self._fowards[from_key].add(to_key)
-        if to_key not in self._backwards:
-            self._backwards[to_key] = {from_key}
-        else:
-            self._backwards[to_key].add(from_key)
+        self._validate_edge_params(f, t)
+        self._forwards[f].add(t)
+        self._backwards[t].add(f)
 
 
 def _recursive_check_cyclic(edges, key, visited):
@@ -105,6 +84,7 @@ class DirectedAcyclicGraph(DirectedGraph):
     """A directed graph that ensures edges don't form loops.
     """
     def _validate_edge_params(self, f, t):
+        super(DirectedAcyclicGraph, self)._validate_edge_params(f, t)
         # Make sure this new edge won't make the graph cyclic.
-        if _recursive_check_cyclic(self._edges, t, {f}):
+        if _recursive_check_cyclic(self._forwards, t, {f}):
             raise CyclicError(f, t)

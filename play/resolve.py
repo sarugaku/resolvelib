@@ -100,40 +100,52 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
         ]
 
 
+def _key_sort(name):
+    if name is None:
+        return (-1, '')
+    return (ord(name[0].lower()), name)
+
+
+def _print_dependency(state, key):
+    print('{:>40}'.format(state.mapping[key].as_line()), end='')
+    parents = sorted(state.graph.iter_parents(key), key=_key_sort)
+    for i, p in enumerate(parents):
+        if p is None:
+            line = '<>'     # Root.
+        else:
+            line = state.mapping[p].as_line()
+        if i == 0:
+            padding = '  '
+        else:
+            padding = ' ' * 42
+        print('{pad}{line}'.format(pad=padding, line=line))
+
+
 class StdOutReporter(BaseReporter):
     """Simple reporter that prints things to stdout.
     """
-    def starting(self, state):
+    def starting(self):
         self._prev = None
 
-    def _print_dependency(self, graph, key):
-        print('{:>30}'.format(graph[key].as_line()))
-        has = False
-        for parent in graph.iter_parent(key):
-            print('{:>31}'.format('(from {})'.format(graph[parent].as_line())))
-            has = True
-        if not has:
-            print('{:>31}'.format('(root dependency)'))
-
     def ending_round(self, index, state):
-        print('\n{:=^30}\n'.format(' Round {} '.format(index)))
+        print('\n{:=^40}\n'.format(' Round {} '.format(index)))
 
-        curr = state.graph
+        mapping = state.mapping
         if self._prev is None:
-            difference = set(curr.keys())
+            difference = set(mapping.keys())
             changed = set()
         else:
-            difference = set(curr.keys()) - set(self._prev.keys())
+            difference = set(mapping.keys()) - set(self._prev.keys())
             changed = set(
-                k for k, v in curr.items()
+                k for k, v in mapping.items()
                 if k in self._prev and self._prev[k] != v
             )
-        self._prev = curr
+        self._prev = mapping
 
         if difference:
             print('New Packages: ')
             for k in difference:
-                self._print_dependency(state.graph, k)
+                _print_dependency(state, k)
         else:
             print('No New Packages.')
         print()
@@ -141,14 +153,14 @@ class StdOutReporter(BaseReporter):
         if changed:
             print('Changed Pins:')
             for k in changed:
-                self._print_dependency(state.graph, k)
+                _print_dependency(state, k)
         print()
 
     def ending(self, state):
-        print('=' * 30)
+        print('=' * 40)
         print('\nSTABLE PINS:')
-        for node in state.graph.values():
-            print('{:>30}'.format(node.as_line()))
+        for k in sorted(state.mapping):
+            _print_dependency(state, k)
         print()
 
 
@@ -157,13 +169,13 @@ try:
     r.resolve(requirements)
 except NoVersionsAvailable as e:
     print('\nCANNOT RESOLVE. NO CANDIDATES FOUND FOR:')
-    print('{:>30}'.format(e.requirement.as_line()))
+    print('{:>40}'.format(e.requirement.as_line()))
     if e.parent:
-        print('{:>31}'.format('(from {})'.format(e.parent.as_line())))
+        print('{:>41}'.format('(from {})'.format(e.parent.as_line())))
     else:
-        print('{:>31}'.format('(root dependency)'))
+        print('{:>41}'.format('(root dependency)'))
 except ResolutionImpossible as e:
     print('\nCANNOT RESOLVE.\nOFFENDING REQUIREMENTS:')
     for r in e.requirements:
-        print('{:>30}'.format(r.as_line()))
+        print('{:>40}'.format(r.as_line()))
         print()

@@ -14,14 +14,14 @@ def test_simple(graph):
     |         ^
     +---------+
     """
-    graph['a'] = 'A'
-    graph['b'] = 'B'
-    graph['c'] = 'C'
-    graph.add_edge('a', 'b')
-    graph.add_edge('b', 'c')
-    graph.add_edge('a', 'c')
-    assert graph.vertices == {'a': 'A', 'b': 'B', 'c': 'C'}
-    assert graph.edges == {'a': {'b', 'c'}, 'b': {'c'}}
+    graph.add('a')
+    graph.add('b')
+    graph.add('c')
+    graph.connect('a', 'b')
+    graph.connect('b', 'c')
+    graph.connect('a', 'c')
+    assert set(graph) == {'a', 'b', 'c'}
+    assert set(graph.iter_edges()) == {('a', 'b'), ('a', 'c'), ('b', 'c')}
 
 
 def test_acyclic_simple(graph):
@@ -30,10 +30,10 @@ def test_acyclic_simple(graph):
     ^         |
     +-- [X] --+
     """
-    graph['a'] = 'A'
-    graph['b'] = 'B'
-    graph['c'] = 'C'
-    graph.add_edge('a', 'b')
-    graph.add_edge('b', 'c')
+    graph.add('a')
+    graph.add('b')
+    graph.add('c')
+    graph.connect('a', 'b')
+    graph.connect('b', 'c')
     with pytest.raises(CyclicError):
-        graph.add_edge('c', 'a')
+        graph.connect('c', 'a')
