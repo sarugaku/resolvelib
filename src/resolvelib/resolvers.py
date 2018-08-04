@@ -99,6 +99,9 @@ class Resolution(object):
         return self._resolved[-1]
 
     def _add_constraint(self, requirement, parent):
+        # Only resolve dependencies with valid markers
+        if not self._p._filter_needed(requirement):
+            return
         name = self._p.identify(requirement)
         try:
             dep = self._dependencies[name]
@@ -164,11 +167,13 @@ class Resolution(object):
             raise RuntimeError('already resolved')
 
         for requirement in requirements:
-            try:
-                self._add_constraint(requirement, parent=None)
-            except RequirementsConflicted as e:
-                # If initial dependencies conflict, nothing would ever work.
-                raise ResolutionImpossible(e.requirements + [requirement])
+            # Only resolve requirements with valid markers.
+            if self._p._filter_needed(requirement):
+                try:
+                    self._add_constraint(requirement, parent=None)
+                except RequirementsConflicted as e:
+                    # If initial dependencies conflict, nothing would ever work.
+                    raise ResolutionImpossible(e.requirements + [requirement])
 
         last = None
         self._r.starting(self)
