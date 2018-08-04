@@ -111,13 +111,13 @@ def _print_dependency(state, key):
     parents = sorted(state.graph.iter_parents(key), key=_key_sort)
     for i, p in enumerate(parents):
         if p is None:
-            line = '<>'     # Root.
+            line = '(user)'
         else:
             line = state.mapping[p].as_line()
         if i == 0:
-            padding = '  '
+            padding = ' <= '
         else:
-            padding = ' ' * 42
+            padding = ' ' * 44
         print('{pad}{line}'.format(pad=padding, line=line))
 
 
@@ -128,8 +128,7 @@ class StdOutReporter(BaseReporter):
         self._prev = None
 
     def ending_round(self, index, state):
-        print('\n{:=^40}\n'.format(' Round {} '.format(index)))
-
+        print('\n{:=^84}\n'.format(' Round {} '.format(index)))
         mapping = state.mapping
         if self._prev is None:
             difference = set(mapping.keys())
@@ -157,7 +156,7 @@ class StdOutReporter(BaseReporter):
         print()
 
     def ending(self, state):
-        print('=' * 40)
+        print('=' * 84)
         print('\nSTABLE PINS:')
         for k in sorted(state.mapping):
             _print_dependency(state, k)
