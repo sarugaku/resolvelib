@@ -29,6 +29,15 @@ class DirectedGraph(object):
         self._forwards[key] = set()
         self._backwards[key] = set()
 
+    def remove(self, key):
+        if self._forwards[key]:
+            raise ValueError('node has incoming edges')
+        if self._backwards[key]:
+            raise ValueError('node has outgoing edges')
+        self._vertices.remove(key)
+        del self._forwards[key]
+        del self._backwards[key]
+
     def iter_edges(self):
         for f, children in self._forwards.items():
             for t in children:
@@ -43,17 +52,24 @@ class DirectedGraph(object):
     def connected(self, f, t):
         return f in self._forwards and t in self._forwards[f]
 
-    def _validate_edge_params(self, f, t):
+    # Extracted for subclassing.
+    def _validate_for_connect(self, f, t):
         for v in (f, t):    # Make sure both ends are in the graph.
             if v not in self._vertices:
                 raise KeyError(v)
 
     def connect(self, f, t):
-        if self.connected(f, t):
-            return
-        self._validate_edge_params(f, t)
+        self._validate_for_connect(f, t)
         self._forwards[f].add(t)
         self._backwards[t].add(f)
+
+    def disconnect(self, f, t):
+        if f not in self._vertices:
+            raise KeyError(f)
+        if t not in self._vertices:
+            raise KeyError(t)
+        self._forwards[f].remove(t)
+        self._backwards[t].remove(f)
 
 
 def _recursive_check_cyclic(edges, key, visited):
@@ -83,8 +99,8 @@ class CyclicError(ValueError):
 class DirectedAcyclicGraph(DirectedGraph):
     """A directed graph that ensures edges don't form loops.
     """
-    def _validate_edge_params(self, f, t):
-        super(DirectedAcyclicGraph, self)._validate_edge_params(f, t)
+    def _validate_for_connect(self, f, t):
+        super(DirectedAcyclicGraph, self)._validate_for_connect(f, t)
         # Make sure this new edge won't make the graph cyclic.
         if _recursive_check_cyclic(self._forwards, t, {f}):
             raise CyclicError(f, t)
