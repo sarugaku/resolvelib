@@ -25,6 +25,8 @@ class DirectedGraph(object):
         return key in self._vertices
 
     def add(self, key):
+        """Add a new vertex to the graph.
+        """
         if key in self._vertices:
             raise ValueError('vertex exists')
         self._vertices.add(key)
@@ -32,6 +34,8 @@ class DirectedGraph(object):
         self._backwards[key] = set()
 
     def remove(self, key):
+        """Remove a vertex from the graph, disconnecting all edges from/to it.
+        """
         for f in self._forwards[key]:
             self._backwards[f].remove(key)
         for t in self._backwards[key]:
@@ -39,6 +43,17 @@ class DirectedGraph(object):
         self._vertices.remove(key)
         del self._forwards[key]
         del self._backwards[key]
+
+    def connected(self, f, t):
+        return f in self._forwards and t in self._forwards[f]
+
+    def connect(self, f, t):
+        """Connect two existing vertices.
+
+        Nothing happens if the vertices are already connected.
+        """
+        self._forwards[f].add(t)
+        self._backwards[t].add(f)
 
     def iter_edges(self):
         for f, children in self._forwards.items():
@@ -50,10 +65,3 @@ class DirectedGraph(object):
 
     def iter_parents(self, key):
         return iter(self._backwards[key])
-
-    def connected(self, f, t):
-        return f in self._forwards and t in self._forwards[f]
-
-    def connect(self, f, t):
-        self._forwards[f].add(t)
-        self._backwards[t].add(f)
