@@ -107,8 +107,15 @@ class Resolution(object):
         except IndexError:
             raise AttributeError('state')
 
-    def _push_state(self, base):
-        if base is None:
+    def _push_new_state(self):
+        """Push a new state into history.
+
+        This new state will be used to hold resolution results of the next
+        coming round.
+        """
+        try:
+            base = self._states[-1]
+        except IndexError:
             graph = DirectedGraph()
             graph.add(None)     # Sentinel as root dependencies' parent.
             state = State(mapping={}, graph=graph)
@@ -215,7 +222,7 @@ class Resolution(object):
         for round_index in range(max_rounds):
             self._r.starting_round(round_index)
 
-            self._push_state(last)
+            self._push_new_state()
             self._pin_criteria()
 
             curr = self.state
