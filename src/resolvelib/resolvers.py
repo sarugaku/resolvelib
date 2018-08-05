@@ -16,13 +16,21 @@ class NoVersionsAvailable(Exception):
 
 
 class RequirementsConflicted(Exception):
-    def __init__(self, dependency):
+    def __init__(self, criterion):
         super(RequirementsConflicted, self).__init__()
-        self.dependency = dependency
+        self.criterion = criterion
 
 
-class Dependency(object):
-    """Internal representation of a dependency.
+class Criterion(object):
+    """Internal representation of a criterion.
+
+    This holds two attributes:
+
+    * `information` is a collection of `RequirementInformation` pairs. Each
+      pair is a requirement contributing to this criterion, and the candidate
+      that provides the requirement.
+    * `candidates` is a collection containing all possible candidates deducted
+      from the union of contributing requirements. It should never be empty.
     """
     def __init__(self, candidates, information):
         self.candidates = candidates
@@ -70,7 +78,7 @@ class State(object):
         else:
             self.mapping = dict(other.mapping)
             self.graph = DirectedGraph(other.graph)
-        self.graph.add(None)    # Root dependency.
+        self.graph.add(None)    # Root requirement.
 
     def get_candidate(self, name):
         return self.mapping[name]
@@ -113,7 +121,7 @@ class Resolution(object):
     def __init__(self, provider, reporter):
         self._p = provider
         self._r = reporter
-        self._dependencies = {}
+        self._criteria = {}
         self._states = []
 
     @property
@@ -123,43 +131,43 @@ class Resolution(object):
         except IndexError:
             raise AttributeError('state')
 
-    def _add_constraint(self, requirement, parent):
+    def _contribute_to_criteria(self, requirement, parent):
         name = self._p.identify(requirement)
         try:
-            dep = self._dependencies[name]
+            crit = self._criteria[name]
         except KeyError:
-            dep = Dependency.from_requirement(self._p, requirement, parent)
+            crit = Criterion.from_requirement(self._p, requirement, parent)
         else:
-            dep = dep.merged_with(self._p, requirement, parent)
-        self._dependencies[name] = dep
+            crit = crit.merged_with(self._p, requirement, parent)
+        self._criteria[name] = crit
 
-    def _get_dependency_item_preference(self, item):
-        name, dependency = item
+    def _get_criterion_item_preference(self, item):
+        name, criterion = item
         try:
             pinned = self._states[-1].mapping[name]
         except (IndexError, KeyError):
             pinned = None
         return self._p.get_preference(
-            pinned, dependency.candidates, dependency.information,
+            pinned, criterion.candidates, criterion.information,
         )
 
     def _check_pinnability(self, candidate):
-        backup = self._dependencies.copy()
+        backup = self._criteria.copy()
         try:
             for subdep in self._p.get_dependencies(candidate):
-                self._add_constraint(subdep, parent=candidate)
+                self._contribute_to_criteria(subdep, parent=candidate)
         except RequirementsConflicted:
-            self._dependencies = backup
+            self._criteria = backup
             return False
         return True
 
-    def _pin_dependencies(self):
+    def _pin_criteria(self):
         state = self._states[-1]
-        dependency_items = sorted(
-            self._dependencies.items(),
-            key=self._get_dependency_item_preference,
+        criterion_items = sorted(
+            self._criteria.items(),
+            key=self._get_criterion_item_preference,
         )
-        for name, dependency in dependency_items:
+        for name, criterion in criterion_items:
             try:
                 pin = state.mapping[name]
             except KeyError:
@@ -167,23 +175,23 @@ class Resolution(object):
             else:
                 satisfied = all(
                     self._p.is_satisfied_by(r, pin)
-                    for r in dependency.iter_requirement()
+                    for r in criterion.iter_requirement()
                 )
             if satisfied:   # If the current pin already works...
                 continue
-            candidates = list(dependency.candidates)
+            candidates = list(criterion.candidates)
             while candidates:
                 candidate = candidates.pop()
                 if not self._check_pinnability(candidate):
                     continue
                 parents = [
                     None if parent is None else self._p.identify(parent)
-                    for parent in dependency.iter_parent()
+                    for parent in criterion.iter_parent()
                 ]
                 state.pin(candidate, name, parents)
                 break
             else:   # All candidates tried, nothing works. Give up?
-                raise ResolutionImpossible(list(dependency.iter_requirement()))
+                raise ResolutionImpossible(list(criterion.iter_requirement()))
 
     def resolve(self, requirements, max_rounds):
         if self._states:
@@ -191,9 +199,9 @@ class Resolution(object):
 
         for requirement in requirements:
             try:
-                self._add_constraint(requirement, parent=None)
+                self._contribute_to_criteria(requirement, parent=None)
             except RequirementsConflicted as e:
-                # If initial dependencies conflict, nothing would ever work.
+                # If initial requirements conflict, nothing would ever work.
                 raise ResolutionImpossible(e.requirements + [requirement])
 
         last = None
@@ -203,7 +211,7 @@ class Resolution(object):
             self._r.starting_round(round_index)
 
             self._states.append(State(last))
-            self._pin_dependencies()
+            self._pin_criteria()
 
             curr = self._states[-1]
             if last is not None and len(curr.mapping) == len(last.mapping):
