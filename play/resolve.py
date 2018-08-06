@@ -165,20 +165,15 @@ class StdOutReporter(BaseReporter):
                 _print_dependency(state, k)
         print()
 
-    def ending(self, state):
-        _print_title(' STABLE PINS ')
-        for k in sorted(state.mapping):
-            _print_dependency(state, k)
 
-
-_print_title('User requirements')
+_print_title(' User requirements ')
 for r in requirements:
     _print_requirement(r)
 
 
 r = Resolver(RequirementsLibProvider(requirements), StdOutReporter())
 try:
-    r.resolve(requirements)
+    state = r.resolve(requirements)
 except NoVersionsAvailable as e:
     print('\nCANNOT RESOLVE. NO CANDIDATES FOUND FOR:')
     print('{:>40}'.format(e.requirement.as_line()))
@@ -190,5 +185,9 @@ except ResolutionImpossible as e:
     print('\nCANNOT RESOLVE.\nOFFENDING REQUIREMENTS:')
     for r in e.requirements:
         _print_requirement(r)
+else:
+    _print_title(' STABLE PINS ')
+    for k in sorted(state.mapping):
+        _print_dependency(state, k)
 
 print()

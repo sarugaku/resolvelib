@@ -248,7 +248,18 @@ class Resolver(object):
     def resolve(self, requirements, max_rounds=20):
         """Take a collection of constraints, spit out the resolution result.
 
-        May raise the following exceptions if a resolution cannot be found:
+        The return value is a representation to the final resolution result. It
+        is a tuple subclass with two public members:
+
+        * `mapping`: A dict of resolved candidates. Each key is an identifier
+            of a requirement (as returned by the provider's `identify` method),
+            and the value is the resolved candidate.
+        * `graph`: A `DirectedGraph` instance representing the dependency tree.
+            The vertices are keys of `mapping`, and each edge represents *why*
+            a particular package is included. A special vertex `None` is
+            included to represent parents of user-supplied requirements.
+
+        The following exceptions may be raised if a resolution cannot be found:
 
         * `NoVersionsAvailable`: A requirement has no available candidates.
         * `ResolutionImpossible`: A resolution cannot be found for the given
@@ -260,4 +271,4 @@ class Resolver(object):
         """
         resolution = Resolution(self.provider, self.reporter)
         resolution.resolve(requirements, max_rounds=max_rounds)
-        return resolution
+        return resolution.state
