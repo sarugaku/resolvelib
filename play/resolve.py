@@ -30,15 +30,14 @@ from resolvelib import (
 
 parser = argparse.ArgumentParser()
 parser.add_argument('packages', metavar='PACKAGE', nargs='*')
-parser.add_argument('--project')
+parser.add_argument('--project', type=os.path.abspath)
 options = parser.parse_args()
 
 
 requirements = [Requirement.from_line(line) for line in options.packages]
 if options.project:
-    project_root = os.path.abspath(options.project)
-    os.chdir(project_root)
-    pipfile = Pipfile.load(project_root)
+    os.chdir(options.project)
+    pipfile = Pipfile.load(options.project)
     requirements.extend(pipfile.packages.requirements)
     requirements.extend(pipfile.dev_packages.requirements)
 
