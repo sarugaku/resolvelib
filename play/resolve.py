@@ -50,12 +50,17 @@ def _filter_needed(requirement):
     return requirement.ireq.match_markers()
 
 
-class RequirementsLibSpecificationProvider(AbstractProvider):
+class RequirementsLibProvider(AbstractProvider):
     """Provider implementation to interface with `requirementslib.Requirement`.
     """
-    def __init__(self):
+    def __init__(self, root_requirements):
         self.sources = None
         self.invalid_candidates = set()
+        self.non_named_requirements = {
+            requirement.name: requirement
+            for requirement in root_requirements
+            if not requirement.is_named
+        }
 
     def identify(self, dependency):
         return dependency.normalized_name
@@ -65,6 +70,8 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
 
     def find_matches(self, requirement):
         name = requirement.normalized_name
+        if name in self.non_named_requirements:
+            return [self.non_named_requirements[name]]
         markers = requirement.ireq.markers
         extras = requirement.ireq.extras
         icans = sorted(
@@ -76,6 +83,9 @@ class RequirementsLibSpecificationProvider(AbstractProvider):
         ))) for ican in icans]
 
     def is_satisfied_by(self, requirement, candidate):
+        name = requirement.normalized_name
+        if name in self.non_named_requirements:
+            return self.non_named_requirements[name] == requirement
         if not requirement.specifiers:  # Short circuit for speed.
             return True
         candidate_line = candidate.as_line()
@@ -170,7 +180,7 @@ for r in requirements:
     _print_requirement(r)
 
 
-r = Resolver(RequirementsLibSpecificationProvider(), StdOutReporter())
+r = Resolver(RequirementsLibProvider(requirements), StdOutReporter())
 try:
     r.resolve(requirements)
 except NoVersionsAvailable as e:
