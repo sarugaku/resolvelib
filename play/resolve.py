@@ -17,6 +17,7 @@ Recommended cases to test:
 
 import argparse
 import operator
+import os
 
 from requirementslib import Pipfile, Requirement
 from requirementslib.models.utils import make_install_requirement
@@ -35,6 +36,7 @@ options = parser.parse_args()
 
 requirements = [Requirement.from_line(line) for line in options.packages]
 if options.project:
+    os.chdir(options.project)
     pipfile = Pipfile.load(options.project)
     requirements.extend(pipfile.packages.requirements)
     requirements.extend(pipfile.dev_packages.requirements)
