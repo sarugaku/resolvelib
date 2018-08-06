@@ -22,7 +22,7 @@ class RequirementsConflicted(Exception):
 
 
 class Criterion(object):
-    """Internal representation of a criterion.
+    """Internal representation of possible resolution results of a package.
 
     This holds two attributes:
 
