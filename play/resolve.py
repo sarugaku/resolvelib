@@ -96,11 +96,16 @@ class RequirementsLibProvider(AbstractProvider):
         return requirement.ireq.specifier.contains(version)
 
     def get_dependencies(self, candidate):
+        try:
+            dependencies = candidate.get_dependencies(sources=self.sources)
+        except Exception as e:
+            print('failed to get dependencies for {0!r}: {1}'.format(
+                candidate.as_line(), e,
+            ))
+            return []
         return [
-            r for r in (
-                Requirement.from_line(d)
-                for d in candidate.get_dependencies(sources=self.sources)
-            ) if _filter_needed(r)
+            r for r in (Requirement.from_line(d) for d in dependencies)
+            if _filter_needed(r)
         ]
 
 
