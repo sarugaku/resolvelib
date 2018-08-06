@@ -5,7 +5,7 @@ __all__ = [
     'ResolutionError', 'ResolutionImpossible', 'ResolutionTooDeep',
 ]
 
-__version__ = '0.1.0'
+__version__ = '0.1.1.dev0'
 
 
 from .providers import AbstractProvider
