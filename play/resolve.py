@@ -30,7 +30,6 @@ from resolvelib import (
 parser = argparse.ArgumentParser()
 parser.add_argument('packages', metavar='PACKAGE', nargs='*')
 parser.add_argument('--project')
-parser.add_argument('--dev', action='store_true', default=False)
 options = parser.parse_args()
 
 
@@ -38,10 +37,7 @@ requirements = [Requirement.from_line(line) for line in options.packages]
 if options.project:
     pipfile = Pipfile.load(options.project)
     requirements.extend(pipfile.packages.requirements)
-    if options.dev:
-        requirements.extend(pipfile.dev_packages.requirements)
-elif options.dev:
-    print('--dev is not useful without --project')
+    requirements.extend(pipfile.dev_packages.requirements)
 
 
 def _filter_needed(requirement):
