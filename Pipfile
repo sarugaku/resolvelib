@@ -1,12 +1,18 @@
 [[source]]
-url = "https://pypi.org/simple"
+url = 'https://pypi.org/simple'
 verify_ssl = true
-name = "pypi"
+name = 'pypi'
 
 [packages]
-resolvelib = {path = ".", editable = true}
+resolvelib = {path = '.', editable = true}
 
 [dev-packages]
-invoke = "*"
-pytest = "*"
-wheel = "*"
+invoke = '*'
+parver = '*'
+pytest = '*'
+towncrier = '*'
+twine = '*'
+wheel = '*'
+
+[scripts]
+release = 'inv release'
