@@ -88,4 +88,4 @@ Dependency
 ----------
 
 A dependency can be either a requirement, or a candidate. In implementations
-you can treat it as a subclass and/or a protocol of the two.
+you can treat it as the parent class and/or a protocol of the two.
