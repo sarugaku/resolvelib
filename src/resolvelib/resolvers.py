@@ -236,7 +236,7 @@ class Resolution(object):
             curr = self.state
             if last is not None and len(curr.mapping) == len(last.mapping):
                 # Nothing new added. Done! Remove the duplicated entry.
-                self._states.pop()
+                del self._states[-1]
                 self._r.ending(last)
                 return
             last = curr
