@@ -82,17 +82,17 @@ def _bump_release(version, type_):
     return next_version
 
 
-PREBUMP = 2     # Default to next patch number.
-
-
-def _prebump(version):
-    next_version = version.bump_release(PREBUMP).bump_dev()
+def _prebump(version, prebump):
+    if prebump not in REL_TYPES:
+        raise ValueError(f'{prebump} not in {REL_TYPES}')
+    index = REL_TYPES.index(prebump)
+    next_version = version.bump_release(index).bump_dev()
     print(f'[bump] {version} -> {next_version}')
     return next_version
 
 
 @invoke.task(pre=[clean])
-def release(ctx, type_, repo):
+def release(ctx, type_, repo, prebump='patch'):
     """Make a new release.
     """
     version = _read_version()
@@ -123,7 +123,7 @@ def release(ctx, type_, repo):
     arg_display = ' '.join(f'"{n}"' for n in artifacts)
     ctx.run(f'twine upload --repository="{repo}" {arg_display}')
 
-    version = _prebump(version)
+    version = _prebump(version, prebump)
     _write_version(version)
 
     ctx.run(f'git commit -am "Prebump to {version}"')
