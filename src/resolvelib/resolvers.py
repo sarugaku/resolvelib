@@ -121,8 +121,8 @@ class Resolution(object):
             state = State(mapping={}, graph=graph)
         else:
             state = State(
-                mapping=dict(base.mapping),
-                graph=DirectedGraph(base.graph),
+                mapping=base.mapping.copy(),
+                graph=base.graph.copy(),
             )
         self._states.append(state)
 
@@ -169,19 +169,27 @@ class Resolution(object):
         return contributed
 
     def _pin_candidate(self, name, criterion, candidate, child_names):
-        if name in self.state.graph:
+        try:
             self.state.graph.remove(name)
+        except KeyError:
+            pass
         self.state.mapping[name] = candidate
         self.state.graph.add(name)
         for parent in criterion.iter_parent():
             parent_name = None if parent is None else self._p.identify(parent)
-            self.state.graph.connect(parent_name, name)
+            try:
+                self.state.graph.connect(parent_name, name)
+            except KeyError:
+                # Parent is not yet pinned. Skip now; this edge will be
+                # connected when the parent is being pinned.
+                pass
         for child_name in child_names:
-            if child_name not in self.state.graph:
+            try:
+                self.state.graph.connect(name, child_name)
+            except KeyError:
                 # Child is not yet pinned. Skip now; this edge will be
                 # connected when the child is being pinned.
-                continue
-            self.state.graph.connect(name, child_name)
+                pass
 
     def _pin_criteria(self):
         criterion_items = sorted(
