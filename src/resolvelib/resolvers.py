@@ -166,13 +166,16 @@ class Resolution(object):
         except RequirementsConflicted:
             self._criteria = backup
             return None
+        self._r.adding_requirements(dependencies)
         return contributed
 
     def _pin_candidate(self, name, criterion, candidate, child_names):
         try:
             self.state.graph.remove(name)
         except KeyError:
-            pass
+            self._r.adding_candidate(candidate)
+        else:
+            self._r.replacing_candidate(self.state.mapping[name], candidate)
         self.state.mapping[name] = candidate
         self.state.graph.add(name)
         for parent in criterion.iter_parent():
