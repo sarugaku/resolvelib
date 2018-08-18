@@ -84,8 +84,42 @@ class ResolutionTooDeep(ResolutionError):
         self.round_count = round_count
 
 
-# Resolution state in a round.
-State = collections.namedtuple('State', 'mapping graph')
+class State(object):
+    """Resolution state in a round.
+
+    This is modified during a resolution round. The last one state created
+    for a resolution process is returned as the resolution result. It has
+    two public attributes:
+
+    * `mapping`: A dict of resolved candidates. Each key is an identifier
+        of a requirement (as returned by the provider's `identify` method),
+        and the value is the resolved candidate.
+    * `graph`: A `DirectedGraph` instance representing the dependency tree.
+        The vertices are keys of `mapping`, and each edge represents *why*
+        a particular package is included. A special vertex `None` is
+        included to represent parents of user-supplied requirements.
+    """
+    def __init__(self, mapping, graph):
+        graph.add(None)     # Sentinel as root dependencies' parent.
+        self.mapping = mapping
+        self.graph = graph
+
+    @classmethod
+    def from_mapping(cls, mapping):
+        mapping = mapping.copy()
+        graph = DirectedGraph.from_vertices(mapping)
+        return cls(mapping=mapping, graph=graph)
+
+    def __repr__(self):
+        return "State(mapping={mapping!r}, graph={graph!r})".format(
+            mapping=self.mapping, graph=self.graph,
+        )
+
+    def copy(self):
+        return type(self)(
+            mapping=self.mapping.copy(),
+            graph=self.graph.copy(),
+        )
 
 
 class Resolution(object):
@@ -119,10 +153,7 @@ class Resolution(object):
         except IndexError:
             state = self._initial_state
         else:
-            state = State(
-                mapping=base.mapping.copy(),
-                graph=base.graph.copy(),
-            )
+            state = base.copy()
         self._states.append(state)
 
     def _contribute_to_criteria(self, name, requirement, parent):
@@ -263,18 +294,7 @@ class Resolver(object):
             provider method `get_dependencies`.
         :param state: An initial state for the resolve to start with (instead
             of a clean slate).
-        :returns: The state to the final resolution result.
-
-        A state is a tuple subclass. It can be initialized with two public
-        members:
-
-        * `mapping`: A dict of resolved candidates. Each key is an identifier
-            of a requirement (as returned by the provider's `identify` method),
-            and the value is the resolved candidate.
-        * `graph`: A `DirectedGraph` instance representing the dependency tree.
-            The vertices are keys of `mapping`, and each edge represents *why*
-            a particular package is included. A special vertex `None` is
-            included to represent parents of user-supplied requirements.
+        :returns: A `State` object representing the resolution result.
 
         The following exceptions may be raised if a resolution cannot be found:
 
@@ -287,9 +307,7 @@ class Resolver(object):
             `max_rounds` argument.
         """
         if state is None:
-            graph = DirectedGraph()
-            graph.add(None)     # Sentinel as root dependencies' parent.
-            state = State(mapping={}, graph=graph)
+            state = State.from_mapping({})
         resolution = Resolution(self.provider, self.reporter, state)
         resolution.resolve(requirements, max_rounds=max_rounds)
         return resolution.state

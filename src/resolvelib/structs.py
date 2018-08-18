@@ -6,6 +6,14 @@ class DirectedGraph(object):
         self._forwards = {}     # <key> -> Set[<key>]
         self._backwards = {}    # <key> -> Set[<key>]
 
+    def __repr__(self):
+        vcount = len(self._vertices)
+        ecount = sum(len(es) for es in self._forwards.values())
+        return "<DirectedGraph: {vc} {vt}, {ec} {et}>".format(
+            vc=vcount, vt="vertex" if vcount == 1 else "vertices",
+            ec=ecount, et="edge" if ecount == 1 else "edges",
+        )
+
     def __iter__(self):
         return iter(self._vertices)
 
@@ -14,6 +22,12 @@ class DirectedGraph(object):
 
     def __contains__(self, key):
         return key in self._vertices
+
+    @classmethod
+    def from_vertices(cls, vertices):
+        instance = cls()
+        instance._vertices = set(vertices)
+        return instance
 
     def copy(self):
         """Return a shallow copy of this graph.
