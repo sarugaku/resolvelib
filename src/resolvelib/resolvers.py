@@ -94,10 +94,11 @@ class Resolution(object):
     This is designed as a one-off object that holds information to kick start
     the resolution process, and holds the results afterwards.
     """
-    def __init__(self, provider, reporter):
+    def __init__(self, provider, reporter, state):
         self._p = provider
         self._r = reporter
         self._criteria = {}
+        self._initial_state = state
         self._states = []
 
     @property
@@ -105,7 +106,7 @@ class Resolution(object):
         try:
             return self._states[-1]
         except IndexError:
-            raise AttributeError('state')
+            return self._initial_state
 
     def _push_new_state(self):
         """Push a new state into history.
@@ -116,9 +117,7 @@ class Resolution(object):
         try:
             base = self._states[-1]
         except IndexError:
-            graph = DirectedGraph()
-            graph.add(None)     # Sentinel as root dependencies' parent.
-            state = State(mapping={}, graph=graph)
+            state = self._initial_state
         else:
             state = State(
                 mapping=base.mapping.copy(),
@@ -256,11 +255,18 @@ class Resolver(object):
         self.provider = provider
         self.reporter = reporter
 
-    def resolve(self, requirements, max_rounds=20):
+    def resolve(self, requirements, state=None, max_rounds=20):
         """Take a collection of constraints, spit out the resolution result.
 
-        The return value is a representation to the final resolution result. It
-        is a tuple subclass with two public members:
+        :param requirements: A collection of initial requirements to resolve.
+            Each requirement should be of the same types returned by the
+            provider method `get_dependencies`.
+        :param state: An initial state for the resolve to start with (instead
+            of a clean slate).
+        :returns: The state to the final resolution result.
+
+        A state is a tuple subclass. It can be initialized with two public
+        members:
 
         * `mapping`: A dict of resolved candidates. Each key is an identifier
             of a requirement (as returned by the provider's `identify` method),
@@ -280,6 +286,10 @@ class Resolver(object):
             dependency, but you can try to resolve this by increasing the
             `max_rounds` argument.
         """
-        resolution = Resolution(self.provider, self.reporter)
+        if state is None:
+            graph = DirectedGraph()
+            graph.add(None)     # Sentinel as root dependencies' parent.
+            state = State(mapping={}, graph=graph)
+        resolution = Resolution(self.provider, self.reporter, state)
         resolution.resolve(requirements, max_rounds=max_rounds)
         return resolution.state
