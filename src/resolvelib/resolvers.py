@@ -256,11 +256,18 @@ class Resolver(object):
         self.provider = provider
         self.reporter = reporter
 
-    def resolve(self, requirements, max_rounds=20):
+    def resolve(self, requirements, candidates=None, max_rounds=20):
         """Take a collection of constraints, spit out the resolution result.
 
-        The return value is a representation to the final resolution result. It
-        is a tuple subclass with two public members:
+        :param requirements: A collection of initial requirements to resolve.
+            Each requirement should be of the same types returned by the
+            provider method `get_dependencies`.
+        :param candidates: An initial mapping of key-candidates for the
+            resolver to start with (instead of a clean slate). The keys should
+            be identical of those returned by the provider's `identify` method.
+        :returns: The state to the final resolution result.
+
+        The state is a tuple subclass with two public members:
 
         * `mapping`: A dict of resolved candidates. Each key is an identifier
             of a requirement (as returned by the provider's `identify` method),
@@ -280,6 +287,8 @@ class Resolver(object):
             dependency, but you can try to resolve this by increasing the
             `max_rounds` argument.
         """
-        resolution = Resolution(self.provider, self.reporter)
+        if candidates is None:
+            candidates = {}
+        resolution = Resolution(self.provider, self.reporter, candidates)
         resolution.resolve(requirements, max_rounds=max_rounds)
         return resolution.state
