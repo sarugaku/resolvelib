@@ -1,0 +1,1 @@
+Support resolving based on an existing state, instead of always from ground zero. This allows the user to perform a differential resolution that only makes minimal changes to a given dataset.
