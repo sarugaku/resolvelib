@@ -10,7 +10,7 @@ resolvelib = {path = '.', editable = true}
 invoke = '*'
 parver = '*'
 pytest = '*'
-towncrier = '>=18.6'
+towncrier = '*'
 twine = '*'
 wheel = '*'
 

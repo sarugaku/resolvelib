@@ -5,11 +5,6 @@ import subprocess
 import invoke
 import parver
 
-from towncrier._builder import (
-    find_fragments, render_fragments, split_fragments,
-)
-from towncrier._settings import load_config
-
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -49,28 +44,6 @@ def _write_version(v):
         f.write(''.join(lines))
 
 
-def _render_log():
-    """Totally tap into Towncrier internals to get an in-memory result.
-    """
-    config = load_config(ROOT)
-    definitions = config['types']
-    fragments, fragment_filenames = find_fragments(
-        pathlib.Path(config['directory']).absolute(),
-        config['sections'],
-        None,
-        definitions,
-    )
-    rendered = render_fragments(
-        pathlib.Path(config['template']).read_text(encoding='utf-8'),
-        config['issue_format'],
-        split_fragments(fragments, definitions),
-        definitions,
-        config['underlines'][1:],
-        wrap=True,
-    )
-    return rendered
-
-
 REL_TYPES = ('major', 'minor', 'patch',)
 
 
@@ -100,15 +73,11 @@ def release(ctx, type_, repo, prebump='patch'):
     version = _bump_release(version, type_)
     _write_version(version)
 
-    # Needs to happen before Towncrier deletes fragment files.
-    tag_content = _render_log()
-
     ctx.run('towncrier')
 
     ctx.run(f'git commit -am "Release {version}"')
 
-    tag_content = tag_content.replace('"', '\\"')
-    ctx.run(f'git tag -a {version} -m "Version {version}\n\n{tag_content}"')
+    ctx.run(f'git tag -a {version} -m "Version {version}"')
 
     ctx.run(f'python setup.py sdist bdist_wheel')
 
