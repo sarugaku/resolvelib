@@ -40,8 +40,10 @@ class AbstractProvider(object):
         * Are there any known conflicts for this requirement? We should
           probably work on those with the most known conflicts.
 
-        A new list should be returned. It should contain all the same entries
-        of `requirements`, but with proper ordering.
+        A sortable value should be returned (this will be used as the `key`
+        parameter of the built-in sorting function). The smaller the value is,
+        the more preferred this specification is (i.e. the sorting function
+        is called with `reverse=False`).
         """
         raise NotImplementedError
 
