@@ -195,13 +195,18 @@ class Resolution(object):
                 pass
 
     def _pin_criteria(self):
-        criterion_items = sorted(
+        criterion_names = [name for name, _ in sorted(
             self._criteria.items(),
             key=self._get_criterion_item_preference,
-        )
-        for name, criterion in criterion_items:
-            # If the current pin already works, just use it.
+        )]
+        for name in criterion_names:
+            # Any pin may modify any criterion during the loop. Criteria are
+            # replaced, not updated in-place, so we need to read this value
+            # in the loop instead of outside. (sarugaku/resolvelib#5)
+            criterion = self._criteria[name]
+
             if self._is_current_pin_satisfying(name, criterion):
+                # If the current pin already works, just use it.
                 continue
             candidates = list(criterion.candidates)
             while candidates:
