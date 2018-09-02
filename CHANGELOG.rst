@@ -5,7 +5,7 @@ Features
 --------
 
 - Add new reporting callbacks `adding_requirements`, `adding_candidate`, and `replacing_candidate` to report progress in requirement pinning.  `#2 <https://github.com/sarugaku/resolvelib/issues/2>`_
-  
+
 
 Bug Fixes
 ---------
