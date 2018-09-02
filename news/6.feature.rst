@@ -1,1 +1,0 @@
-Remove reporting callbacks `adding_requirements`, `adding_candidate`, and `replacing_candidate` added in 0.2.1. These are not useful, and it’s better to remove them while we can.

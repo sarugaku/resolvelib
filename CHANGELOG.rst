@@ -1,3 +1,12 @@
+0.2.2 (2018-09-03)
+==================
+
+Features
+--------
+
+- Remove reporting callbacks `adding_requirements`, `adding_candidate`, and `replacing_candidate` added in 0.2.1. These are not useful, and it’s better to remove them while we can.  `#6 <https://github.com/sarugaku/resolvelib/issues/6>`_
+
+
 0.2.1 (2018-08-21)
 ==================
 
