@@ -1,5 +1,6 @@
 import collections
 
+from .providers import AbstractResolver
 from .structs import DirectedGraph
 
 
@@ -8,14 +9,19 @@ RequirementInformation = collections.namedtuple('RequirementInformation', [
 ])
 
 
-class NoVersionsAvailable(Exception):
+class ResolverException(Exception):
+    """A base class for all exceptions raised by this module.
+    """
+
+
+class NoVersionsAvailable(ResolverException):
     def __init__(self, requirement, parent):
         super(NoVersionsAvailable, self).__init__()
         self.requirement = requirement
         self.parent = parent
 
 
-class RequirementsConflicted(Exception):
+class RequirementsConflicted(ResolverException):
     def __init__(self, criterion):
         super(RequirementsConflicted, self).__init__()
         self.criterion = criterion
@@ -68,7 +74,7 @@ class Criterion(object):
         return type(self)(candidates, infos)
 
 
-class ResolutionError(Exception):
+class ResolutionError(ResolverException):
     pass
 
 
@@ -251,12 +257,10 @@ class Resolution(object):
         raise ResolutionTooDeep(max_rounds)
 
 
-class Resolver(object):
+class Resolver(AbstractResolver):
     """The thing that performs the actual resolution work.
     """
-    def __init__(self, provider, reporter):
-        self.provider = provider
-        self.reporter = reporter
+    base_exception = ResolverException
 
     def resolve(self, requirements, max_rounds=20):
         """Take a collection of constraints, spit out the resolution result.
