@@ -26,11 +26,40 @@ def _parse_version(s):
 
 
 def _is_version_allowed(version, ranges):
+    """Check version compatibility with Sematic Versioning.
+    """
     for r in ranges:
         r = _parse_version(r)
-        if version[:2] == r[:2] and version[2] >= r[2]:
-            return True
+        if r[0] != version[0]:
+            continue
+        if r[0] == 0:
+            if version[:2] == r[:2] and version[2] >= r[2]:
+                print(r, version)
+                return True
+        else:
+            if version[1:] >= r[1:]:
+                return True
     return False
+
+
+def _calculate_preference(parsed_version):
+    """Calculate preference of a version with Minimal Version Selection.
+    """
+    if parsed_version[0] == 0:
+        return (
+            0,
+            -parsed_version[1],
+            parsed_version[2],
+            -len(parsed_version[3][:1]),
+            parsed_version[3],
+        )
+    return (
+        -parsed_version[0],
+        parsed_version[1],
+        parsed_version[2],
+        -len(parsed_version[3][:1]),
+        parsed_version[3],
+    )
 
 
 class SwiftInputProvider(AbstractProvider):
@@ -58,13 +87,10 @@ class SwiftInputProvider(AbstractProvider):
         container = requirement.container
         constraint_requirement = requirement.constraint["requirement"]
         for version in container["versions"]:
-            v = _parse_version(version)
-            if not _is_version_allowed(v, constraint_requirement):
+            parsed_version = _parse_version(version)
+            if not _is_version_allowed(parsed_version, constraint_requirement):
                 continue
-            # Minimal Version Selection: Select lowest X.Y, but among the same
-            # X.Y select the highest patch version. (We ignore prereleases
-            # because it complicates things and not used in any tests anyway.)
-            preference = (-v[0], -v[1], v[2])
+            preference = _calculate_preference(parsed_version)
             yield (preference, Candidate(container, version))
 
     def find_matches(self, requirement):
@@ -75,7 +101,10 @@ class SwiftInputProvider(AbstractProvider):
         return [candidate for _, candidate in matches]
 
     def is_satisfied_by(self, requirement, candidate):
-        return candidate.version in requirement.constraint["requirement"]
+        return _is_version_allowed(
+            _parse_version(candidate.version),
+            requirement.constraint["requirement"],
+        )
 
     def _iter_dependencies(self, candidate):
         for constraint in candidate.container["versions"][candidate.version]:
