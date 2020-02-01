@@ -1,5 +1,6 @@
 import collections
 import json
+import operator
 import os
 
 import pytest
@@ -8,8 +9,8 @@ from resolvelib.providers import AbstractProvider
 from resolvelib.resolvers import Resolver
 
 
-Requirement = collections.namedtuple("Requirement", "container, constraint")
-Candidate = collections.namedtuple("Candidate", "container, version")
+Requirement = collections.namedtuple("Requirement", "container constraint")
+Candidate = collections.namedtuple("Candidate", "container version")
 
 
 INPUTS_DIR = os.path.abspath(os.path.join(__file__, "..", "inputs"))
@@ -22,6 +23,14 @@ def _parse_version(s):
     else:
         patch, rest = rest, ""
     return (int(major), int(minor), int(patch), rest)
+
+
+def _is_version_allowed(version, ranges):
+    for r in ranges:
+        r = _parse_version(r)
+        if version[:2] == r[:2] and version[2] >= r[2]:
+            return True
+    return False
 
 
 class SwiftInputProvider(AbstractProvider):
@@ -45,18 +54,25 @@ class SwiftInputProvider(AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def find_matches(self, requirement):
+    def _iter_matches(self, requirement):
         container = requirement.container
-        return sorted(
-            (
-                Candidate(container, version)
-                for version in container["versions"]
-            ),
-            key=lambda c: _parse_version(c.version),
-            # Swift uses Minimal Version Selection, i.e. prefer earlier
-            # versions to later.
-            reverse=True,
+        constraint_requirement = requirement.constraint["requirement"]
+        for version in container["versions"]:
+            v = _parse_version(version)
+            if not _is_version_allowed(v, constraint_requirement):
+                continue
+            # Minimal Version Selection: Select lowest X.Y, but among the same
+            # X.Y select the highest patch version. (We ignore prereleases
+            # because it complicates things and not used in any tests anyway.)
+            preference = (-v[0], -v[1], v[2])
+            yield (preference, Candidate(container, version))
+
+    def find_matches(self, requirement):
+        matches = sorted(
+            self._iter_matches(requirement),
+            key=operator.itemgetter(0),
         )
+        return [candidate for _, candidate in matches]
 
     def is_satisfied_by(self, requirement, candidate):
         return candidate.version in requirement.constraint["requirement"]
@@ -93,5 +109,4 @@ def test_resolver(provider, base_reporter):
         identifier: candidate.version
         for identifier, candidate in result.mapping.items()
     }
-
     assert display == provider.expectation
