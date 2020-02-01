@@ -11,6 +11,9 @@ RequirementInformation = collections.namedtuple(
 
 class ResolverException(Exception):
     """A base class for all exceptions raised by this module.
+
+    Exceptions derived by this class should all be handled in this module. Any
+    bubbling pass the resolver should be treated as a bug.
     """
 
 
@@ -21,13 +24,13 @@ class RequirementsConflicted(ResolverException):
 
 
 class Criterion(object):
-    """Internal representation of possible resolution results of a package.
+    """Representation of possible resolution results of a package.
 
     This holds two attributes:
 
-    * `information` is a collection of `RequirementInformation` pairs. Each
-      pair is a requirement contributing to this criterion, and the candidate
-      that provides the requirement.
+    * `information` is a collection of `RequirementInformation` pairs.
+      Each pair is a requirement contributing to this criterion, and the
+      candidate that provides the requirement.
     * `candidates` is a collection containing all possible candidates deducted
       from the union of contributing requirements. It should never be empty.
     """
