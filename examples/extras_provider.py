@@ -20,9 +20,11 @@ this, we constrain the solution to require a unique version of X.
 
 from resolvelib.providers import AbstractProvider
 
+
 class ExtrasProvider(AbstractProvider):
     """A provider that handles extras.
     """
+
     def get_extras_for(self, dependency):
         """Given a dependency, return its extras.
 

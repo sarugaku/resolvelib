@@ -4,9 +4,9 @@ from .providers import AbstractResolver
 from .structs import DirectedGraph
 
 
-RequirementInformation = collections.namedtuple('RequirementInformation', [
-    'requirement', 'parent',
-])
+RequirementInformation = collections.namedtuple(
+    "RequirementInformation", ["requirement", "parent",]
+)
 
 
 class ResolverException(Exception):
@@ -38,6 +38,7 @@ class Criterion(object):
     * `candidates` is a collection containing all possible candidates deducted
       from the union of contributing requirements. It should never be empty.
     """
+
     def __init__(self, candidates, information):
         self.candidates = candidates
         self.information = information
@@ -66,7 +67,8 @@ class Criterion(object):
         infos = list(self.information)
         infos.append(RequirementInformation(requirement, parent))
         candidates = [
-            c for c in self.candidates
+            c
+            for c in self.candidates
             if provider.is_satisfied_by(requirement, c)
         ]
         if not candidates:
@@ -91,7 +93,7 @@ class ResolutionTooDeep(ResolutionError):
 
 
 # Resolution state in a round.
-State = collections.namedtuple('State', 'mapping graph')
+State = collections.namedtuple("State", "mapping graph")
 
 
 class Resolution(object):
@@ -100,6 +102,7 @@ class Resolution(object):
     This is designed as a one-off object that holds information to kick start
     the resolution process, and holds the results afterwards.
     """
+
     def __init__(self, provider, reporter):
         self._p = provider
         self._r = reporter
@@ -111,7 +114,7 @@ class Resolution(object):
         try:
             return self._states[-1]
         except IndexError:
-            raise AttributeError('state')
+            raise AttributeError("state")
 
     def _push_new_state(self):
         """Push a new state into history.
@@ -123,13 +126,10 @@ class Resolution(object):
             base = self._states[-1]
         except IndexError:
             graph = DirectedGraph()
-            graph.add(None)     # Sentinel as root dependencies' parent.
+            graph.add(None)  # Sentinel as root dependencies' parent.
             state = State(mapping={}, graph=graph)
         else:
-            state = State(
-                mapping=base.mapping.copy(),
-                graph=base.graph.copy(),
-            )
+            state = State(mapping=base.mapping.copy(), graph=base.graph.copy(),)
         self._states.append(state)
 
     def _contribute_to_criteria(self, name, requirement, parent):
@@ -198,10 +198,12 @@ class Resolution(object):
                 pass
 
     def _pin_criteria(self):
-        criterion_names = [name for name, _ in sorted(
-            self._criteria.items(),
-            key=self._get_criterion_item_preference,
-        )]
+        criterion_names = [
+            name
+            for name, _ in sorted(
+                self._criteria.items(), key=self._get_criterion_item_preference,
+            )
+        ]
         for name in criterion_names:
             # Any pin may modify any criterion during the loop. Criteria are
             # replaced, not updated in-place, so we need to read this value
@@ -220,12 +222,12 @@ class Resolution(object):
                     continue
                 self._pin_candidate(name, criterion, candidate, child_names)
                 break
-            else:   # All candidates tried, nothing works. Give up. (?)
+            else:  # All candidates tried, nothing works. Give up. (?)
                 raise ResolutionImpossible(list(criterion.iter_requirement()))
 
     def resolve(self, requirements, max_rounds):
         if self._states:
-            raise RuntimeError('already resolved')
+            raise RuntimeError("already resolved")
 
         for requirement in requirements:
             try:
@@ -260,6 +262,7 @@ class Resolution(object):
 class Resolver(AbstractResolver):
     """The thing that performs the actual resolution work.
     """
+
     base_exception = ResolverException
 
     def resolve(self, requirements, max_rounds=20):

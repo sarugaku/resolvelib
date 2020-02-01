@@ -1,6 +1,10 @@
 [build-system]
 requires = ['setuptools>=36.2.2', 'wheel>=0.28.0']
 
+[tool.black]
+line-length = 80
+include = '^/(docs|examples|src|tasks|tests)/.+\.py$'
+
 [tool.towncrier]
 package = 'resolvelib'
 package_dir = 'src'

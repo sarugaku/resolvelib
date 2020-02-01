@@ -16,6 +16,7 @@ from extras_provider import ExtrasProvider
 
 PYTHON_VERSION = Version(platform.python_version())
 
+
 class Candidate:
     def __init__(self, name, version, url=None, extras=None):
         self.name = name
@@ -38,7 +39,7 @@ class Candidate:
 
     def _get_dependencies(self):
         deps = self.metadata.get_all("Requires-Dist", [])
-        extras = self.extras if self.extras else ['']
+        extras = self.extras if self.extras else [""]
 
         for d in deps:
             r = Requirement(d)
@@ -46,7 +47,7 @@ class Candidate:
                 yield r
             else:
                 for e in extras:
-                    if r.marker.evaluate({'extra': e}):
+                    if r.marker.evaluate({"extra": e}):
                         yield r
 
     @property
@@ -54,6 +55,7 @@ class Candidate:
         if self._dependencies is None:
             self._dependencies = list(self._get_dependencies())
         return self._dependencies
+
 
 def get_project_from_pypi(project, extras):
     url = "https://pypi.org/simple/{}".format(project)
@@ -70,16 +72,16 @@ def get_project_from_pypi(project, extras):
                 continue
 
         path = urlparse(url).path
-        filename = path.rpartition('/')[-1]
+        filename = path.rpartition("/")[-1]
 
         # We only handle wheels
-        if not filename.endswith('.whl'):
+        if not filename.endswith(".whl"):
             continue
 
         # TODO: Handle compatibility tags?
 
         # Very primitive wheel filename parsing
-        name, version = filename[:-4].split('-')[:2]
+        name, version = filename[:-4].split("-")[:2]
 
         try:
             version = Version(version)
@@ -89,11 +91,12 @@ def get_project_from_pypi(project, extras):
 
         yield Candidate(name, version, url=url, extras=extras)
 
+
 def get_metadata_for_wheel(url):
     data = requests.get(url).content
     with ZipFile(BytesIO(data)) as z:
         for n in z.namelist():
-            if n.endswith('.dist-info/METADATA'):
+            if n.endswith(".dist-info/METADATA"):
                 p = BytesParser()
                 return p.parse(z.open(n), headersonly=True)
 
@@ -128,7 +131,7 @@ class PyPIProvider(ExtrasProvider):
             if version in requirement.specifier:
                 candidates.append(c)
         return candidates
-        
+
     def is_satisfied_by(self, requirement, candidate):
         if requirement.name != candidate.name:
             return False
@@ -170,6 +173,5 @@ if __name__ == "__main__":
 
         display_resolution(result)
 
-    # Run the demo program 
+    # Run the demo program
     main(sys.argv[1:])
-
