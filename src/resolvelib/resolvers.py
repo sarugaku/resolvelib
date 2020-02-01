@@ -5,7 +5,7 @@ from .structs import DirectedGraph
 
 
 RequirementInformation = collections.namedtuple(
-    "RequirementInformation", ["requirement", "parent",]
+    "RequirementInformation", ["requirement", "parent"]
 )
 
 
