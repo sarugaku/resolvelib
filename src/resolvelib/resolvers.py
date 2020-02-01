@@ -14,13 +14,6 @@ class ResolverException(Exception):
     """
 
 
-class NoVersionsAvailable(ResolverException):
-    def __init__(self, requirement, parent):
-        super(NoVersionsAvailable, self).__init__()
-        self.requirement = requirement
-        self.parent = parent
-
-
 class RequirementsConflicted(ResolverException):
     def __init__(self, criterion):
         super(RequirementsConflicted, self).__init__()
@@ -47,11 +40,8 @@ class Criterion(object):
     def from_requirement(cls, provider, requirement, parent):
         """Build an instance from a requirement.
         """
-        candidates = provider.find_matches(requirement)
-        if not candidates:
-            raise NoVersionsAvailable(requirement, parent)
         return cls(
-            candidates=candidates,
+            candidates=provider.find_matches(requirement),
             information=[RequirementInformation(requirement, parent)],
         )
 
@@ -281,7 +271,6 @@ class Resolver(AbstractResolver):
 
         The following exceptions may be raised if a resolution cannot be found:
 
-        * `NoVersionsAvailable`: A requirement has no available candidates.
         * `ResolutionImpossible`: A resolution cannot be found for the given
             combination of requirements.
         * `ResolutionTooDeep`: The dependency tree is too deeply nested and
