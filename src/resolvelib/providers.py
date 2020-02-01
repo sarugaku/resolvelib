@@ -57,8 +57,8 @@ class AbstractProvider(object):
         consulted to find concrete candidates for this requirement.
 
         The returned candidates should be sorted by reversed preference, e.g.
-        the latest should be LAST. This is done so list-popping can be as
-        efficient as possible.
+        the most preferred should be LAST. This is done so list-popping can be
+        as efficient as possible.
         """
         raise NotImplementedError
 
