@@ -33,6 +33,10 @@ class Criterion(object):
       candidate that provides the requirement.
     * `candidates` is a collection containing all possible candidates deducted
       from the union of contributing requirements. It should never be empty.
+
+    .. note::
+        This class is intended to be externally immutable. **Do not** mutate
+        any of its attribute containers.
     """
 
     def __init__(self, candidates, information):
@@ -198,9 +202,9 @@ class Resolution(object):
             )
         ]
         for name in criterion_names:
-            # Any pin may modify any criterion during the loop. Criteria are
-            # replaced, not updated in-place, so we need to read this value
-            # in the loop instead of outside. (sarugaku/resolvelib#5)
+            # Criteria are replaced, not updated in-place, so we need to read
+            # this value in the loop instead of outside, otherwise we may be
+            # looking at outdated instances. (sarugaku/resolvelib#5)
             criterion = self._criteria[name]
 
             if self._is_current_pin_satisfying(name, criterion):
