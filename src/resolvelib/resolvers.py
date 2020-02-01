@@ -103,7 +103,6 @@ class Resolution(object):
     def __init__(self, provider, reporter):
         self._p = provider
         self._r = reporter
-        self._criteria = {}
         self._states = []
 
     @property
@@ -125,18 +124,20 @@ class Resolution(object):
             graph = DirectedGraph()
             graph.add(None)  # Sentinel as root dependencies' parent.
             state = State(mapping={}, graph=graph)
+            state._criteria = {}
         else:
-            state = State(mapping=base.mapping.copy(), graph=base.graph.copy(),)
+            state = State(mapping=base.mapping.copy(), graph=base.graph.copy())
+            state._criteria = base._criteria.copy()
         self._states.append(state)
 
     def _contribute_to_criteria(self, name, requirement, parent):
         try:
-            crit = self._criteria[name]
+            crit = self.state._criteria[name]
         except KeyError:
             crit = Criterion.from_requirement(self._p, requirement, parent)
         else:
             crit = crit.merged_with(self._p, requirement, parent)
-        self._criteria[name] = crit
+        self.state._criteria[name] = crit
 
     def _get_criterion_item_preference(self, item):
         name, criterion = item
@@ -159,7 +160,7 @@ class Resolution(object):
         )
 
     def _check_pinnability(self, candidate, dependencies):
-        backup = self._criteria.copy()
+        backup = self.state._criteria.copy()
         contributed = set()
         try:
             for subdep in dependencies:
@@ -167,7 +168,7 @@ class Resolution(object):
                 self._contribute_to_criteria(key, subdep, parent=candidate)
                 contributed.add(key)
         except RequirementsConflicted:
-            self._criteria = backup
+            self.state._criteria = backup
             return None
         return contributed
 
@@ -195,17 +196,18 @@ class Resolution(object):
                 pass
 
     def _pin_criteria(self):
+        criteria = self.state._criteria
         criterion_names = [
             name
             for name, _ in sorted(
-                self._criteria.items(), key=self._get_criterion_item_preference,
+                criteria.items(), key=self._get_criterion_item_preference,
             )
         ]
         for name in criterion_names:
             # Criteria are replaced, not updated in-place, so we need to read
             # this value in the loop instead of outside, otherwise we may be
             # looking at outdated instances. (sarugaku/resolvelib#5)
-            criterion = self._criteria[name]
+            criterion = criteria[name]
 
             if self._is_current_pin_satisfying(name, criterion):
                 # If the current pin already works, just use it.
@@ -226,6 +228,7 @@ class Resolution(object):
         if self._states:
             raise RuntimeError("already resolved")
 
+        self._push_new_state()
         for requirement in requirements:
             try:
                 name = self._p.identify(requirement)
