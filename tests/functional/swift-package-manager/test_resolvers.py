@@ -53,6 +53,8 @@ class SwiftInputProvider(AbstractProvider):
                 for version in container["versions"]
             ),
             key=lambda c: _parse_version(c.version),
+            # Swift uses Minimal Version Selection, i.e. prefer earlier
+            # versions to later.
             reverse=True,
         )
 
