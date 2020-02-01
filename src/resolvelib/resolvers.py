@@ -72,7 +72,7 @@ class ResolutionError(ResolverException):
 
 class ResolutionImpossible(ResolutionError):
     def __init__(self, requirements):
-        super(ResolutionImpossible, self).__init__()
+        super(ResolutionImpossible, self).__init__(requirements)
         self.requirements = requirements
 
 
