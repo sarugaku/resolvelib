@@ -1,0 +1,1 @@
+Inputs in this directory are borrowed from https://github.com/apple/swift-package-manager
