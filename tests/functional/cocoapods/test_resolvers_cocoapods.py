@@ -26,9 +26,9 @@ CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 def _convert_specifier(s):
     if not s:
         return s
-    m = re.match(r"^([<>=~]+)\s*(.+)$", s)
+    m = re.match(r"^([<>=~!]*)\s*(.+)$", s)
     op, ver = m.groups()
-    if op == "=":
+    if not op or op == "=":
         return "== {}".format(ver)
     elif op == "~>":
         if ver == "0":  # packaging can't handle "~> 0".
@@ -51,6 +51,18 @@ def _parse_specifier_set(inp):
     )
 
 
+def _safe_json_load(filename):
+    try:
+        with open(filename) as f:
+            data = json.load(f)
+    except ValueError:
+        # Some fixtures has comments. Try to fix the file.
+        with open(filename) as f:
+            lines = [line for line in f if not line.lstrip().startswith("//")]
+            data = json.loads("".join(lines))
+    return data
+
+
 def _iter_resolved(dependencies):
     for entry in dependencies:
         yield (entry["name"], entry["version"])
@@ -60,14 +72,12 @@ def _iter_resolved(dependencies):
 
 class CocoaPodsInputProvider(AbstractProvider):
     def __init__(self, filename):
-        with open(filename) as f:
-            case_data = json.load(f)
+        case_data = _safe_json_load(filename)
 
         index_name = os.path.join(
             INPUTS_DIR, "index", case_data.get("index", "awesome") + ".json",
         )
-        with open(index_name) as f:
-            self.index = json.load(f)
+        self.index = _safe_json_load(index_name)
 
         self.root_requirements = [
             Requirement(key, _parse_specifier_set(spec))
@@ -91,9 +101,11 @@ class CocoaPodsInputProvider(AbstractProvider):
             version = packaging.version.parse(entry["version"])
             if version not in requirement.spec:
                 continue
+            # Some fixtures incorrectly set dependencies to an empty list.
+            dependencies = entry["dependencies"] or {}
             dependencies = [
                 Requirement(k, _parse_specifier_set(v))
-                for k, v in entry["dependencies"].items()
+                for k, v in dependencies.items()
             ]
             yield Candidate(entry["name"], version, dependencies)
 
