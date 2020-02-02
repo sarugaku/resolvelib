@@ -172,10 +172,10 @@ class Resolution(object):
             for r in criterion.iter_requirement()
         )
 
-    def _check_pinnability(self, candidate, dependencies):
+    def _check_pinnability(self, candidate):
         backup = self.state.criteria.copy()
         try:
-            for subdep in dependencies:
+            for subdep in self._p.get_dependencies(candidate):
                 key = self._p.identify(subdep)
                 self._contribute_to_criteria(key, subdep, parent=candidate)
         except RequirementsConflicted:
@@ -205,8 +205,7 @@ class Resolution(object):
                 # If the current pin already works, just use it.
                 continue
             for candidate in reversed(criterion.candidates):
-                dependencies = self._p.get_dependencies(candidate)
-                if self._check_pinnability(candidate, dependencies):
+                if self._check_pinnability(candidate):
                     self.state.mapping[name] = candidate
                     break
             else:
