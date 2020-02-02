@@ -9,8 +9,7 @@ import packaging.specifiers
 import packaging.version
 import pytest
 
-from resolvelib.providers import AbstractProvider
-from resolvelib.resolvers import Resolver
+from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
 
 
 Requirement = collections.namedtuple("Requirement", "name spec")
@@ -135,6 +134,7 @@ XFAIL_CASES = {
     "circular.json": "different resolution",
     "complex_conflict.json": "different resolution",
     "complex_conflict_unwinding.json": "different resolution",
+    "conflict.json": "different resolution",
     "conflict_on_child.json": "different resolution",
     "deep_complex_conflict.json": "different resolution",
     "fixed_circular.json": "different resolution",
@@ -142,6 +142,8 @@ XFAIL_CASES = {
     "pruned_unresolved_orphan.json": "different resolution",
     "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
     "spapping_and_rewinding.json": "different resolution",
+    "swapping_children_with_successors.json": "different resolution",
+    "unresolvable_child.json": "did not fail",
 }
 
 
@@ -161,14 +163,22 @@ def provider(request):
     return CocoaPodsInputProvider(request.param)
 
 
-def test_resolver(provider, base_reporter):
-    resolver = Resolver(provider, base_reporter)
-    result = resolver.resolve(provider.root_requirements)
-
-    display = {
+def _format_resolution(result):
+    return {
         identifier: str(candidate.ver)
         for identifier, candidate in result.mapping.items()
     }
-    assert display == provider.expected_resolution
 
-    # TODO: Assert conflicts.
+
+def test_resolver(provider, base_reporter):
+    resolver = Resolver(provider, base_reporter)
+
+    if provider.expected_conflicts:
+        with pytest.raises(ResolutionImpossible) as ctx:
+            result = resolver.resolve(provider.root_requirements)
+            print(_format_resolution(result))
+        # TODO: Compare conflict information.
+        assert False, ctx.value
+    else:
+        result = resolver.resolve(provider.root_requirements)
+        assert _format_resolution(result) == provider.expected_resolution
