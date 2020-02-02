@@ -84,6 +84,10 @@ class CocoaPodsInputProvider(AbstractProvider):
             Requirement(key, _parse_specifier_set(spec))
             for key, spec in case_data["requested"].items()
         ]
+        self.preferred_versions = {
+            entry["name"]: packaging.version.parse(entry["version"])
+            for entry in case_data["base"]
+        }
         self.expected_resolution = dict(_iter_resolved(case_data["resolved"]))
         self.expected_conflicts = case_data["conflicts"]
 
@@ -111,9 +115,16 @@ class CocoaPodsInputProvider(AbstractProvider):
             yield Candidate(entry["name"], version, dependencies)
 
     def find_matches(self, requirement):
-        return sorted(
-            self._iter_matches(requirement), key=operator.attrgetter("ver"),
-        )
+        mapping = {c.ver: c for c in self._iter_matches(requirement)}
+        try:
+            version = self.preferred_versions[requirement.name]
+            preferred_candidate = mapping.pop(version)
+        except KeyError:
+            preferred_candidate = None
+        candidates = sorted(mapping.values(), key=operator.attrgetter("ver"))
+        if preferred_candidate:
+            candidates.append(preferred_candidate)
+        return candidates
 
     def is_satisfied_by(self, requirement, candidate):
         return candidate.ver in requirement.spec
@@ -123,6 +134,7 @@ class CocoaPodsInputProvider(AbstractProvider):
 
 
 XFAIL_CASES = {
+    "circular.json": "different resolution",
     "complex_conflict.json": "different resolution",
     "complex_conflict_unwinding.json": "different resolution",
     "conflict_on_child.json": "different resolution",
@@ -131,7 +143,6 @@ XFAIL_CASES = {
     "previous_conflict.json": "different resolution",
     "pruned_unresolved_orphan.json": "different resolution",
     "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
-    "simple_with_base.json": "different resolution",
     "spapping_and_rewinding.json": "different resolution",
     "swapping_children_with_successors.json": "different resolution",
 }
@@ -157,13 +168,10 @@ def test_resolver(provider, base_reporter):
     resolver = Resolver(provider, base_reporter)
     result = resolver.resolve(provider.root_requirements)
 
-    if provider.expected_conflicts:
-        return
-
     display = {
         identifier: str(candidate.ver)
         for identifier, candidate in result.mapping.items()
     }
     assert display == provider.expected_resolution
 
-    # TODO: Handle errors and assert conflicts.
+    # TODO: Assert conflicts.
