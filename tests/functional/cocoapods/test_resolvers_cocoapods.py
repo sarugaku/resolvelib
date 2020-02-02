@@ -73,7 +73,7 @@ class CocoaPodsInputProvider(AbstractProvider):
     def _iter_matches(self, requirement):
         try:
             data = self.index[requirement.name]
-        except IndexError:
+        except KeyError:
             return
         for entry in data:
             version = packaging.version.parse(entry["version"])
