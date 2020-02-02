@@ -132,7 +132,6 @@ XFAIL_CASES = {
     "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
     "simple_with_base.json": "different resolution",
     "spapping_and_rewinding.json": "different resolution",
-    "swapping_children_with_successors.json": "different resolution",
 }
 
 

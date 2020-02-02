@@ -105,7 +105,7 @@ class ResolutionTooDeep(ResolutionError):
 
 
 # Resolution state in a round.
-State = collections.namedtuple("State", "mapping graph criteria")
+State = collections.namedtuple("State", "mapping criteria")
 
 
 class Resolution(object):
@@ -136,14 +136,10 @@ class Resolution(object):
         try:
             base = self._states[-1]
         except IndexError:
-            graph = DirectedGraph()
-            graph.add(None)  # Sentinel as root dependencies' parent.
-            state = State(mapping={}, graph=graph, criteria={})
+            state = State(mapping={}, criteria={})
         else:
             state = State(
-                mapping=base.mapping.copy(),
-                graph=base.graph.copy(),
-                criteria=base.criteria.copy(),
+                mapping=base.mapping.copy(), criteria=base.criteria.copy(),
             )
         self._states.append(state)
 
@@ -178,41 +174,16 @@ class Resolution(object):
 
     def _check_pinnability(self, candidate, dependencies):
         backup = self.state.criteria.copy()
-        contributed = set()
         try:
             for subdep in dependencies:
                 key = self._p.identify(subdep)
                 self._contribute_to_criteria(key, subdep, parent=candidate)
-                contributed.add(key)
         except RequirementsConflicted:
             criteria = self.state.criteria
             criteria.clear()
             criteria.update(backup)
-            return None
-        return contributed
-
-    def _pin_candidate(self, name, criterion, candidate, child_names):
-        try:
-            self.state.graph.remove(name)
-        except KeyError:
-            pass
-        self.state.mapping[name] = candidate
-        self.state.graph.add(name)
-        for parent in criterion.iter_parent():
-            parent_name = None if parent is None else self._p.identify(parent)
-            try:
-                self.state.graph.connect(parent_name, name)
-            except KeyError:
-                # Parent is not yet pinned. Skip now; this edge will be
-                # connected when the parent is being pinned.
-                pass
-        for child_name in child_names:
-            try:
-                self.state.graph.connect(name, child_name)
-            except KeyError:
-                # Child is not yet pinned. Skip now; this edge will be
-                # connected when the child is being pinned.
-                pass
+            return False
+        return True
 
     def _pin_criteria(self):
         criteria = self.state.criteria
@@ -233,15 +204,11 @@ class Resolution(object):
             if self._is_current_pin_satisfying(name, criterion):
                 # If the current pin already works, just use it.
                 continue
-            candidates = list(criterion.candidates)
-            while candidates:
-                candidate = candidates.pop()
+            for candidate in reversed(criterion.candidates):
                 dependencies = self._p.get_dependencies(candidate)
-                child_names = self._check_pinnability(candidate, dependencies)
-                if child_names is None:
-                    continue
-                self._pin_candidate(name, criterion, candidate, child_names)
-                break
+                if self._check_pinnability(candidate, dependencies):
+                    self.state.mapping[name] = candidate
+                    break
             else:
                 # All candidates tried, nothing works. This criterion is a dead
                 # end, signal for backtracking.
@@ -324,6 +291,56 @@ class Resolution(object):
         raise ResolutionTooDeep(max_rounds)
 
 
+def _has_route_to_root(criteria, key, all_keys, connected):
+    if key in connected:
+        return True
+    for p in criteria[key].iter_parent():
+        try:
+            pkey = all_keys[id(p)]
+        except KeyError:
+            continue
+        if pkey in connected:
+            connected.add(key)
+            return True
+        if _has_route_to_root(criteria, pkey, all_keys, connected):
+            connected.add(key)
+            return True
+    return False
+
+
+Result = collections.namedtuple("Result", "mapping graph criteria")
+
+
+def _build_result(state):
+    mapping = state.mapping
+    all_keys = {id(v): k for k, v in mapping.items()}
+    all_keys[id(None)] = None
+
+    graph = DirectedGraph()
+    graph.add(None)  # Sentinel as root dependencies' parent.
+
+    connected = {None}
+    for key, criterion in state.criteria.items():
+        if not _has_route_to_root(state.criteria, key, all_keys, connected):
+            continue
+        if key not in graph:
+            graph.add(key)
+        for p in criterion.iter_parent():
+            try:
+                pkey = all_keys[id(p)]
+            except KeyError:
+                continue
+            if pkey not in graph:
+                graph.add(pkey)
+            graph.connect(pkey, key)
+
+    return Result(
+        mapping={k: v for k, v in mapping.items() if k in connected},
+        graph=graph,
+        criteria=state.criteria,
+    )
+
+
 class Resolver(AbstractResolver):
     """The thing that performs the actual resolution work.
     """
@@ -358,4 +375,4 @@ class Resolver(AbstractResolver):
         """
         resolution = Resolution(self.provider, self.reporter)
         resolution.resolve(requirements, max_rounds=max_rounds)
-        return resolution.state
+        return _build_result(resolution.state)
