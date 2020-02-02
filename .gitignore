@@ -6,5 +6,6 @@ __pycache__
 
 build
 dist
+pip-wheel-metadata
 
 *.egg-info
