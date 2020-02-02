@@ -86,7 +86,7 @@ class CocoaPodsInputProvider(AbstractProvider):
             Requirement(key, _parse_specifier_set(spec))
             for key, spec in case_data["requested"].items()
         ]
-        self.preferred_versions = {
+        self.pinned_versions = {
             entry["name"]: packaging.version.parse(entry["version"])
             for entry in case_data["base"]
         }
@@ -119,14 +119,10 @@ class CocoaPodsInputProvider(AbstractProvider):
     def find_matches(self, requirement):
         mapping = {c.ver: c for c in self._iter_matches(requirement)}
         try:
-            version = self.preferred_versions[requirement.name]
-            preferred_candidate = mapping.pop(version)
+            version = self.pinned_versions[requirement.name]
         except KeyError:
-            preferred_candidate = None
-        candidates = sorted(mapping.values(), key=operator.attrgetter("ver"))
-        if preferred_candidate:
-            candidates.append(preferred_candidate)
-        return candidates
+            return sorted(mapping.values(), key=operator.attrgetter("ver"))
+        return [mapping.pop(version)]
 
     def is_satisfied_by(self, requirement, candidate):
         return candidate.ver in requirement.spec
