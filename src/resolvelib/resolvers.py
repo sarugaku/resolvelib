@@ -185,66 +185,57 @@ class Resolution(object):
             return False
         return True
 
-    def _pin_criteria(self):
-        criteria = self.state.criteria
-        criterion_names = [
-            name
-            for name, _ in sorted(
-                criteria.items(), key=self._get_criterion_item_preference,
-            )
+    def _pin_criterion(self):
+        criterion_items = [
+            item
+            for item in self.state.criteria.items()
+            if not self._is_current_pin_satisfying(*item)
         ]
-        failures = {}
 
-        for name in criterion_names:
-            # Criteria are replaced, not updated in-place, so we need to read
-            # this value in the loop instead of outside, otherwise we may be
-            # looking at outdated instances. (sarugaku/resolvelib#5)
-            criterion = criteria[name]
+        # All criteria are accounted for. Nothing more to pin, we are done!
+        if not criterion_items:
+            return
 
-            if self._is_current_pin_satisfying(name, criterion):
-                # If the current pin already works, just use it.
+        # Choose the most preferred unpinned criterion to try.
+        name, criterion = min(
+            criterion_items, key=self._get_criterion_item_preference,
+        )
+
+        for candidate in reversed(criterion.candidates):
+            if not self._check_pinnability(candidate):
                 continue
-            for candidate in reversed(criterion.candidates):
-                if self._check_pinnability(candidate):
-                    self.state.mapping[name] = candidate
-                    break
-            else:
-                # All candidates tried, nothing works. This criterion is a dead
-                # end, signal for backtracking.
-                failures[name] = criterion
+            self.state.mapping[name] = candidate
+            return None
 
-        return failures
+        # All candidates tried, nothing works. This criterion is a dead
+        # end, signal for backtracking.
+        return (name, criterion)
 
-    def _point_to_last_working_state(self, failures):
-        """Backtrack until we find state without failures to continue.
-        """
-        while failures:
+    def _backtrack_to_last_workable_state(self, failure):
+        while failure:
             del self._states[-1]
+            failed_name, failed_criterion = failure
+
+            # Nowhere to go, this is unsolvable.
             if not self._states:
-                requirements = [
-                    requirement
-                    for criterion in failures.values()
-                    for requirement in criterion.iter_requirement()
-                ]
+                requirements = list(failed_criterion.iter_requirement())
                 raise ResolutionImpossible(requirements)
 
+            failure = None
             criteria = self.state.criteria
-            new_failures = {}
-            for failed_name, failed_criterion in failures.items():
-                for parent in failed_criterion.iter_parent():
-                    if parent is None:
-                        continue
-                    name = self._p.identify(parent)
-                    try:
-                        crit = criteria[name].excluded_of(parent)
-                    except KeyError:
-                        pass
-                    except RequirementsConflicted as e:
-                        new_failures[name] = e.criterion
-                    else:
-                        criteria[name] = crit
-                del criteria[failed_name]
-            failures = new_failures
+            for parent in failed_criterion.iter_parent():
+                if parent is None:
+                    continue
+                name = self._p.identify(parent)
+                try:
+                    crit = criteria[name].excluded_of(parent)
+                except KeyError:
+                    pass
+                except RequirementsConflicted as e:
+                    failure = (name, e.criterion)
+                else:
+                    criteria[name] = crit
+            del criteria[failed_name]
 
     def resolve(self, requirements, max_rounds):
         if self._states:
@@ -266,12 +257,12 @@ class Resolution(object):
             self._r.starting_round(round_index)
 
             self._push_new_state()
-            failures = self._pin_criteria()
+            failure = self._pin_criterion()
 
             curr = self.state
             all_completed = (
                 last is not None
-                and not failures
+                and not failure
                 and len(curr.mapping) == len(last.mapping)
             )
 
@@ -281,12 +272,13 @@ class Resolution(object):
                 self._r.ending(last)
                 return
 
-            if failures:
+            if failure:
                 last = None
             else:
                 last = curr
 
-            self._point_to_last_working_state(failures)
+            if failure:
+                self._backtrack_to_last_workable_state(failure)
             self._r.ending_round(round_index, curr)
 
         raise ResolutionTooDeep(max_rounds)
@@ -350,7 +342,7 @@ class Resolver(AbstractResolver):
 
     base_exception = ResolverException
 
-    def resolve(self, requirements, max_rounds=20):
+    def resolve(self, requirements, max_rounds=100):
         """Take a collection of constraints, spit out the resolution result.
 
         The return value is a representation to the final resolution result. It
