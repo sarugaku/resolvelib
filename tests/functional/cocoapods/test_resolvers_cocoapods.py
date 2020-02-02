@@ -24,18 +24,30 @@ CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 
 
 def _convert_specifier(s):
+    if not s:
+        return s
     m = re.match(r"^([<>=~]+)\s*(.+)$", s)
     op, ver = m.groups()
     if op == "=":
         return "== {}".format(ver)
     elif op == "~>":
+        if ver == "0":  # packaging can't handle "~> 0".
+            return ""
         return "~= {0}, >= {0}".format(ver)
     return s
 
 
+def _iter_convert_specifiers(inp):
+    for raw in inp.split(","):
+        cov = _convert_specifier(raw.strip())
+        if not cov:
+            continue
+        yield cov
+
+
 def _parse_specifier_set(inp):
     return packaging.specifiers.SpecifierSet(
-        ", ".join(_convert_specifier(s.strip()) for s in inp.split(",") if s),
+        ", ".join(_iter_convert_specifiers(inp)),
     )
 
 
