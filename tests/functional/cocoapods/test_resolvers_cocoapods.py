@@ -98,7 +98,7 @@ class CocoaPodsInputProvider(AbstractProvider):
             for entry in case_data["base"]
         }
         self.expected_resolution = dict(_iter_resolved(case_data["resolved"]))
-        self.expected_conflicts = case_data["conflicts"]
+        self.expected_conflicts = set(case_data["conflicts"])
 
     def identify(self, dependency):
         return dependency.name
@@ -149,7 +149,6 @@ XFAIL_CASES = {
     "pruned_unresolved_orphan.json": "different resolution",
     "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
     "spapping_and_rewinding.json": "different resolution",
-    "unresolvable_child.json": "did not fail",
 }
 
 
@@ -169,6 +168,10 @@ def provider(request):
     return CocoaPodsInputProvider(request.param)
 
 
+def _format_conflicts(exc):
+    return {r.name for r in exc.requirements}
+
+
 def _format_resolution(result):
     return {
         identifier: str(candidate.ver)
@@ -182,9 +185,8 @@ def test_resolver(provider, base_reporter):
     if provider.expected_conflicts:
         with pytest.raises(ResolutionImpossible) as ctx:
             result = resolver.resolve(provider.root_requirements)
-            print(_format_resolution(result))
-        # TODO: Compare conflict information.
-        assert False, ctx.value
+            print(_format_resolution(result))  # Provide some debugging hints.
+        assert _format_conflicts(ctx.value) == provider.expected_conflicts
     else:
         result = resolver.resolve(provider.root_requirements)
         assert _format_resolution(result) == provider.expected_resolution

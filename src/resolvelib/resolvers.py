@@ -182,28 +182,36 @@ class Resolution(object):
             criteria = self.state.criteria
             criteria.clear()
             criteria.update(backup)
-            return False
-        return True
+            raise
 
     def _pin_criterion(self, name, criterion):
+        causes = []
         for candidate in reversed(criterion.candidates):
-            if not self._check_pinnability(candidate):
+            try:
+                self._check_pinnability(candidate)
+            except RequirementsConflicted as e:
+                causes.append(e.criterion)
                 continue
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
-            return True
+            return []
 
         # All candidates tried, nothing works. This criterion is a dead
         # end, signal for backtracking.
-        return False
+        return causes
 
-    def _backtrack_to_last_workable_state(self, criterion):
+    def _backtrack_to_last_workable_state(self, criterion, causes):
         while criterion:
             del self._states[-1]
 
-            # Nowhere to go, this is unsolvable.
-            if not self._states:
-                requirements = list(criterion.iter_requirement())
+            # Nowhere to go, this is unsolvable. (the first state is the root;
+            # reaching it means root requirements are incompatible.)
+            if len(self._states) < 2:
+                requirements = [
+                    requirement
+                    for crit in causes
+                    for requirement in crit.iter_requirement()
+                ]
                 raise ResolutionImpossible(requirements)
 
             name, candidate = self.state.mapping.popitem()
@@ -251,10 +259,10 @@ class Resolution(object):
             name, criterion = min(
                 criterion_items, key=self._get_criterion_item_preference,
             )
-            success = self._pin_criterion(name, criterion)
+            causes = self._pin_criterion(name, criterion)
 
-            if not success:
-                self._backtrack_to_last_workable_state(criterion)
+            if causes:
+                self._backtrack_to_last_workable_state(criterion, causes)
             self._r.ending_round(round_index, curr)
 
         raise ResolutionTooDeep(max_rounds)
