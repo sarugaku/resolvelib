@@ -36,7 +36,6 @@ def _is_version_allowed(version, ranges):
             continue
         if r[0] == 0:
             if version[:2] == r[:2] and version[2] >= r[2]:
-                print(r, version)
                 return True
         else:
             if version[1:] >= r[1:]:
