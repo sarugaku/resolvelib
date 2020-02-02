@@ -122,24 +122,25 @@ class CocoaPodsInputProvider(AbstractProvider):
 
 
 XFAIL_CASES = {
-    "complex_conflict.json",
-    "complex_conflict_unwinding.json",
-    "conflict_on_child.json",
-    "deep_complex_conflict.json",
-    "fixed_circular.json",
-    "previous_conflict.json",
-    "pruned_unresolved_orphan.json",
-    "shared_parent_dependency_with_swapping.json",
-    "simple_with_base.json",
-    "spapping_and_rewinding.json",
-    "swapping_children_with_successors.json",
+    "complex_conflict.json": "different resolution",
+    "complex_conflict_unwinding.json": "different resolution",
+    "conflict_on_child.json": "different resolution",
+    "deep_complex_conflict.json": "different resolution",
+    "fixed_circular.json": "different resolution",
+    "previous_conflict.json": "Fixture JSON parse error",
+    "pruned_unresolved_orphan.json": "different resolution",
+    "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
+    "simple_with_base.json": "different resolution",
+    "spapping_and_rewinding.json": "different resolution",
+    "swapping_children_with_successors.json": "different resolution",
 }
 
 
 @pytest.fixture(
     params=[
         pytest.param(
-            os.path.join(CASE_DIR, n), marks=pytest.mark.xfail(strict=True)
+            os.path.join(CASE_DIR, n),
+            marks=pytest.mark.xfail(strict=True, reason=XFAIL_CASES[n]),
         )
         if n in XFAIL_CASES
         else os.path.join(CASE_DIR, n)
