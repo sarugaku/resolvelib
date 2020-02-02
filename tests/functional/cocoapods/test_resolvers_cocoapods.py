@@ -139,12 +139,15 @@ class CocoaPodsInputProvider(AbstractProvider):
 
 
 XFAIL_CASES = {
-    "circular.json": "different resolution",
-    "complex_conflict.json": "different resolution",
-    "fixed_circular.json": "different resolution",
-    "previous_conflict.json": "different resolution",
-    "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
-    "spapping_and_rewinding.json": "different resolution",
+    # ResolveLib does not complain about cycles, so these will be different.
+    # No right or wrong here, just a design decision.
+    "circular.json": "circular dependencies works for us, no conflicts",
+    "fixed_circular.json": "circular dependencies works for us, no backtracks",
+
+    "complex_conflict.json": "ResolutionTooDeep",    
+    "previous_conflict.json": "KeyError: dictionary is empty",
+    "shared_parent_dependency_with_swapping.json": "ResolutionTooDeep",
+    "spapping_and_rewinding.json": "ResolutionImpossible",
 }
 
 
