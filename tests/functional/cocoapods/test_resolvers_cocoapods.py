@@ -32,8 +32,10 @@ def _convert_specifier(s):
     if not op or op == "=":
         return "== {}".format(ver)
     elif op == "~>":
-        if ver == "0":  # packaging can't handle "~> 0".
-            return ""
+        if len(ver) == 1:
+            # PEP 440 can't handle "~= X" (no minor part). This translates to
+            # a simple ">= X" because it means we accept major version changes.
+            return ">= {}".format(ver)
         return "~= {0}, >= {0}".format(ver)
     return s
 
