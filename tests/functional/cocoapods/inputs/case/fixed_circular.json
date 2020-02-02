@@ -1,0 +1,33 @@
+{
+  "name": "handle circular dependencies that only appear for one bad version",
+  "index": "fixed_circular",
+  "requested": {
+    "circular_app": ""
+  },
+  "base": [],
+  "resolved": [
+    {
+      "name": "circular_app",
+      "version": "1.0.0",
+      "dependencies": [
+        {
+          "name": "foo",
+          "version": "0.2.6",
+          "dependencies": [
+            {
+              "name": "bar",
+              "version": "0.1.0",
+              "dependencies": []
+            }
+          ]
+        },
+        {
+          "name": "bar",
+          "version": "0.1.0",
+          "dependencies": []
+        }
+      ]
+    }
+  ],
+  "conflicts": []
+}

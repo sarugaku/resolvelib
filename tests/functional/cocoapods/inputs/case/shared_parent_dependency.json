@@ -1,0 +1,590 @@
+{
+  "name": "can resolve when two specs have the same dependencies",
+  "index": "rubygems-2016-09-11",
+  "requested": {
+    "chef": "~> 12.1.2"
+  },
+  "base": [
+
+  ],
+  "resolved": [
+    {
+      "name": "chef",
+      "version": "12.1.2",
+      "dependencies": [
+        {
+          "name": "chef-zero",
+          "version": "4.2.3",
+          "dependencies": [
+            {
+              "name": "ffi-yajl",
+              "version": "1.4.0",
+              "dependencies": [
+                {
+                  "name": "ffi",
+                  "version": "1.9.14",
+                  "dependencies": [
+
+                  ]
+                },
+                {
+                  "name": "libyajl2",
+                  "version": "1.2.0",
+                  "dependencies": [
+
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "hashie",
+              "version": "2.1.2",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "mixlib-log",
+              "version": "1.7.1",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "rack",
+              "version": "2.0.1",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "uuidtools",
+              "version": "2.1.5",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "diff-lcs",
+          "version": "1.2.5",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "erubis",
+          "version": "2.7.0",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "ffi-yajl",
+          "version": "1.4.0",
+          "dependencies": [
+            {
+              "name": "ffi",
+              "version": "1.9.14",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "libyajl2",
+              "version": "1.2.0",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "highline",
+          "version": "1.7.8",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "mixlib-authentication",
+          "version": "1.4.1",
+          "dependencies": [
+            {
+              "name": "mixlib-log",
+              "version": "1.7.1",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "mixlib-cli",
+          "version": "1.7.0",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "mixlib-config",
+          "version": "2.2.4",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "mixlib-log",
+          "version": "1.7.1",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "mixlib-shellout",
+          "version": "2.2.7",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "net-ssh",
+          "version": "2.9.4",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "net-ssh-multi",
+          "version": "1.2.1",
+          "dependencies": [
+            {
+              "name": "net-ssh",
+              "version": "2.9.4",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "net-ssh-gateway",
+              "version": "1.2.0",
+              "dependencies": [
+                {
+                  "name": "net-ssh",
+                  "version": "2.9.4",
+                  "dependencies": [
+
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ohai",
+          "version": "8.4.0",
+          "dependencies": [
+            {
+              "name": "ffi",
+              "version": "1.9.14",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "ffi-yajl",
+              "version": "1.4.0",
+              "dependencies": [
+                {
+                  "name": "ffi",
+                  "version": "1.9.14",
+                  "dependencies": [
+
+                  ]
+                },
+                {
+                  "name": "libyajl2",
+                  "version": "1.2.0",
+                  "dependencies": [
+
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "ipaddress",
+              "version": "0.8.3",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "mime-types",
+              "version": "2.99.3",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "mixlib-cli",
+              "version": "1.7.0",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "mixlib-config",
+              "version": "2.2.4",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "mixlib-log",
+              "version": "1.7.1",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "mixlib-shellout",
+              "version": "2.2.7",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "rake",
+              "version": "10.5.0",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "systemu",
+              "version": "2.6.5",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "wmi-lite",
+              "version": "1.0.0",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "plist",
+          "version": "3.1.0",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "pry",
+          "version": "0.10.4",
+          "dependencies": [
+            {
+              "name": "coderay",
+              "version": "1.1.1",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "method_source",
+              "version": "0.8.2",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "slop",
+              "version": "3.6.0",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "rspec-core",
+          "version": "3.5.3",
+          "dependencies": [
+            {
+              "name": "rspec-support",
+              "version": "3.5.0",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "rspec-expectations",
+          "version": "3.5.0",
+          "dependencies": [
+            {
+              "name": "diff-lcs",
+              "version": "1.2.5",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "rspec-support",
+              "version": "3.5.0",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "rspec-mocks",
+          "version": "3.5.0",
+          "dependencies": [
+            {
+              "name": "diff-lcs",
+              "version": "1.2.5",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "rspec-support",
+              "version": "3.5.0",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "rspec_junit_formatter",
+          "version": "0.2.3",
+          "dependencies": [
+            {
+              "name": "builder",
+              "version": "3.2.2",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "rspec-core",
+              "version": "3.5.3",
+              "dependencies": [
+                {
+                  "name": "rspec-support",
+                  "version": "3.5.0",
+                  "dependencies": [
+
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "serverspec",
+          "version": "2.36.1",
+          "dependencies": [
+            {
+              "name": "multi_json",
+              "version": "1.12.1",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "rspec",
+              "version": "3.5.0",
+              "dependencies": [
+                {
+                  "name": "rspec-core",
+                  "version": "3.5.3",
+                  "dependencies": [
+                    {
+                      "name": "rspec-support",
+                      "version": "3.5.0",
+                      "dependencies": [
+
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "rspec-expectations",
+                  "version": "3.5.0",
+                  "dependencies": [
+                    {
+                      "name": "diff-lcs",
+                      "version": "1.2.5",
+                      "dependencies": [
+
+                      ]
+                    },
+                    {
+                      "name": "rspec-support",
+                      "version": "3.5.0",
+                      "dependencies": [
+
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "rspec-mocks",
+                  "version": "3.5.0",
+                  "dependencies": [
+                    {
+                      "name": "diff-lcs",
+                      "version": "1.2.5",
+                      "dependencies": [
+
+                      ]
+                    },
+                    {
+                      "name": "rspec-support",
+                      "version": "3.5.0",
+                      "dependencies": [
+
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "rspec-its",
+              "version": "1.2.0",
+              "dependencies": [
+                {
+                  "name": "rspec-core",
+                  "version": "3.5.3",
+                  "dependencies": [
+                    {
+                      "name": "rspec-support",
+                      "version": "3.5.0",
+                      "dependencies": [
+
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "rspec-expectations",
+                  "version": "3.5.0",
+                  "dependencies": [
+                    {
+                      "name": "diff-lcs",
+                      "version": "1.2.5",
+                      "dependencies": [
+
+                      ]
+                    },
+                    {
+                      "name": "rspec-support",
+                      "version": "3.5.0",
+                      "dependencies": [
+
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "specinfra",
+              "version": "2.61.3",
+              "dependencies": [
+                {
+                  "name": "net-scp",
+                  "version": "1.2.1",
+                  "dependencies": [
+                    {
+                      "name": "net-ssh",
+                      "version": "2.9.4",
+                      "dependencies": [
+
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "net-ssh",
+                  "version": "2.9.4",
+                  "dependencies": [
+
+                  ]
+                },
+                {
+                  "name": "net-telnet",
+                  "version": "0.1.1",
+                  "dependencies": [
+
+                  ]
+                },
+                {
+                  "name": "sfl",
+                  "version": "2.2",
+                  "dependencies": [
+
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "specinfra",
+          "version": "2.61.3",
+          "dependencies": [
+            {
+              "name": "net-scp",
+              "version": "1.2.1",
+              "dependencies": [
+                {
+                  "name": "net-ssh",
+                  "version": "2.9.4",
+                  "dependencies": [
+
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "net-ssh",
+              "version": "2.9.4",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "net-telnet",
+              "version": "0.1.1",
+              "dependencies": [
+
+              ]
+            },
+            {
+              "name": "sfl",
+              "version": "2.2",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conflicts": [
+
+  ]
+}

@@ -1,0 +1,3138 @@
+{
+  "name": "resolves a conflict which requires non-trivial unwinding",
+  "index": "complex_conflict_unwinding",
+  "requested": {
+    "devise": "",
+    "sprockets-rails": "",
+    "rails": "",
+    "spring": "",
+    "web-console": ""
+  },
+  "base": [
+    {
+      "name": "bcrypt",
+      "version": "3.1.11",
+      "dependencies": []
+    },
+    {
+      "name": "orm_adapter",
+      "version": "0.5.0",
+      "dependencies": []
+    },
+    {
+      "name": "responders",
+      "version": "2.3.0",
+      "dependencies": []
+    },
+    {
+      "name": "warden",
+      "version": "1.2.7",
+      "dependencies": []
+    },
+    {
+      "name": "devise",
+      "version": "4.2.1",
+      "dependencies": []
+    },
+    {
+      "name": "spring",
+      "version": "2.0.1",
+      "dependencies": []
+    },
+    {
+      "name": "bindex",
+      "version": "0.5.0",
+      "dependencies": []
+    },
+    {
+      "name": "web-console",
+      "version": "3.5.0",
+      "dependencies": []
+    }
+  ],
+  "resolved": [{
+    "name": "rails",
+    "version": "5.0.4",
+    "dependencies": [
+      {
+        "name": "actioncable",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "actionpack",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "actionview",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "builder",
+                    "version": "3.2.3",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "erubis",
+                    "version": "2.7.0",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "rails-dom-testing",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "activesupport",
+                        "version": "5.0.4",
+                        "dependencies": [
+                          {
+                            "name": "concurrent-ruby",
+                            "version": "1.0.5",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "i18n",
+                            "version": "0.8.6",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "minitest",
+                            "version": "5.10.2",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "tzinfo",
+                            "version": "1.2.3",
+                            "dependencies": [
+                              {
+                                "name": "thread_safe",
+                                "version": "0.3.6",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "rails-html-sanitizer",
+                    "version": "1.0.3",
+                    "dependencies": [
+                      {
+                        "name": "loofah",
+                        "version": "2.0.3",
+                        "dependencies": [
+                          {
+                            "name": "nokogiri",
+                            "version": "1.8.0",
+                            "dependencies": [
+                              {
+                                "name": "mini_portile2",
+                                "version": "2.2.0",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rack",
+                "version": "2.0.3",
+                "dependencies": []
+              },
+              {
+                "name": "rack-test",
+                "version": "0.6.3",
+                "dependencies": [
+                  {
+                    "name": "rack",
+                    "version": "2.0.3",
+                    "dependencies": []
+                  }
+                ]
+              },
+              {
+                "name": "rails-dom-testing",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rails-html-sanitizer",
+                "version": "1.0.3",
+                "dependencies": [
+                  {
+                    "name": "loofah",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "nio4r",
+            "version": "2.1.0",
+            "dependencies": []
+          },
+          {
+            "name": "websocket-driver",
+            "version": "0.6.5",
+            "dependencies": [
+              {
+                "name": "websocket-extensions",
+                "version": "0.1.2",
+                "dependencies": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "actionmailer",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "actionpack",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "actionview",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "builder",
+                    "version": "3.2.3",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "erubis",
+                    "version": "2.7.0",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "rails-dom-testing",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "activesupport",
+                        "version": "5.0.4",
+                        "dependencies": [
+                          {
+                            "name": "concurrent-ruby",
+                            "version": "1.0.5",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "i18n",
+                            "version": "0.8.6",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "minitest",
+                            "version": "5.10.2",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "tzinfo",
+                            "version": "1.2.3",
+                            "dependencies": [
+                              {
+                                "name": "thread_safe",
+                                "version": "0.3.6",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "rails-html-sanitizer",
+                    "version": "1.0.3",
+                    "dependencies": [
+                      {
+                        "name": "loofah",
+                        "version": "2.0.3",
+                        "dependencies": [
+                          {
+                            "name": "nokogiri",
+                            "version": "1.8.0",
+                            "dependencies": [
+                              {
+                                "name": "mini_portile2",
+                                "version": "2.2.0",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rack",
+                "version": "2.0.3",
+                "dependencies": []
+              },
+              {
+                "name": "rack-test",
+                "version": "0.6.3",
+                "dependencies": [
+                  {
+                    "name": "rack",
+                    "version": "2.0.3",
+                    "dependencies": []
+                  }
+                ]
+              },
+              {
+                "name": "rails-dom-testing",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rails-html-sanitizer",
+                "version": "1.0.3",
+                "dependencies": [
+                  {
+                    "name": "loofah",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "rails-dom-testing",
+            "version": "2.0.3",
+            "dependencies": [
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "nokogiri",
+                "version": "1.8.0",
+                "dependencies": [
+                  {
+                    "name": "mini_portile2",
+                    "version": "2.2.0",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "actionview",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "builder",
+                "version": "3.2.3",
+                "dependencies": []
+              },
+              {
+                "name": "erubis",
+                "version": "2.7.0",
+                "dependencies": []
+              },
+              {
+                "name": "rails-dom-testing",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rails-html-sanitizer",
+                "version": "1.0.3",
+                "dependencies": [
+                  {
+                    "name": "loofah",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "mail",
+            "version": "2.6.6",
+            "dependencies": [
+              {
+                "name": "mime-types",
+                "version": "3.1",
+                "dependencies": [
+                  {
+                    "name": "mime-types-data",
+                    "version": "3.2016.0521",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "activejob",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "globalid",
+                "version": "0.4.0",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "activemodel",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "activerecord",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "activemodel",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "arel",
+            "version": "7.1.4",
+            "dependencies": []
+          }
+        ]
+      },
+      {
+        "name": "activesupport",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "concurrent-ruby",
+            "version": "1.0.5",
+            "dependencies": []
+          },
+          {
+            "name": "i18n",
+            "version": "0.8.6",
+            "dependencies": []
+          },
+          {
+            "name": "minitest",
+            "version": "5.10.2",
+            "dependencies": []
+          },
+          {
+            "name": "tzinfo",
+            "version": "1.2.3",
+            "dependencies": [
+              {
+                "name": "thread_safe",
+                "version": "0.3.6",
+                "dependencies": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "actionpack",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "actionview",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "builder",
+                "version": "3.2.3",
+                "dependencies": []
+              },
+              {
+                "name": "erubis",
+                "version": "2.7.0",
+                "dependencies": []
+              },
+              {
+                "name": "rails-dom-testing",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rails-html-sanitizer",
+                "version": "1.0.3",
+                "dependencies": [
+                  {
+                    "name": "loofah",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "rack",
+            "version": "2.0.3",
+            "dependencies": []
+          },
+          {
+            "name": "rack-test",
+            "version": "0.6.3",
+            "dependencies": [
+              {
+                "name": "rack",
+                "version": "2.0.3",
+                "dependencies": []
+              }
+            ]
+          },
+          {
+            "name": "rails-dom-testing",
+            "version": "2.0.3",
+            "dependencies": [
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "nokogiri",
+                "version": "1.8.0",
+                "dependencies": [
+                  {
+                    "name": "mini_portile2",
+                    "version": "2.2.0",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "rails-html-sanitizer",
+            "version": "1.0.3",
+            "dependencies": [
+              {
+                "name": "loofah",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "actionview",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "builder",
+            "version": "3.2.3",
+            "dependencies": []
+          },
+          {
+            "name": "erubis",
+            "version": "2.7.0",
+            "dependencies": []
+          },
+          {
+            "name": "rails-dom-testing",
+            "version": "2.0.3",
+            "dependencies": [
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "nokogiri",
+                "version": "1.8.0",
+                "dependencies": [
+                  {
+                    "name": "mini_portile2",
+                    "version": "2.2.0",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "rails-html-sanitizer",
+            "version": "1.0.3",
+            "dependencies": [
+              {
+                "name": "loofah",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "activejob",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "railties",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "actionpack",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "actionview",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "builder",
+                    "version": "3.2.3",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "erubis",
+                    "version": "2.7.0",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "rails-dom-testing",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "activesupport",
+                        "version": "5.0.4",
+                        "dependencies": [
+                          {
+                            "name": "concurrent-ruby",
+                            "version": "1.0.5",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "i18n",
+                            "version": "0.8.6",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "minitest",
+                            "version": "5.10.2",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "tzinfo",
+                            "version": "1.2.3",
+                            "dependencies": [
+                              {
+                                "name": "thread_safe",
+                                "version": "0.3.6",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "rails-html-sanitizer",
+                    "version": "1.0.3",
+                    "dependencies": [
+                      {
+                        "name": "loofah",
+                        "version": "2.0.3",
+                        "dependencies": [
+                          {
+                            "name": "nokogiri",
+                            "version": "1.8.0",
+                            "dependencies": [
+                              {
+                                "name": "mini_portile2",
+                                "version": "2.2.0",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rack",
+                "version": "2.0.3",
+                "dependencies": []
+              },
+              {
+                "name": "rack-test",
+                "version": "0.6.3",
+                "dependencies": [
+                  {
+                    "name": "rack",
+                    "version": "2.0.3",
+                    "dependencies": []
+                  }
+                ]
+              },
+              {
+                "name": "rails-dom-testing",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rails-html-sanitizer",
+                "version": "1.0.3",
+                "dependencies": [
+                  {
+                    "name": "loofah",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "method_source",
+            "version": "0.8.2",
+            "dependencies": []
+          },
+          {
+            "name": "rake",
+            "version": "12.0.0",
+            "dependencies": []
+          },
+          {
+            "name": "thor",
+            "version": "0.19.4",
+            "dependencies": []
+          }
+        ]
+      },
+      {
+        "name": "bundler",
+        "version": "1.15.1",
+        "dependencies": []
+      },
+      {
+        "name": "sprockets-rails",
+        "version": "3.2.0",
+        "dependencies": [
+          {
+            "name": "actionpack",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "actionview",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "builder",
+                    "version": "3.2.3",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "erubis",
+                    "version": "2.7.0",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "rails-dom-testing",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "activesupport",
+                        "version": "5.0.4",
+                        "dependencies": [
+                          {
+                            "name": "concurrent-ruby",
+                            "version": "1.0.5",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "i18n",
+                            "version": "0.8.6",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "minitest",
+                            "version": "5.10.2",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "tzinfo",
+                            "version": "1.2.3",
+                            "dependencies": [
+                              {
+                                "name": "thread_safe",
+                                "version": "0.3.6",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "rails-html-sanitizer",
+                    "version": "1.0.3",
+                    "dependencies": [
+                      {
+                        "name": "loofah",
+                        "version": "2.0.3",
+                        "dependencies": [
+                          {
+                            "name": "nokogiri",
+                            "version": "1.8.0",
+                            "dependencies": [
+                              {
+                                "name": "mini_portile2",
+                                "version": "2.2.0",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rack",
+                "version": "2.0.3",
+                "dependencies": []
+              },
+              {
+                "name": "rack-test",
+                "version": "0.6.3",
+                "dependencies": [
+                  {
+                    "name": "rack",
+                    "version": "2.0.3",
+                    "dependencies": []
+                  }
+                ]
+              },
+              {
+                "name": "rails-dom-testing",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rails-html-sanitizer",
+                "version": "1.0.3",
+                "dependencies": [
+                  {
+                    "name": "loofah",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sprockets",
+            "version": "3.7.1",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "rack",
+                "version": "2.0.3",
+                "dependencies": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "devise",
+    "version": "4.2.1",
+    "dependencies": [
+      {
+        "name": "bcrypt",
+        "version": "3.1.11",
+        "dependencies": []
+      },
+      {
+        "name": "orm_adapter",
+        "version": "0.5.0",
+        "dependencies": []
+      },
+      {
+        "name": "railties",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "actionpack",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "actionview",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "builder",
+                    "version": "3.2.3",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "erubis",
+                    "version": "2.7.0",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "rails-dom-testing",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "activesupport",
+                        "version": "5.0.4",
+                        "dependencies": [
+                          {
+                            "name": "concurrent-ruby",
+                            "version": "1.0.5",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "i18n",
+                            "version": "0.8.6",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "minitest",
+                            "version": "5.10.2",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "tzinfo",
+                            "version": "1.2.3",
+                            "dependencies": [
+                              {
+                                "name": "thread_safe",
+                                "version": "0.3.6",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "rails-html-sanitizer",
+                    "version": "1.0.3",
+                    "dependencies": [
+                      {
+                        "name": "loofah",
+                        "version": "2.0.3",
+                        "dependencies": [
+                          {
+                            "name": "nokogiri",
+                            "version": "1.8.0",
+                            "dependencies": [
+                              {
+                                "name": "mini_portile2",
+                                "version": "2.2.0",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rack",
+                "version": "2.0.3",
+                "dependencies": []
+              },
+              {
+                "name": "rack-test",
+                "version": "0.6.3",
+                "dependencies": [
+                  {
+                    "name": "rack",
+                    "version": "2.0.3",
+                    "dependencies": []
+                  }
+                ]
+              },
+              {
+                "name": "rails-dom-testing",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rails-html-sanitizer",
+                "version": "1.0.3",
+                "dependencies": [
+                  {
+                    "name": "loofah",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "method_source",
+            "version": "0.8.2",
+            "dependencies": []
+          },
+          {
+            "name": "rake",
+            "version": "12.0.0",
+            "dependencies": []
+          },
+          {
+            "name": "thor",
+            "version": "0.19.4",
+            "dependencies": []
+          }
+        ]
+      },
+      {
+        "name": "responders",
+        "version": "2.3.0",
+        "dependencies": [
+          {
+            "name": "railties",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "actionpack",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "actionview",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "activesupport",
+                        "version": "5.0.4",
+                        "dependencies": [
+                          {
+                            "name": "concurrent-ruby",
+                            "version": "1.0.5",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "i18n",
+                            "version": "0.8.6",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "minitest",
+                            "version": "5.10.2",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "tzinfo",
+                            "version": "1.2.3",
+                            "dependencies": [
+                              {
+                                "name": "thread_safe",
+                                "version": "0.3.6",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "builder",
+                        "version": "3.2.3",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "erubis",
+                        "version": "2.7.0",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "rails-dom-testing",
+                        "version": "2.0.3",
+                        "dependencies": [
+                          {
+                            "name": "activesupport",
+                            "version": "5.0.4",
+                            "dependencies": [
+                              {
+                                "name": "concurrent-ruby",
+                                "version": "1.0.5",
+                                "dependencies": []
+                              },
+                              {
+                                "name": "i18n",
+                                "version": "0.8.6",
+                                "dependencies": []
+                              },
+                              {
+                                "name": "minitest",
+                                "version": "5.10.2",
+                                "dependencies": []
+                              },
+                              {
+                                "name": "tzinfo",
+                                "version": "1.2.3",
+                                "dependencies": [
+                                  {
+                                    "name": "thread_safe",
+                                    "version": "0.3.6",
+                                    "dependencies": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "nokogiri",
+                            "version": "1.8.0",
+                            "dependencies": [
+                              {
+                                "name": "mini_portile2",
+                                "version": "2.2.0",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "rails-html-sanitizer",
+                        "version": "1.0.3",
+                        "dependencies": [
+                          {
+                            "name": "loofah",
+                            "version": "2.0.3",
+                            "dependencies": [
+                              {
+                                "name": "nokogiri",
+                                "version": "1.8.0",
+                                "dependencies": [
+                                  {
+                                    "name": "mini_portile2",
+                                    "version": "2.2.0",
+                                    "dependencies": []
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "rack",
+                    "version": "2.0.3",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "rack-test",
+                    "version": "0.6.3",
+                    "dependencies": [
+                      {
+                        "name": "rack",
+                        "version": "2.0.3",
+                        "dependencies": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "rails-dom-testing",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "activesupport",
+                        "version": "5.0.4",
+                        "dependencies": [
+                          {
+                            "name": "concurrent-ruby",
+                            "version": "1.0.5",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "i18n",
+                            "version": "0.8.6",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "minitest",
+                            "version": "5.10.2",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "tzinfo",
+                            "version": "1.2.3",
+                            "dependencies": [
+                              {
+                                "name": "thread_safe",
+                                "version": "0.3.6",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "rails-html-sanitizer",
+                    "version": "1.0.3",
+                    "dependencies": [
+                      {
+                        "name": "loofah",
+                        "version": "2.0.3",
+                        "dependencies": [
+                          {
+                            "name": "nokogiri",
+                            "version": "1.8.0",
+                            "dependencies": [
+                              {
+                                "name": "mini_portile2",
+                                "version": "2.2.0",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "method_source",
+                "version": "0.8.2",
+                "dependencies": []
+              },
+              {
+                "name": "rake",
+                "version": "12.0.0",
+                "dependencies": []
+              },
+              {
+                "name": "thor",
+                "version": "0.19.4",
+                "dependencies": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "warden",
+        "version": "1.2.7",
+        "dependencies": [
+          {
+            "name": "rack",
+            "version": "2.0.3",
+            "dependencies": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "web-console",
+    "version": "3.5.0",
+    "dependencies": [
+      {
+        "name": "actionview",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "builder",
+            "version": "3.2.3",
+            "dependencies": []
+          },
+          {
+            "name": "erubis",
+            "version": "2.7.0",
+            "dependencies": []
+          },
+          {
+            "name": "rails-dom-testing",
+            "version": "2.0.3",
+            "dependencies": [
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "nokogiri",
+                "version": "1.8.0",
+                "dependencies": [
+                  {
+                    "name": "mini_portile2",
+                    "version": "2.2.0",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "rails-html-sanitizer",
+            "version": "1.0.3",
+            "dependencies": [
+              {
+                "name": "loofah",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "activemodel",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "bindex",
+        "version": "0.5.0",
+        "dependencies": []
+      },
+      {
+        "name": "railties",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "activesupport",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "concurrent-ruby",
+                "version": "1.0.5",
+                "dependencies": []
+              },
+              {
+                "name": "i18n",
+                "version": "0.8.6",
+                "dependencies": []
+              },
+              {
+                "name": "minitest",
+                "version": "5.10.2",
+                "dependencies": []
+              },
+              {
+                "name": "tzinfo",
+                "version": "1.2.3",
+                "dependencies": [
+                  {
+                    "name": "thread_safe",
+                    "version": "0.3.6",
+                    "dependencies": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "actionpack",
+            "version": "5.0.4",
+            "dependencies": [
+              {
+                "name": "actionview",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "builder",
+                    "version": "3.2.3",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "erubis",
+                    "version": "2.7.0",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "rails-dom-testing",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "activesupport",
+                        "version": "5.0.4",
+                        "dependencies": [
+                          {
+                            "name": "concurrent-ruby",
+                            "version": "1.0.5",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "i18n",
+                            "version": "0.8.6",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "minitest",
+                            "version": "5.10.2",
+                            "dependencies": []
+                          },
+                          {
+                            "name": "tzinfo",
+                            "version": "1.2.3",
+                            "dependencies": [
+                              {
+                                "name": "thread_safe",
+                                "version": "0.3.6",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "rails-html-sanitizer",
+                    "version": "1.0.3",
+                    "dependencies": [
+                      {
+                        "name": "loofah",
+                        "version": "2.0.3",
+                        "dependencies": [
+                          {
+                            "name": "nokogiri",
+                            "version": "1.8.0",
+                            "dependencies": [
+                              {
+                                "name": "mini_portile2",
+                                "version": "2.2.0",
+                                "dependencies": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "activesupport",
+                "version": "5.0.4",
+                "dependencies": [
+                  {
+                    "name": "concurrent-ruby",
+                    "version": "1.0.5",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "i18n",
+                    "version": "0.8.6",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "minitest",
+                    "version": "5.10.2",
+                    "dependencies": []
+                  },
+                  {
+                    "name": "tzinfo",
+                    "version": "1.2.3",
+                    "dependencies": [
+                      {
+                        "name": "thread_safe",
+                        "version": "0.3.6",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rack",
+                "version": "2.0.3",
+                "dependencies": []
+              },
+              {
+                "name": "rack-test",
+                "version": "0.6.3",
+                "dependencies": [
+                  {
+                    "name": "rack",
+                    "version": "2.0.3",
+                    "dependencies": []
+                  }
+                ]
+              },
+              {
+                "name": "rails-dom-testing",
+                "version": "2.0.3",
+                "dependencies": [
+                  {
+                    "name": "activesupport",
+                    "version": "5.0.4",
+                    "dependencies": [
+                      {
+                        "name": "concurrent-ruby",
+                        "version": "1.0.5",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "i18n",
+                        "version": "0.8.6",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "minitest",
+                        "version": "5.10.2",
+                        "dependencies": []
+                      },
+                      {
+                        "name": "tzinfo",
+                        "version": "1.2.3",
+                        "dependencies": [
+                          {
+                            "name": "thread_safe",
+                            "version": "0.3.6",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "nokogiri",
+                    "version": "1.8.0",
+                    "dependencies": [
+                      {
+                        "name": "mini_portile2",
+                        "version": "2.2.0",
+                        "dependencies": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rails-html-sanitizer",
+                "version": "1.0.3",
+                "dependencies": [
+                  {
+                    "name": "loofah",
+                    "version": "2.0.3",
+                    "dependencies": [
+                      {
+                        "name": "nokogiri",
+                        "version": "1.8.0",
+                        "dependencies": [
+                          {
+                            "name": "mini_portile2",
+                            "version": "2.2.0",
+                            "dependencies": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "method_source",
+            "version": "0.8.2",
+            "dependencies": []
+          },
+          {
+            "name": "rake",
+            "version": "12.0.0",
+            "dependencies": []
+          },
+          {
+            "name": "thor",
+            "version": "0.19.4",
+            "dependencies": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "spring",
+    "version": "2.0.1",
+    "dependencies": [
+      {
+        "name": "activesupport",
+        "version": "5.0.4",
+        "dependencies": [
+          {
+            "name": "concurrent-ruby",
+            "version": "1.0.5",
+            "dependencies": []
+          },
+          {
+            "name": "i18n",
+            "version": "0.8.6",
+            "dependencies": []
+          },
+          {
+            "name": "minitest",
+            "version": "5.10.2",
+            "dependencies": []
+          },
+          {
+            "name": "tzinfo",
+            "version": "1.2.3",
+            "dependencies": [
+              {
+                "name": "thread_safe",
+                "version": "0.3.6",
+                "dependencies": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }],
+  "conflicts": []
+}

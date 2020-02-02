@@ -1,0 +1,109 @@
+{
+  "a": [
+    // Three versions, so this dependency is less constrained than "b", which will have
+    // its version selected first
+    {
+      "name": "a",
+      "version": "0.3.0",
+      "dependencies": {
+        "c": "~> 1.4", // This in incompatible with b = 2.0.0 (and this version is attempted first)
+        "e": "~> 1.4"
+      }
+    },
+    {
+      "name": "a",
+      "version": "0.2.0",
+      "dependencies": {
+        "c": "~> 1.3", // This in incompatible with b = 2.0.0 (and this version is attempted second)
+        "e": "~> 1.4"
+      }
+    },
+    {
+      "name": "a",
+      "version": "0.1.0",
+      "dependencies": {
+        "c": ">= 0", // This is compatible with b = 2.0.0...
+        "e": "~> 1.0", 
+        "f": "~> 1.4" // ...but this constraint is incompatible with the e ~> 1.0 above it, causing a conflict
+                      //  where the parent of both requirements is requiring "a", but there are no more possibilities
+                      // for "a". Correct unwind is to pick a new version of "b", and attempt a = 0.3.0 again.
+      }
+    }
+  ],
+  "b": [
+    {
+      "name": "b",
+      "version": "2.0.0",
+      "dependencies": {
+        "c": "= 2.0.0",
+        "d": "~> 2.0"
+      }
+    },
+    {
+      "name": "b",
+      "version": "1.4.0",
+      "dependencies": {
+        "c": "= 1.4.0",
+        "d": "~> 1.4"
+      }
+    }
+  ],
+  "c": [
+    {
+      "name": "c",
+      "version": "2.0.0",
+      "dependencies": {
+        "d": "~> 2.0.0"
+      }
+    },
+    {
+      "name": "c",
+      "version": "1.4.0",
+      "dependencies": {
+        "d": "~> 1.4"
+      }
+    }
+  ],
+  "e": [
+    {
+      "name": "e",
+      "version": "2.0.0",
+      "dependencies": {
+        "d": "> 1, < 3"
+      }
+    },
+    {
+      "name": "e",
+      "version": "1.4.0",
+      "dependencies": {
+        "d": "> 1, < 3"
+      }
+    },
+    {
+      "name": "e",
+      "version": "1.0.0",
+      "dependencies": {}
+    }
+  ],
+  "f": [
+    {
+      "name": "f",
+      "version": "1.4.0",
+      "dependencies": {
+        "e": "~> 2.0"
+      }
+    }
+  ],
+  "d": [
+    {
+      "name": "d",
+      "version": "1.4.0",
+      "dependencies": {}
+    },
+    {
+      "name": "d",
+      "version": "2.0.0",
+      "dependencies": {}
+    }
+  ]
+}

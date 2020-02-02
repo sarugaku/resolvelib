@@ -1,0 +1,39 @@
+{
+  "name": "resolves an index with conflict on child",
+  "index": "child_conflict",
+  "requested": {
+    "chef_app": ""
+  },
+  "base": [],
+  "resolved": [
+    {
+      "name": "chef_app",
+      "version": "1.0.0",
+      "dependencies": [
+        {
+          "name": "berkshelf",
+          "version": "2.0.7",
+          "dependencies": [
+            {
+              "name": "json",
+              "version": "1.7.7",
+              "dependencies": []
+            }
+          ]
+        },
+        {
+          "name": "chef",
+          "version": "10.26.0",
+          "dependencies": [
+            {
+              "name": "json",
+              "version": "1.7.7",
+              "dependencies": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conflicts": []
+}

@@ -1,0 +1,29 @@
+{
+  "name": "picks the latest version when non-contiguous grouping would fail",
+  "index": "contiguous_grouping",
+  "requested": {
+    "a": "",
+    "b": ""
+  },
+  "base": [],
+  "resolved": [
+    {
+      "name": "b",
+      "version": "1.0.0",
+      "dependencies": [
+        {
+          "name": "a",
+          "version": "1.0.1",
+          "dependencies": [
+            {
+              "name": "c",
+              "version": "1.0.0",
+              "dependencies": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conflicts": []
+}

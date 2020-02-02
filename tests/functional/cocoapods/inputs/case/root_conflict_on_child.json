@@ -1,0 +1,61 @@
+{
+  "name": "resolves an index with root level conflict on child",
+  "index": "root_conflict_on_child",
+  "requested": {
+    "i18n": "~> 0.4",
+    "activesupport": "~> 3.0",
+    "activerecord": "~> 3.0",
+    "builder": "~> 2.1.2"
+  },
+  "base": [],
+  "resolved": [
+    {
+      "name": "activesupport",
+      "version": "3.0.5",
+      "dependencies": []
+    },
+    {
+      "name": "i18n",
+      "version": "0.4.2",
+      "dependencies": []
+    },
+    {
+      "name": "builder",
+      "version": "2.1.2",
+      "dependencies": []
+    },
+    {
+      "name": "activerecord",
+      "version": "3.0.5",
+      "dependencies": [
+        {
+          "name": "activesupport",
+          "version": "3.0.5",
+          "dependencies": []
+        },
+        {
+          "name": "activemodel",
+          "version": "3.0.5",
+          "dependencies": [
+            {
+              "name": "activesupport",
+              "version": "3.0.5",
+              "dependencies": []
+            },
+            {
+              "name": "builder",
+              "version": "2.1.2",
+              "dependencies": []
+            },
+            {
+              "name": "i18n",
+              "version": "0.4.2",
+              "dependencies": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conflicts": []
+}

@@ -1,0 +1,40 @@
+{
+  "name": "resolves when a previous conflict can be unwound only if filtered correctly",
+  "index": "previous_primary_conflict",
+  "requested": {
+    "a": ">= 4.2",
+    "b": "< 5.1"
+  },
+  "base": [],
+  "resolved": [
+    {
+      "name": "a",
+      "version": "5.0.5",
+      "dependencies": [
+        {
+          "name": "c",
+          "version": "1.0.0",
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "b",
+      "version": "5.0.5",
+      "dependencies": [
+        {
+          "name": "a",
+          "version": "5.0.5",
+          "dependencies": [
+            {
+              "name": "c",
+              "version": "1.0.0",
+              "dependencies": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conflicts": []
+}

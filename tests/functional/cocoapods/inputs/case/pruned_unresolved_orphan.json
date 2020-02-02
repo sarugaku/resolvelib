@@ -1,0 +1,49 @@
+{
+  "name": "resolves when there is a pruned unresolved orphan after swapping",
+  "index": "rubygems-2016-02-15",
+  "requested": {
+    "mail": "2.6.3",
+    "github-linguist": "4.4.3"
+  },
+  "base": [],
+  "resolved": [
+    {
+      "name": "mail",
+      "version": "2.6.3",
+      "dependencies": [
+        {
+          "name": "mime-types",
+          "version": "2.99",
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "github-linguist",
+      "version": "4.4.3",
+      "dependencies": [
+        {
+          "name": "charlock_holmes",
+          "version": "0.7.3",
+          "dependencies": []
+        },
+        {
+          "name": "escape_utils",
+          "version": "1.0.1",
+          "dependencies": []
+        },
+        {
+          "name": "mime-types",
+          "version": "2.99",
+          "dependencies": []
+        },
+        {
+          "name": "rugged",
+          "version": "0.22.11-b11",
+          "dependencies": []
+        }
+      ]
+    }
+  ],
+  "conflicts": []
+}

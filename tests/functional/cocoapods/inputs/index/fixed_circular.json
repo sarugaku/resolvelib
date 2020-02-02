@@ -1,0 +1,40 @@
+{
+  "foo": [
+    {
+      "name": "foo",
+      "version": "0.2.6",
+      "dependencies": {
+        "bar": ">= 0"
+      }
+    }
+  ],
+  "bar": [
+    {
+      "name": "bar",
+      "version": "1.0.0",
+      "dependencies": {
+        "foo": ">= 0.1"
+      }
+    },
+    {
+      "name": "bar",
+      "version": "0.1.0",
+      "dependencies": {}
+    }
+  ],
+  "circular_app": [
+    {
+      "name": "circular_app",
+      "version": "1.0.0",
+      "dependencies": {
+        "foo": ">= 0",
+        "bar": ">= 0"
+      }
+    },
+    {
+      "name": "circular_app",
+      "version": "0.0.1",
+      "dependencies": []
+    }
+  ]
+}
