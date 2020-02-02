@@ -75,7 +75,7 @@ def _clean_identifier(s):
 
 def _iter_resolved(dependencies):
     for entry in dependencies:
-        yield (entry["name"], entry["version"])
+        yield (entry["name"], packaging.version.parse(entry["version"]))
         for sub in _iter_resolved(entry["dependencies"]):
             yield sub
 
@@ -141,12 +141,8 @@ class CocoaPodsInputProvider(AbstractProvider):
 XFAIL_CASES = {
     "circular.json": "different resolution",
     "complex_conflict.json": "different resolution",
-    "complex_conflict_unwinding.json": "different resolution",
-    "conflict_on_child.json": "different resolution",
-    "deep_complex_conflict.json": "different resolution",
     "fixed_circular.json": "different resolution",
     "previous_conflict.json": "different resolution",
-    "pruned_unresolved_orphan.json": "different resolution",
     "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
     "spapping_and_rewinding.json": "different resolution",
 }
@@ -174,7 +170,7 @@ def _format_conflicts(exc):
 
 def _format_resolution(result):
     return {
-        identifier: str(candidate.ver)
+        identifier: candidate.ver
         for identifier, candidate in result.mapping.items()
     }
 
