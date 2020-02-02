@@ -185,7 +185,9 @@ class Resolution(object):
                 self._contribute_to_criteria(key, subdep, parent=candidate)
                 contributed.add(key)
         except RequirementsConflicted:
-            self.state.criteria = backup
+            criteria = self.state.criteria
+            criteria.clear()
+            criteria.update(backup)
             return None
         return contributed
 
@@ -261,7 +263,7 @@ class Resolution(object):
                 raise ResolutionImpossible(requirements)
 
             criteria = self.state.criteria
-            new_failures = []
+            new_failures = {}
             for failed_name, failed_criterion in failures.items():
                 for parent in failed_criterion.iter_parent():
                     if parent is None:
@@ -270,7 +272,7 @@ class Resolution(object):
                     try:
                         crit = criteria[name].excluded_of(parent)
                     except RequirementsConflicted as e:
-                        new_failures.append(e.criterion)
+                        new_failures[name] = e.criterion
                     else:
                         criteria[name] = crit
                 del criteria[failed_name]
