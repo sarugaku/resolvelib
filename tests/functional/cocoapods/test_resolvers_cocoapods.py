@@ -142,7 +142,6 @@ XFAIL_CASES = {
     "pruned_unresolved_orphan.json": "different resolution",
     "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
     "spapping_and_rewinding.json": "different resolution",
-    "swapping_children_with_successors.json": "different resolution",
 }
 
 

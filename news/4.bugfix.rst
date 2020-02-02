@@ -1,0 +1,3 @@
+Ensure the result returned by the resolver only contains candidates that are
+actually needed. This is done by tracing the graph after resolution completes,
+snipping nodes that don’t have a route to the root.
