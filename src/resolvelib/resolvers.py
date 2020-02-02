@@ -237,6 +237,8 @@ class Resolution(object):
                     name = self._p.identify(parent)
                     try:
                         crit = criteria[name].excluded_of(parent)
+                    except KeyError:
+                        pass
                     except RequirementsConflicted as e:
                         new_failures[name] = e.criterion
                     else:
@@ -293,6 +295,8 @@ class Resolution(object):
 def _has_route_to_root(criteria, key, all_keys, connected):
     if key in connected:
         return True
+    if key not in criteria:
+        return False
     for p in criteria[key].iter_parent():
         try:
             pkey = all_keys[id(p)]
