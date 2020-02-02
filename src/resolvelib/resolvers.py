@@ -26,22 +26,26 @@ class RequirementsConflicted(ResolverException):
 class Criterion(object):
     """Representation of possible resolution results of a package.
 
-    This holds two attributes:
+    This holds three attributes:
 
     * `information` is a collection of `RequirementInformation` pairs.
       Each pair is a requirement contributing to this criterion, and the
       candidate that provides the requirement.
+    * `incompatibilities` is a collection of all known not-to-work candidates
+      to exclude from consideration.
     * `candidates` is a collection containing all possible candidates deducted
-      from the union of contributing requirements. It should never be empty.
+      from the union of contributing requirements and known incompatibilities.
+      It should never be empty.
 
     .. note::
         This class is intended to be externally immutable. **Do not** mutate
         any of its attribute containers.
     """
 
-    def __init__(self, candidates, information):
+    def __init__(self, candidates, information, incompatibilities):
         self.candidates = candidates
         self.information = information
+        self.incompatibilities = incompatibilities
 
     @classmethod
     def from_requirement(cls, provider, requirement, parent):
@@ -50,6 +54,7 @@ class Criterion(object):
         return cls(
             candidates=provider.find_matches(requirement),
             information=[RequirementInformation(requirement, parent)],
+            incompatibilities=[],
         )
 
     def iter_requirement(self):
@@ -70,7 +75,17 @@ class Criterion(object):
         ]
         if not candidates:
             raise RequirementsConflicted(self)
-        return type(self)(candidates, infos)
+        return type(self)(candidates, infos, list(self.incompatibilities))
+
+    def excluded_of(self, candidate):
+        """Build a new instance from this, but excluding specified candidate.
+        """
+        incompats = list(self.incompatibilities)
+        incompats.append(candidate)
+        candidates = [c for c in self.candidates if c != candidate]
+        if not candidates:
+            raise RequirementsConflicted(self)
+        return type(self)(candidates, list(self.information), incompats)
 
 
 class ResolutionError(ResolverException):
@@ -90,7 +105,7 @@ class ResolutionTooDeep(ResolutionError):
 
 
 # Resolution state in a round.
-State = collections.namedtuple("State", "mapping graph")
+State = collections.namedtuple("State", "mapping graph criteria")
 
 
 class Resolution(object):
@@ -103,7 +118,6 @@ class Resolution(object):
     def __init__(self, provider, reporter):
         self._p = provider
         self._r = reporter
-        self._criteria = {}
         self._states = []
 
     @property
@@ -124,19 +138,23 @@ class Resolution(object):
         except IndexError:
             graph = DirectedGraph()
             graph.add(None)  # Sentinel as root dependencies' parent.
-            state = State(mapping={}, graph=graph)
+            state = State(mapping={}, graph=graph, criteria={})
         else:
-            state = State(mapping=base.mapping.copy(), graph=base.graph.copy(),)
+            state = State(
+                mapping=base.mapping.copy(),
+                graph=base.graph.copy(),
+                criteria=base.criteria.copy(),
+            )
         self._states.append(state)
 
     def _contribute_to_criteria(self, name, requirement, parent):
         try:
-            crit = self._criteria[name]
+            crit = self.state.criteria[name]
         except KeyError:
             crit = Criterion.from_requirement(self._p, requirement, parent)
         else:
             crit = crit.merged_with(self._p, requirement, parent)
-        self._criteria[name] = crit
+        self.state.criteria[name] = crit
 
     def _get_criterion_item_preference(self, item):
         name, criterion = item
@@ -159,7 +177,7 @@ class Resolution(object):
         )
 
     def _check_pinnability(self, candidate, dependencies):
-        backup = self._criteria.copy()
+        backup = self.state.criteria.copy()
         contributed = set()
         try:
             for subdep in dependencies:
@@ -167,7 +185,7 @@ class Resolution(object):
                 self._contribute_to_criteria(key, subdep, parent=candidate)
                 contributed.add(key)
         except RequirementsConflicted:
-            self._criteria = backup
+            self.state.criteria = backup
             return None
         return contributed
 
@@ -195,17 +213,20 @@ class Resolution(object):
                 pass
 
     def _pin_criteria(self):
+        criteria = self.state.criteria
         criterion_names = [
             name
             for name, _ in sorted(
-                self._criteria.items(), key=self._get_criterion_item_preference,
+                criteria.items(), key=self._get_criterion_item_preference,
             )
         ]
+        failures = {}
+
         for name in criterion_names:
             # Criteria are replaced, not updated in-place, so we need to read
             # this value in the loop instead of outside, otherwise we may be
             # looking at outdated instances. (sarugaku/resolvelib#5)
-            criterion = self._criteria[name]
+            criterion = criteria[name]
 
             if self._is_current_pin_satisfying(name, criterion):
                 # If the current pin already works, just use it.
@@ -219,13 +240,47 @@ class Resolution(object):
                     continue
                 self._pin_candidate(name, criterion, candidate, child_names)
                 break
-            else:  # All candidates tried, nothing works. Give up. (?)
-                raise ResolutionImpossible(list(criterion.iter_requirement()))
+            else:
+                # All candidates tried, nothing works. This criterion is a dead
+                # end, signal for backtracking.
+                failures[name] = criterion
+
+        return failures
+
+    def _point_to_last_working_state(self, failures):
+        """Backtrack until we find state without failures to continue.
+        """
+        while failures:
+            del self._states[-1]
+            if not self._states:
+                requirements = [
+                    requirement
+                    for criterion in failures.values()
+                    for requirement in criterion.iter_requirement()
+                ]
+                raise ResolutionImpossible(requirements)
+
+            criteria = self.state.criteria
+            new_failures = []
+            for failed_name, failed_criterion in failures.items():
+                for parent in failed_criterion.iter_parent():
+                    if parent is None:
+                        continue
+                    name = self._p.identify(parent)
+                    try:
+                        crit = criteria[name].excluded_of(parent)
+                    except RequirementsConflicted as e:
+                        new_failures.append(e.criterion)
+                    else:
+                        criteria[name] = crit
+                del criteria[failed_name]
+            failures = new_failures
 
     def resolve(self, requirements, max_rounds):
         if self._states:
             raise RuntimeError("already resolved")
 
+        self._push_new_state()
         for requirement in requirements:
             try:
                 name = self._p.identify(requirement)
@@ -241,16 +296,27 @@ class Resolution(object):
             self._r.starting_round(round_index)
 
             self._push_new_state()
-            self._pin_criteria()
+            failures = self._pin_criteria()
 
             curr = self.state
-            if last is not None and len(curr.mapping) == len(last.mapping):
-                # Nothing new added. Done! Remove the duplicated entry.
+            all_completed = (
+                last is not None
+                and not failures
+                and len(curr.mapping) == len(last.mapping)
+            )
+
+            # Nothing new added. Done! Remove the duplicated entry.
+            if all_completed:
                 del self._states[-1]
                 self._r.ending(last)
                 return
-            last = curr
 
+            if failures:
+                last = None
+            else:
+                last = curr
+
+            self._point_to_last_working_state(failures)
             self._r.ending_round(round_index, curr)
 
         raise ResolutionTooDeep(max_rounds)
@@ -266,7 +332,7 @@ class Resolver(AbstractResolver):
         """Take a collection of constraints, spit out the resolution result.
 
         The return value is a representation to the final resolution result. It
-        is a tuple subclass with two public members:
+        is a tuple subclass with three public members:
 
         * `mapping`: A dict of resolved candidates. Each key is an identifier
             of a requirement (as returned by the provider's `identify` method),
@@ -275,6 +341,9 @@ class Resolver(AbstractResolver):
             The vertices are keys of `mapping`, and each edge represents *why*
             a particular package is included. A special vertex `None` is
             included to represent parents of user-supplied requirements.
+        * `criteria`: A dict of "criteria" that hold detailed information on
+            how edges in the graph are derived. Each key is an identifier of a
+            vertex, and the value is a `Criterion` instance.
 
         The following exceptions may be raised if a resolution cannot be found:
 
