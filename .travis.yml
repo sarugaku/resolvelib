@@ -1,0 +1,30 @@
+language: python
+
+cache: pip
+
+jobs:
+  fast_finish: true
+  include:
+    - stage: lint
+      name: syntax
+      install: pip install black flake8
+      script:
+        - black --check .
+        - flake8 .
+    - install: pip install setl
+      name: packaging
+      script: setl dist      
+    - stage: primary
+    - python: "2.7"
+    - stage: secondary
+      python: "3.7"
+    - python: "3.6"
+    - python: "nightly"
+  allow_failures:
+    - python: "nightly"
+
+python: "3.8"
+
+install: pip install .[test]
+
+script: pytest tests

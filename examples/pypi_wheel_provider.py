@@ -7,7 +7,6 @@ from email.message import EmailMessage
 
 import requests
 import html5lib
-from packaging.markers import Marker
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version, InvalidVersion
 from packaging.requirements import Requirement
@@ -143,7 +142,6 @@ class PyPIProvider(ExtrasProvider):
 
 if __name__ == "__main__":
     import sys
-    from packaging.requirements import Requirement
     from resolvelib import BaseReporter, Resolver
 
     def display_resolution(result):
