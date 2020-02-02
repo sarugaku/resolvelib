@@ -1,7 +1,11 @@
 import collections
 import json
+import operator
 import os
+import re
 
+import packaging.specifiers
+import packaging.version
 import pytest
 
 from resolvelib.providers import AbstractProvider
@@ -19,6 +23,29 @@ CASE_DIR = os.path.join(INPUTS_DIR, "case")
 CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 
 
+def _convert_specifier(s):
+    m = re.match(r"^([<>=~]+)\s*(.+)$", s)
+    op, ver = m.groups()
+    if op == "=":
+        return "== {}".format(ver)
+    elif op == "~>":
+        return "~= {0}, >= {0}".format(ver)
+    return s
+
+
+def _parse_specifier_set(inp):
+    return packaging.specifiers.SpecifierSet(
+        ", ".join(_convert_specifier(s.strip()) for s in inp.split(",") if s),
+    )
+
+
+def _iter_resolved(dependencies):
+    for entry in dependencies:
+        yield (entry["name"], entry["version"])
+        for sub in _iter_resolved(entry["dependencies"]):
+            yield sub
+
+
 class CocoaPodsInputProvider(AbstractProvider):
     def __init__(self, filename):
         with open(filename) as f:
@@ -31,13 +58,10 @@ class CocoaPodsInputProvider(AbstractProvider):
             self.index = json.load(f)
 
         self.root_requirements = [
-            Requirement(key, spec)
+            Requirement(key, _parse_specifier_set(spec))
             for key, spec in case_data["requested"].items()
         ]
-        self.expected_resolution = {
-            entry["name"]: entry["version"]
-            for entry in case_data["resolved"]
-        }
+        self.expected_resolution = dict(_iter_resolved(case_data["resolved"]))
         self.expected_conflicts = case_data["conflicts"]
 
     def identify(self, dependency):
@@ -46,21 +70,32 @@ class CocoaPodsInputProvider(AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def find_matches(self, requirement):
+    def _iter_matches(self, requirement):
         try:
             data = self.index[requirement.name]
         except IndexError:
-            return []
-        return [
-            Candidate(entry["name"], entry["version"], entry["dependencies"])
-            for entry in data
-        ]
+            return
+        for entry in data:
+            version = packaging.version.parse(entry["version"])
+            if version not in requirement.spec:
+                continue
+            dependencies = [
+                Requirement(k, _parse_specifier_set(v))
+                for k, v in entry["dependencies"].items()
+            ]
+            yield Candidate(entry["name"], version, dependencies)
+
+    def find_matches(self, requirement):
+        return sorted(
+            self._iter_matches(requirement),
+            key=operator.attrgetter("ver"),
+        )
 
     def is_satisfied_by(self, requirement, candidate):
-        raise NotImplementedError("God I need to implement Ruby version spec")
+        return candidate.ver in requirement.spec
 
     def get_dependencies(self, candidate):
-        return [Requirement(k, v) for k, v in candidate.deps.items()]
+        return candidate.deps
 
 
 @pytest.fixture(
@@ -75,8 +110,11 @@ def test_resolver(provider, base_reporter):
     resolver = Resolver(provider, base_reporter)
     result = resolver.resolve(provider.root_requirements)
 
+    if provider.expected_conflicts:
+        return
+
     display = {
-        identifier: candidate.ver
+        identifier: str(candidate.ver)
         for identifier, candidate in result.mapping.items()
     }
     assert display == provider.expected_resolution
