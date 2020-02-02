@@ -3,6 +3,7 @@ import json
 import operator
 import os
 import re
+import string
 
 import commentjson
 import packaging.specifiers
@@ -65,6 +66,13 @@ def _safe_json_load(filename):
     return data
 
 
+def _clean_identifier(s):
+    # I'm not entirely sure how identifiers in the spec work. The only fixture
+    # this matters (AFAICT) is swapping_changes_transitive_dependency, which
+    # has a '\u0001' that seems to intend to be dropped?
+    return "".join(c for c in s if c in string.printable)
+
+
 def _iter_resolved(dependencies):
     for entry in dependencies:
         yield (entry["name"], entry["version"])
@@ -82,7 +90,7 @@ class CocoaPodsInputProvider(AbstractProvider):
         self.index = _safe_json_load(index_name)
 
         self.root_requirements = [
-            Requirement(key, _parse_specifier_set(spec))
+            Requirement(_clean_identifier(key), _parse_specifier_set(spec))
             for key, spec in case_data["requested"].items()
         ]
         self.pinned_versions = {
@@ -134,7 +142,6 @@ XFAIL_CASES = {
     "circular.json": "different resolution",
     "complex_conflict.json": "different resolution",
     "complex_conflict_unwinding.json": "different resolution",
-    "conflict.json": "different resolution",
     "conflict_on_child.json": "different resolution",
     "deep_complex_conflict.json": "different resolution",
     "fixed_circular.json": "different resolution",
@@ -142,7 +149,6 @@ XFAIL_CASES = {
     "pruned_unresolved_orphan.json": "different resolution",
     "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
     "spapping_and_rewinding.json": "different resolution",
-    "swapping_children_with_successors.json": "different resolution",
     "unresolvable_child.json": "did not fail",
 }
 

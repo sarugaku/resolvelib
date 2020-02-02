@@ -136,7 +136,7 @@ class Resolution(object):
         try:
             base = self._states[-1]
         except IndexError:
-            state = State(mapping={}, criteria={})
+            state = State(mapping=collections.OrderedDict(), criteria={})
         else:
             state = State(
                 mapping=base.mapping.copy(), criteria=base.criteria.copy(),
@@ -156,7 +156,7 @@ class Resolution(object):
         name, criterion = item
         try:
             pinned = self.state.mapping[name]
-        except (IndexError, KeyError):
+        except KeyError:
             pinned = None
         return self._p.get_preference(
             pinned, criterion.candidates, criterion.information,
@@ -185,57 +185,34 @@ class Resolution(object):
             return False
         return True
 
-    def _pin_criterion(self):
-        criterion_items = [
-            item
-            for item in self.state.criteria.items()
-            if not self._is_current_pin_satisfying(*item)
-        ]
-
-        # All criteria are accounted for. Nothing more to pin, we are done!
-        if not criterion_items:
-            return
-
-        # Choose the most preferred unpinned criterion to try.
-        name, criterion = min(
-            criterion_items, key=self._get_criterion_item_preference,
-        )
-
+    def _pin_criterion(self, name, criterion):
         for candidate in reversed(criterion.candidates):
             if not self._check_pinnability(candidate):
                 continue
+            self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
-            return None
+            return True
 
         # All candidates tried, nothing works. This criterion is a dead
         # end, signal for backtracking.
-        return (name, criterion)
+        return False
 
-    def _backtrack_to_last_workable_state(self, failure):
-        while failure:
+    def _backtrack_to_last_workable_state(self, criterion):
+        while criterion:
             del self._states[-1]
-            failed_name, failed_criterion = failure
 
             # Nowhere to go, this is unsolvable.
             if not self._states:
-                requirements = list(failed_criterion.iter_requirement())
+                requirements = list(criterion.iter_requirement())
                 raise ResolutionImpossible(requirements)
 
-            failure = None
-            criteria = self.state.criteria
-            for parent in failed_criterion.iter_parent():
-                if parent is None:
-                    continue
-                name = self._p.identify(parent)
-                try:
-                    crit = criteria[name].excluded_of(parent)
-                except KeyError:
-                    pass
-                except RequirementsConflicted as e:
-                    failure = (name, e.criterion)
-                else:
-                    criteria[name] = crit
-            del criteria[failed_name]
+            name, candidate = self.state.mapping.popitem()
+            try:
+                criterion = self.state.criteria[name].excluded_of(candidate)
+            except RequirementsConflicted:
+                continue
+            self.state.criteria[name] = criterion
+            break
 
     def resolve(self, requirements, max_rounds):
         if self._states:
@@ -250,35 +227,34 @@ class Resolution(object):
                 # If initial requirements conflict, nothing would ever work.
                 raise ResolutionImpossible(e.requirements + [requirement])
 
-        last = None
         self._r.starting()
 
         for round_index in range(max_rounds):
             self._r.starting_round(round_index)
 
             self._push_new_state()
-            failure = self._pin_criterion()
-
             curr = self.state
-            all_completed = (
-                last is not None
-                and not failure
-                and len(curr.mapping) == len(last.mapping)
-            )
 
-            # Nothing new added. Done! Remove the duplicated entry.
-            if all_completed:
+            criterion_items = [
+                item
+                for item in self.state.criteria.items()
+                if not self._is_current_pin_satisfying(*item)
+            ]
+
+            # All criteria are accounted for. Nothing more to pin, we are done!
+            if not criterion_items:
                 del self._states[-1]
-                self._r.ending(last)
+                self._r.ending(curr)
                 return
 
-            if failure:
-                last = None
-            else:
-                last = curr
+            # Choose the most preferred unpinned criterion to try.
+            name, criterion = min(
+                criterion_items, key=self._get_criterion_item_preference,
+            )
+            success = self._pin_criterion(name, criterion)
 
-            if failure:
-                self._backtrack_to_last_workable_state(failure)
+            if not success:
+                self._backtrack_to_last_workable_state(criterion)
             self._r.ending_round(round_index, curr)
 
         raise ResolutionTooDeep(max_rounds)
