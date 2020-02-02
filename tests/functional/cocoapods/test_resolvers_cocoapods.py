@@ -4,6 +4,7 @@ import operator
 import os
 import re
 
+import commentjson
 import packaging.specifiers
 import packaging.version
 import pytest
@@ -52,14 +53,14 @@ def _parse_specifier_set(inp):
 
 
 def _safe_json_load(filename):
+    # Some fixtures has comments so the stdlib implementation doesn't work.
+    # We only use commentjson if we absolutely need to because it's SLOW.
     try:
         with open(filename) as f:
             data = json.load(f)
     except ValueError:
-        # Some fixtures has comments. Try to fix the file.
         with open(filename) as f:
-            lines = [line for line in f if not line.lstrip().startswith("//")]
-            data = json.loads("".join(lines))
+            data = commentjson.load(f)
     return data
 
 
@@ -127,7 +128,7 @@ XFAIL_CASES = {
     "conflict_on_child.json": "different resolution",
     "deep_complex_conflict.json": "different resolution",
     "fixed_circular.json": "different resolution",
-    "previous_conflict.json": "Fixture JSON parse error",
+    "previous_conflict.json": "different resolution",
     "pruned_unresolved_orphan.json": "different resolution",
     "shared_parent_dependency_with_swapping.json": "KeyError: 'fog'",
     "simple_with_base.json": "different resolution",
