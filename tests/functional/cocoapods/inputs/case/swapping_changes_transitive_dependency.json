@@ -1,0 +1,29 @@
+{
+  "name": "can resolve when swapping changes transitive dependencies",
+  "index": "restkit",
+  "requested": {
+    "RestKit": "<= 0.23.2",
+    "RestKit\u0001": "~> 0.23.0"
+  },
+  "base": [
+
+  ],
+  "resolved": [
+    {
+      "name": "RestKit",
+      "version": "0.23.2",
+      "dependencies": [
+        {
+          "name": "RestKit/Core",
+          "version": "0.23.2",
+          "dependencies": [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "conflicts": [
+
+  ]
+}

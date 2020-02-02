@@ -1,0 +1,82 @@
+// Idea is as follows:
+// - "a" gets selected first (on some indices) as it is the most constrained.
+// - "b" gets selected second. Initial conditions forbid its 5.1.0 version, and
+//   its subsequent versions each conflict with the current value for "a"
+// - "c" exists solely to ensure a's versions aren't grouped together (it's
+//   present every-other version. This simulates the rubygems requirement that
+//   is generated for pre-release versions but not full-release ones)
+// - The correct resolution is to unwind from the final conflict on "b" to the
+//   initial choice of "a", and NOT filter by the "a = 5.0.4" requirement in
+//   that final conflict
+{
+  "a": [
+    {
+      "name": "a",
+      "version": "5.1.0",
+      "dependencies": {}
+    },
+    {
+      "name": "a",
+      "version": "5.0.5",
+      "dependencies": {
+        "c": ""
+      }
+    },
+    {
+      "name": "a",
+      "version": "5.0.4",
+      "dependencies": {}
+    },
+    // The following versions are created to make "a" the most constrained gem
+    // when a "< 4.2" constraint is placed on it
+    {
+      "name": "a",
+      "version": "4.0.3",
+      "dependencies": {
+        "c": ""
+      }
+    },
+    {
+      "name": "a",
+      "version": "4.0.2",
+      "dependencies": {}
+    },
+    {
+      "name": "a",
+      "version": "4.0.1",
+      "dependencies": {
+        "c": ""
+      }
+    }
+  ],
+  "b": [
+    {
+      "name": "b",
+      "version": "5.1.0",
+      "dependencies": {
+        "a": "= 5.1.0"
+      }
+    },
+    {
+      "name": "b",
+      "version": "5.0.5",
+      "dependencies": {
+        "a": "= 5.0.5"
+      }
+    },
+    {
+      "name": "b",
+      "version": "5.0.4",
+      "dependencies": {
+        "a": "= 5.0.4"
+      }
+    }
+  ],
+  "c": [
+    {
+      "name": "c",
+      "version": "1.0.0",
+      "dependencies": {}
+    }
+  ]
+}

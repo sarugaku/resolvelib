@@ -1,0 +1,46 @@
+{
+  "name": "resolves a three-way conflict index",
+  "index": "three_way_conflict",
+  "requested": {
+    "AFAmazonS3Client": "",
+    "CargoBay": "",
+    "AFOAuth2Client": ""
+  },
+  "base": [],
+  "resolved": [
+    {
+      "name": "AFAmazonS3Client",
+      "version": "1.0.1",
+      "dependencies": [
+        {
+          "name": "AFNetworking",
+          "version": "1.3.4",
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "CargoBay",
+      "version": "1.0.0",
+      "dependencies": [
+        {
+          "name": "AFNetworking",
+          "version": "1.3.4",
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "AFOAuth2Client",
+      "version": "0.1.2",
+      "dependencies": [
+        {
+          "name": "AFNetworking",
+          "version": "1.3.4",
+          "dependencies": []
+        }
+      ]
+    }
+  ],
+  "conflicts": []
+}

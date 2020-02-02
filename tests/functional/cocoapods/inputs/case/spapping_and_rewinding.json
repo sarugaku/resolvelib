@@ -1,0 +1,82 @@
+{
+  "name": "can resolve when a spec that has a child conflict is swapped",
+  "index": "rubygems-2017-02-15",
+  "requested": {
+    "capistrano": "~> 2.15",
+    "ruby": ">= 0"
+  },
+  "base": [
+
+  ],
+  "resolved": [
+    {
+      "name": "capistrano",
+      "version": "2.15.9",
+      "dependencies": [
+        {
+          "name": "highline",
+          "version": "1.7.8",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "net-scp",
+          "version": "1.2.1",
+          "dependencies": [
+            {
+              "name": "net-ssh",
+              "version": "2.9.4",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "net-sftp",
+          "version": "2.1.2",
+          "dependencies": [
+            {
+              "name": "net-ssh",
+              "version": "2.9.4",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "net-ssh",
+          "version": "2.9.4",
+          "dependencies": [
+
+          ]
+        },
+        {
+          "name": "net-ssh-gateway",
+          "version": "1.3.0",
+          "dependencies": [
+            {
+              "name": "net-ssh",
+              "version": "2.9.4",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ruby",
+      "version": "1.9.3.551",
+      "dependencies": [
+
+      ]
+    }
+  ],
+  "conflicts": [
+
+  ]
+}

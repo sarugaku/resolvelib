@@ -1,0 +1,85 @@
+{
+  "name": "can resolve when swapping children with successors",
+  "index": "swap_child_with_successors",
+  "requested": {
+    "build-essential": ">= 0.0.0",
+    "nginx": ">= 0.0.0"
+  },
+  "base": [
+
+  ],
+  "resolved": [
+    {
+      "name": "build-essential",
+      "version": "2.4.0",
+      "dependencies": [
+        {
+          "name": "7-zip",
+          "version": "1.0.0",
+          "dependencies": [
+            {
+              "name": "windows",
+              "version": "1.39.2",
+              "dependencies": [
+                {
+                  "name": "chef-handler",
+                  "version": "1.3.0",
+                  "dependencies": [
+
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nginx",
+      "version": "2.7.6",
+      "dependencies": [
+        {
+          "name": "yum-epel",
+          "version": "0.6.6",
+          "dependencies": [
+            {
+              "name": "yum",
+              "version": "3.10.0",
+              "dependencies": [
+
+              ]
+            }
+          ]
+        },
+        {
+          "name": "build-essential",
+          "version": "2.4.0",
+          "dependencies": [
+            {
+              "name": "7-zip",
+              "version": "1.0.0",
+              "dependencies": [
+                {
+                  "name": "windows",
+                  "version": "1.39.2",
+                  "dependencies": [
+                    {
+                      "name": "chef-handler",
+                      "version": "1.3.0",
+                      "dependencies": [
+
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conflicts": [
+
+  ]
+}

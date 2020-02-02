@@ -1,0 +1,64 @@
+{
+  "RestKit": [
+    {
+      "name": "RestKit",
+      "version": "0.0.1",
+      "dependencies": {}
+    },
+    {
+      "name": "RestKit",
+      "version": "0.0.2",
+      "dependencies": {}
+    },
+    {
+      "name": "RestKit",
+      "version": "0.23.0",
+      "dependencies": {
+        "RestKit/Core": "= 0.23.0"
+      }
+    },
+    {
+      "name": "RestKit",
+      "version": "0.23.1",
+      "dependencies": {
+        "RestKit/Core": "= 0.23.1"
+      }
+    },
+    {
+      "name": "RestKit",
+      "version": "0.23.2",
+      "dependencies": {
+        "RestKit/Core": "= 0.23.2"
+      }
+    },
+    {
+      "name": "RestKit",
+      "version": "0.23.3",
+      "dependencies": {
+        "RestKit/Core": "= 0.23.3"
+      }
+    }
+  ],
+  "RestKit/Core": [
+    {
+      "name": "RestKit/Core",
+      "version": "0.23.0",
+      "dependencies": {}
+    },
+    {
+      "name": "RestKit/Core",
+      "version": "0.23.1",
+      "dependencies": {}
+    },
+    {
+      "name": "RestKit/Core",
+      "version": "0.23.2",
+      "dependencies": {}
+    },
+    {
+      "name": "RestKit/Core",
+      "version": "0.23.3",
+      "dependencies": {}
+    }
+  ]
+}

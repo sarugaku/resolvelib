@@ -1,0 +1,62 @@
+{
+  "name": "resolves when a previous conflict can be unwound but the existing one cannot",
+  "index": "previous_conflict",
+  "requested": {
+    "a": "",
+    "b": ""
+  },
+  "base": [],
+  "resolved": [
+    {
+      "name": "a",
+      "version": "0.3.0",
+      "dependencies": [
+        {
+          "name": "c",
+          "version": "1.4.0",
+          "dependencies": [
+            {
+              "name": "d",
+              "version": "1.4.0",
+              "dependencies": []
+            }
+          ]
+        },
+        {
+          "name": "e",
+          "version": "1.4.0",
+          "dependencies": [
+            {
+              "name": "d",
+              "version": "1.4.0",
+              "dependencies": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "b",
+      "version": "1.4.0",
+      "dependencies": [
+        {
+          "name": "c",
+          "version": "1.4.0",
+          "dependencies": [
+            {
+              "name": "d",
+              "version": "1.4.0",
+              "dependencies": []
+            }
+          ]
+        },
+        {
+          "name": "d",
+          "version": "1.4.0",
+          "dependencies": []
+        }
+      ]
+    }
+  ],
+  "conflicts": []
+}

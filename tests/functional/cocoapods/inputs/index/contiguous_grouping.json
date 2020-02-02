@@ -1,0 +1,37 @@
+{
+  "a": [
+    {
+      "name": "a",
+      "version": "1.0.0",
+      "dependencies": {}
+    },
+    {
+      "name": "a",
+      "version": "1.0.1",
+      "dependencies": {
+        "c": ""
+      }
+    },
+    {
+      "name": "a",
+      "version": "1.0.2",
+      "dependencies": {}
+    }
+  ],
+  "b": [
+    {
+      "name": "b",
+      "version": "1.0.0",
+      "dependencies": {
+        "a": "!= 1.0.2"
+      }
+    }
+  ],
+  "c": [
+    {
+      "name": "c",
+      "version": "1.0.0",
+      "dependencies": {}
+    }
+  ]
+}
