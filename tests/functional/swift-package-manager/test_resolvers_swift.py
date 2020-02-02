@@ -15,6 +15,8 @@ Candidate = collections.namedtuple("Candidate", "container version")
 
 INPUTS_DIR = os.path.abspath(os.path.join(__file__, "..", "inputs"))
 
+INPUT_NAMES = [n for n in os.listdir(INPUTS_DIR) if n.endswith(".json")]
+
 
 def _parse_version(s):
     major, minor, rest = s.split(".", 2)
@@ -64,7 +66,7 @@ def _calculate_preference(parsed_version):
 
 class SwiftInputProvider(AbstractProvider):
     def __init__(self, filename):
-        with open(os.path.join(INPUTS_DIR, filename + ".json")) as f:
+        with open(filename) as f:
             input_data = json.load(f)
 
         self.containers = {
@@ -95,8 +97,7 @@ class SwiftInputProvider(AbstractProvider):
 
     def find_matches(self, requirement):
         matches = sorted(
-            self._iter_matches(requirement),
-            key=operator.itemgetter(0),
+            self._iter_matches(requirement), key=operator.itemgetter(0),
         )
         return [candidate for _, candidate in matches]
 
@@ -120,16 +121,14 @@ class SwiftInputProvider(AbstractProvider):
         return list(self._iter_dependencies(candidate))
 
 
-@pytest.fixture()
+@pytest.fixture(
+    params=[os.path.join(INPUTS_DIR, n) for n in INPUT_NAMES],
+    ids=[n[:-5] for n in INPUT_NAMES],
+)
 def provider(request):
     return SwiftInputProvider(request.param)
 
 
-@pytest.mark.parametrize(
-    "provider",
-    [name[:-5] for name in os.listdir(INPUTS_DIR) if name.endswith(".json")],
-    indirect=True,
-)
 def test_resolver(provider, base_reporter):
     resolver = Resolver(provider, base_reporter)
     result = resolver.resolve(provider.root_requirements)
