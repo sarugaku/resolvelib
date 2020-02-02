@@ -111,8 +111,7 @@ class CocoaPodsInputProvider(AbstractProvider):
 
     def find_matches(self, requirement):
         return sorted(
-            self._iter_matches(requirement),
-            key=operator.attrgetter("ver"),
+            self._iter_matches(requirement), key=operator.attrgetter("ver"),
         )
 
     def is_satisfied_by(self, requirement, candidate):
@@ -122,8 +121,30 @@ class CocoaPodsInputProvider(AbstractProvider):
         return candidate.deps
 
 
+XFAIL_CASES = {
+    "complex_conflict.json",
+    "complex_conflict_unwinding.json",
+    "conflict_on_child.json",
+    "deep_complex_conflict.json",
+    "fixed_circular.json",
+    "previous_conflict.json",
+    "pruned_unresolved_orphan.json",
+    "shared_parent_dependency_with_swapping.json",
+    "simple_with_base.json",
+    "spapping_and_rewinding.json",
+    "swapping_children_with_successors.json",
+}
+
+
 @pytest.fixture(
-    params=[os.path.join(CASE_DIR, n) for n in CASE_NAMES],
+    params=[
+        pytest.param(
+            os.path.join(CASE_DIR, n), marks=pytest.mark.xfail(strict=True)
+        )
+        if n in XFAIL_CASES
+        else os.path.join(CASE_DIR, n)
+        for n in CASE_NAMES
+    ],
     ids=[n[:-5] for n in CASE_NAMES],
 )
 def provider(request):
