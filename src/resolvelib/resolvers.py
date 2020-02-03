@@ -275,7 +275,7 @@ class Resolution(object):
             if not criterion_items:
                 del self._states[-1]
                 self._r.ending(curr)
-                return
+                return self.state
 
             # Choose the most preferred unpinned criterion to try.
             name, criterion = min(
@@ -375,5 +375,5 @@ class Resolver(AbstractResolver):
             `max_rounds` argument.
         """
         resolution = Resolution(self.provider, self.reporter)
-        resolution.resolve(requirements, max_rounds=max_rounds)
-        return _build_result(resolution.state)
+        state = resolution.resolve(requirements, max_rounds=max_rounds)
+        return _build_result(state)
