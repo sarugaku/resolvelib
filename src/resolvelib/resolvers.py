@@ -200,6 +200,26 @@ class Resolution(object):
         # end, signal for backtracking.
         return causes
 
+    def _has_pinned_parent(self, criterion):
+        for p in criterion.iter_parent():
+            if p is None or self._p.identify(p) in self.state.mapping:
+                return True
+        return False
+
+    def _backtrack_criteria(self):
+        # Unpin the last candidate.
+        cand_name, candidate = self.state.mapping.popitem()
+
+        # Remove criteria that are no longer needed after the unpin.
+        for key in list(self.state.criteria):
+            if not self._has_pinned_parent(self.state.criteria[key]):
+                del self.state.criteria[key]
+
+        # Mark the unpinnned candidate as incompatible. This may fail with
+        # RequirementsConflicted to signal for further backtracking.
+        criterion = self.state.criteria[cand_name].excluded_of(candidate)
+        self.state.criteria[cand_name] = criterion
+
     def _backtrack_to_last_workable_state(self, criterion, causes):
         while criterion:
             del self._states[-1]
@@ -214,12 +234,10 @@ class Resolution(object):
                 ]
                 raise ResolutionImpossible(requirements)
 
-            name, candidate = self.state.mapping.popitem()
             try:
-                criterion = self.state.criteria[name].excluded_of(candidate)
+                self._backtrack_criteria()
             except RequirementsConflicted:
                 continue
-            self.state.criteria[name] = criterion
             break
 
     def resolve(self, requirements, max_rounds):

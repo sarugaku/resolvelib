@@ -144,10 +144,9 @@ XFAIL_CASES = {
     "circular.json": "circular dependencies works for us, no conflicts",
     "fixed_circular.json": "circular dependencies works for us, no backtracks",
 
-    "complex_conflict.json": "ResolutionTooDeep",    
-    "previous_conflict.json": "KeyError: dictionary is empty",
+    "complex_conflict.json": "ResolutionTooDeep",
     "shared_parent_dependency_with_swapping.json": "ResolutionTooDeep",
-    "spapping_and_rewinding.json": "ResolutionImpossible",
+    "spapping_and_rewinding.json": "ResolutionTooDeep",
 }
 
 
