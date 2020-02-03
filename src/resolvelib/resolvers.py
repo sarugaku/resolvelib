@@ -192,9 +192,6 @@ class Resolution(object):
             raise
 
     def _pin_criterion(self, name, criterion):
-        if not criterion.candidates:
-            raise ResolutionImpossible(list(criterion.iter_requirement()))
-
         causes = []
         for candidate in reversed(criterion.candidates):
             try:
