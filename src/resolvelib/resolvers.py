@@ -203,22 +203,19 @@ class Resolution(object):
         # end, signal for backtracking.
         return causes
 
-    def _has_pinned_parent(self, criterion):
-        for p in criterion.iter_parent():
-            if p is None or self._p.identify(p) in self.state.mapping:
-                return True
-        return False
-
     def _backtrack_criteria(self):
-        # Unpin the last candidate.
+        # Retract the last candidate pin.
         cand_name, candidate = self.state.mapping.popitem()
 
-        # Remove criteria that are no longer needed after the unpin.
+        # Restore criteria to the previous state (before candidate was pinned).
+        prev_state = self._states[-2]
         for key in list(self.state.criteria):
-            if not self._has_pinned_parent(self.state.criteria[key]):
+            try:
+                self.state.criteria[key] = prev_state.criteria[key]
+            except KeyError:
                 del self.state.criteria[key]
 
-        # Mark the unpinnned candidate as incompatible. This may fail with
+        # Mark the retracted candidate as incompatible. This may fail with
         # RequirementsConflicted to signal for further backtracking.
         criterion = self.state.criteria[cand_name].excluded_of(candidate)
         self.state.criteria[cand_name] = criterion
