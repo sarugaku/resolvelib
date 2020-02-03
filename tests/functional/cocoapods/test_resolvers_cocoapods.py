@@ -125,6 +125,7 @@ class CocoaPodsInputProvider(AbstractProvider):
 
     def find_matches(self, requirement):
         mapping = {c.ver: c for c in self._iter_matches(requirement)}
+        print(requirement.name, list(mapping))
         try:
             version = self.pinned_versions[requirement.name]
         except KeyError:
@@ -143,8 +144,6 @@ XFAIL_CASES = {
     # No right or wrong here, just a design decision.
     "circular.json": "circular dependencies works for us, no conflicts",
     "fixed_circular.json": "circular dependencies works for us, no backtracks",
-    # This needs a deeper look.
-    "complex_conflict.json": "ResolutionImpossible",
 }
 
 

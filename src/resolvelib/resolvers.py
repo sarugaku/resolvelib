@@ -19,7 +19,7 @@ class ResolverException(Exception):
 
 class RequirementsConflicted(ResolverException):
     def __init__(self, criterion):
-        super(RequirementsConflicted, self).__init__()
+        super(RequirementsConflicted, self).__init__(criterion)
         self.criterion = criterion
 
 
@@ -35,7 +35,8 @@ class Criterion(object):
       to exclude from consideration.
     * `candidates` is a collection containing all possible candidates deducted
       from the union of contributing requirements and known incompatibilities.
-      It should never be empty.
+      It should never be empty, except when the criterion is an attribute of a
+      raised `RequirementsConflicted` (in which case it is always empty).
 
     .. note::
         This class is intended to be externally immutable. **Do not** mutate
@@ -51,11 +52,15 @@ class Criterion(object):
     def from_requirement(cls, provider, requirement, parent):
         """Build an instance from a requirement.
         """
-        return cls(
-            candidates=provider.find_matches(requirement),
+        candidates = provider.find_matches(requirement)
+        criterion = cls(
+            candidates=candidates,
             information=[RequirementInformation(requirement, parent)],
             incompatibilities=[],
         )
+        if not candidates:
+            raise RequirementsConflicted(criterion)
+        return criterion
 
     def iter_requirement(self):
         return (i.requirement for i in self.information)
@@ -73,9 +78,10 @@ class Criterion(object):
             for c in self.candidates
             if provider.is_satisfied_by(requirement, c)
         ]
+        criterion = type(self)(candidates, infos, list(self.incompatibilities))
         if not candidates:
-            raise RequirementsConflicted(self)
-        return type(self)(candidates, infos, list(self.incompatibilities))
+            raise RequirementsConflicted(criterion)
+        return criterion
 
     def excluded_of(self, candidate):
         """Build a new instance from this, but excluding specified candidate.
@@ -83,9 +89,10 @@ class Criterion(object):
         incompats = list(self.incompatibilities)
         incompats.append(candidate)
         candidates = [c for c in self.candidates if c != candidate]
+        criterion = type(self)(candidates, list(self.information), incompats)
         if not candidates:
-            raise RequirementsConflicted(self)
-        return type(self)(candidates, list(self.information), incompats)
+            raise RequirementsConflicted(criterion)
+        return criterion
 
 
 class ResolutionError(ResolverException):
