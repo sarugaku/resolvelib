@@ -143,7 +143,7 @@ XFAIL_CASES = {
     # No right or wrong here, just a design decision.
     "circular.json": "circular dependencies works for us, no conflicts",
     "fixed_circular.json": "circular dependencies works for us, no backtracks",
-
+    # These need a deeper look.
     "complex_conflict.json": "ResolutionTooDeep",
     "shared_parent_dependency_with_swapping.json": "ResolutionTooDeep",
     "spapping_and_rewinding.json": "ResolutionTooDeep",
