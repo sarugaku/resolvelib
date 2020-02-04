@@ -191,7 +191,7 @@ class Resolution(object):
             criteria.update(backup)
             raise
 
-    def _pin_criterion(self, name, criterion):
+    def _attempt_to_pin_criterion(self, name, criterion):
         causes = []
         for candidate in reversed(criterion.candidates):
             try:
@@ -207,42 +207,34 @@ class Resolution(object):
         # end, signal for backtracking.
         return causes
 
-    def _backtrack_criteria(self):
-        # Retract the last candidate pin.
-        cand_name, candidate = self.state.mapping.popitem()
-
-        # Restore criteria to the previous state (before candidate was pinned).
-        prev_state = self._states[-2]
-        for key in list(self.state.criteria):
-            try:
-                self.state.criteria[key] = prev_state.criteria[key]
-            except KeyError:
-                del self.state.criteria[key]
-
-        # Mark the retracted candidate as incompatible. This may fail with
-        # RequirementsConflicted to signal for further backtracking.
-        criterion = self.state.criteria[cand_name].excluded_of(candidate)
-        self.state.criteria[cand_name] = criterion
-
-    def _backtrack_to_last_workable_state(self, criterion, causes):
-        while criterion:
+    def _backtrack(self):
+        while True:
+            # Discard the current (known not to work) state.
             del self._states[-1]
 
-            # Nowhere to go, this is unsolvable. (the first state is the root;
-            # reaching it means root requirements are incompatible.)
-            if len(self._states) < 2:
-                requirements = [
-                    requirement
-                    for crit in causes
-                    for requirement in crit.iter_requirement()
-                ]
-                raise ResolutionImpossible(requirements)
+            try:
+                prev_state = self._states[-2]
+            except IndexError:
+                return False
+
+            # Retract the last candidate pin.
+            name, candidate = self.state.mapping.popitem()
+
+            # Restore criteria to before candidate was pinned.
+            for key in list(self.state.criteria):
+                try:
+                    self.state.criteria[key] = prev_state.criteria[key]
+                except KeyError:
+                    del self.state.criteria[key]
 
             try:
-                self._backtrack_criteria()
+                # Mark the retracted candidate as incompatible.
+                criterion = self.state.criteria[name].excluded_of(candidate)
+                self.state.criteria[name] = criterion
             except RequirementsConflicted:
+                # This state still does not work. Try the still previous state.
                 continue
-            break
+            return True
 
     def resolve(self, requirements, max_rounds):
         if self._states:
@@ -265,26 +257,36 @@ class Resolution(object):
             self._push_new_state()
             curr = self.state
 
-            criterion_items = [
+            unsatisfied_criterion_items = [
                 item
                 for item in self.state.criteria.items()
                 if not self._is_current_pin_satisfying(*item)
             ]
 
             # All criteria are accounted for. Nothing more to pin, we are done!
-            if not criterion_items:
+            if not unsatisfied_criterion_items:
                 del self._states[-1]
                 self._r.ending(curr)
                 return self.state
 
             # Choose the most preferred unpinned criterion to try.
             name, criterion = min(
-                criterion_items, key=self._get_criterion_item_preference,
+                unsatisfied_criterion_items,
+                key=self._get_criterion_item_preference,
             )
-            causes = self._pin_criterion(name, criterion)
+            failure_causes = self._attempt_to_pin_criterion(name, criterion)
 
-            if causes:
-                self._backtrack_to_last_workable_state(criterion, causes)
+            # Backtrack if pinning fails.
+            if failure_causes:
+                result = self._backtrack()
+                if not result:
+                    requirements = [
+                        requirement
+                        for crit in failure_causes
+                        for requirement in crit.iter_requirement()
+                    ]
+                    raise ResolutionImpossible(requirements)
+
             self._r.ending_round(round_index, curr)
 
         raise ResolutionTooDeep(max_rounds)
