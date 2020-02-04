@@ -208,14 +208,19 @@ class Resolution(object):
         return causes
 
     def _backtrack(self):
-        while len(self._states) > 2:
-            # Discard the current (known not to work) state.
+        # We need at least 3 states here:
+        # (a) One known not working, to drop.
+        # (b) One to backtrack to.
+        # (c) One to restore state (b) to its state prior to candidate-pinning,
+        #     so we can pin another one instead.
+        while len(self._states) >= 3:
             del self._states[-1]
 
             # Retract the last candidate pin.
             name, candidate = self.state.mapping.popitem()
 
-            # Restore criteria to before candidate was pinned.
+            # Restore criteria to before candidate was pinned. The list() call
+            # is needed because we may be removing entries from the dict.
             prev_state = self._states[-2]
             for key in list(self.state.criteria):
                 try:
@@ -230,6 +235,7 @@ class Resolution(object):
             except RequirementsConflicted:
                 # This state still does not work. Try the still previous state.
                 continue
+
             return True
 
         return False
