@@ -150,12 +150,7 @@ class Resolution(object):
             )
         self._states.append(state)
 
-    def _contribute_to_criteria(self, requirement, parent):
-        """Merge this requirement to known dependency information.
-
-        This may raise `RequirementsConflicted` to indicate the new requirement
-        causes a conflict, signalling the caller to try something else.
-        """
+    def _merge_into_criterion(self, requirement, parent):
         name = self._p.identify(requirement)
         try:
             crit = self.state.criteria[name]
@@ -163,7 +158,7 @@ class Resolution(object):
             crit = Criterion.from_requirement(self._p, requirement, parent)
         else:
             crit = crit.merged_with(self._p, requirement, parent)
-        self.state.criteria[name] = crit
+        return name, crit
 
     def _get_criterion_item_preference(self, item):
         name, criterion = item
@@ -186,15 +181,11 @@ class Resolution(object):
         )
 
     def _check_pinnability(self, candidate):
-        backup = self.state.criteria.copy()
-        try:
-            for subdep in self._p.get_dependencies(candidate):
-                self._contribute_to_criteria(subdep, parent=candidate)
-        except RequirementsConflicted:
-            criteria = self.state.criteria
-            criteria.clear()
-            criteria.update(backup)
-            raise
+        criteria = {}
+        for r in self._p.get_dependencies(candidate):
+            name, crit = self._merge_into_criterion(r, parent=candidate)
+            criteria[name] = crit
+        self.state.criteria.update(criteria)
 
     def _attempt_to_pin_criterion(self, name, criterion):
         causes = []
@@ -242,12 +233,14 @@ class Resolution(object):
             raise RuntimeError("already resolved")
 
         self._push_new_state()
-        for requirement in requirements:
+        for r in requirements:
             try:
-                self._contribute_to_criteria(requirement, parent=None)
+                name, crit = self._merge_into_criterion(r, parent=None)
             except RequirementsConflicted as e:
                 # If initial requirements conflict, nothing would ever work.
-                raise ResolutionImpossible(e.requirements + [requirement])
+                raise ResolutionImpossible(e.requirements + [r])
+            else:
+                self.state.criteria[name] = crit
 
         self._r.starting()
 
