@@ -224,14 +224,9 @@ class Resolution(object):
             # Retract the last candidate pin.
             name, candidate = self.state.mapping.popitem()
 
-            # Restore criteria to before candidate was pinned. The list() call
-            # is needed because we may be removing entries from the dict.
-            prev_state = self._states[-2]
-            for key in list(self.state.criteria):
-                try:
-                    self.state.criteria[key] = prev_state.criteria[key]
-                except KeyError:
-                    del self.state.criteria[key]
+            # Restore criteria to before candidate was pinned.
+            self.state.criteria.clear()
+            self.state.criteria.update(self._states[-2].criteria)
 
             try:
                 # Mark the retracted candidate as incompatible.
