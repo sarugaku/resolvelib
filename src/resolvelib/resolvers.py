@@ -150,7 +150,13 @@ class Resolution(object):
             )
         self._states.append(state)
 
-    def _contribute_to_criteria(self, name, requirement, parent):
+    def _contribute_to_criteria(self, requirement, parent):
+        """Merge this requirement to known dependency information.
+
+        This may raise `RequirementsConflicted` to indicate the new requirement
+        causes a conflict, signalling the caller to try something else.
+        """
+        name = self._p.identify(requirement)
         try:
             crit = self.state.criteria[name]
         except KeyError:
@@ -183,8 +189,7 @@ class Resolution(object):
         backup = self.state.criteria.copy()
         try:
             for subdep in self._p.get_dependencies(candidate):
-                key = self._p.identify(subdep)
-                self._contribute_to_criteria(key, subdep, parent=candidate)
+                self._contribute_to_criteria(subdep, parent=candidate)
         except RequirementsConflicted:
             criteria = self.state.criteria
             criteria.clear()
@@ -247,8 +252,7 @@ class Resolution(object):
         self._push_new_state()
         for requirement in requirements:
             try:
-                name = self._p.identify(requirement)
-                self._contribute_to_criteria(name, requirement, parent=None)
+                self._contribute_to_criteria(requirement, parent=None)
             except RequirementsConflicted as e:
                 # If initial requirements conflict, nothing would ever work.
                 raise ResolutionImpossible(e.requirements + [requirement])
@@ -369,7 +373,7 @@ class Resolver(AbstractResolver):
             included to represent parents of user-supplied requirements.
         * `criteria`: A dict of "criteria" that hold detailed information on
             how edges in the graph are derived. Each key is an identifier of a
-            vertex, and the value is a `Criterion` instance.
+            requirement, and the value is a `Criterion` instance.
 
         The following exceptions may be raised if a resolution cannot be found:
 
