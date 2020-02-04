@@ -180,23 +180,26 @@ class Resolution(object):
             for r in criterion.iter_requirement()
         )
 
-    def _check_pinnability(self, candidate):
+    def _get_criteria_to_update(self, candidate):
         criteria = {}
         for r in self._p.get_dependencies(candidate):
             name, crit = self._merge_into_criterion(r, parent=candidate)
             criteria[name] = crit
-        self.state.criteria.update(criteria)
+        return criteria
 
     def _attempt_to_pin_criterion(self, name, criterion):
         causes = []
         for candidate in reversed(criterion.candidates):
             try:
-                self._check_pinnability(candidate)
+                criteria = self._get_criteria_to_update(candidate)
             except RequirementsConflicted as e:
                 causes.append(e.criterion)
                 continue
+            # Put newly-pinned candidate at the end. This is essential because
+            # backtracking looks at this mapping to get the last pin.
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
+            self.state.criteria.update(criteria)
             return []
 
         # All candidates tried, nothing works. This criterion is a dead
