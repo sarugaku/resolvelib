@@ -208,19 +208,15 @@ class Resolution(object):
         return causes
 
     def _backtrack(self):
-        while True:
+        while len(self._states) > 2:
             # Discard the current (known not to work) state.
             del self._states[-1]
-
-            try:
-                prev_state = self._states[-2]
-            except IndexError:
-                return False
 
             # Retract the last candidate pin.
             name, candidate = self.state.mapping.popitem()
 
             # Restore criteria to before candidate was pinned.
+            prev_state = self._states[-2]
             for key in list(self.state.criteria):
                 try:
                     self.state.criteria[key] = prev_state.criteria[key]
@@ -235,6 +231,8 @@ class Resolution(object):
                 # This state still does not work. Try the still previous state.
                 continue
             return True
+
+        return False
 
     def resolve(self, requirements, max_rounds):
         if self._states:
