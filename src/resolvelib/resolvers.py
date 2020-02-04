@@ -150,20 +150,12 @@ class Resolution(object):
             )
         self._states.append(state)
 
-    def _contribute_to_criteria(self, requirement, parent):
-        """Merge this requirement to known dependency information.
-
-        This may raise `RequirementsConflicted` to indicate the new requirement
-        causes a conflict, signalling the caller to try something else.
-        """
-        name = self._p.identify(requirement)
+    def _merge_criterion(self, name, requirement, parent):
         try:
             crit = self.state.criteria[name]
         except KeyError:
-            crit = Criterion.from_requirement(self._p, requirement, parent)
-        else:
-            crit = crit.merged_with(self._p, requirement, parent)
-        self.state.criteria[name] = crit
+            return Criterion.from_requirement(self._p, requirement, parent)
+        return crit.merged_with(self._p, requirement, parent)
 
     def _get_criterion_item_preference(self, item):
         name, criterion = item
@@ -185,25 +177,22 @@ class Resolution(object):
             for r in criterion.iter_requirement()
         )
 
-    def _check_pinnability(self, candidate):
-        backup = self.state.criteria.copy()
-        try:
-            for subdep in self._p.get_dependencies(candidate):
-                self._contribute_to_criteria(subdep, parent=candidate)
-        except RequirementsConflicted:
-            criteria = self.state.criteria
-            criteria.clear()
-            criteria.update(backup)
-            raise
+    def _merge_criteria_with_dependencies(self, candidate):
+        criteria = {}
+        for subdep in self._p.get_dependencies(candidate):
+            key = self._p.identify(subdep)
+            criteria[key] = self._merge_criterion(key, subdep, parent=candidate)
+        return criteria
 
     def _attempt_to_pin_criterion(self, name, criterion):
         causes = []
         for candidate in reversed(criterion.candidates):
             try:
-                self._check_pinnability(candidate)
+                criteria = self._merge_criteria_with_dependencies(candidate)
             except RequirementsConflicted as e:
                 causes.append(e.criterion)
                 continue
+            self.state.criteria.update(criteria)
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
             return []
@@ -247,7 +236,10 @@ class Resolution(object):
         self._push_new_state()
         for requirement in requirements:
             try:
-                self._contribute_to_criteria(requirement, parent=None)
+                name = self._p.identify(requirement)
+                self.state.criteria[name] = self._merge_criterion(
+                    name, requirement, parent=None,
+                )
             except RequirementsConflicted as e:
                 # If initial requirements conflict, nothing would ever work.
                 raise ResolutionImpossible(e.requirements + [requirement])
