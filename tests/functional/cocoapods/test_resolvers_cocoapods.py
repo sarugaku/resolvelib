@@ -125,7 +125,6 @@ class CocoaPodsInputProvider(AbstractProvider):
 
     def find_matches(self, requirement):
         mapping = {c.ver: c for c in self._iter_matches(requirement)}
-        print(requirement.name, list(mapping))
         try:
             version = self.pinned_versions[requirement.name]
         except KeyError:
