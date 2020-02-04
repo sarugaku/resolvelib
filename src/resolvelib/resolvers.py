@@ -221,12 +221,9 @@ class Resolution(object):
         while len(self._states) >= 3:
             del self._states[-1]
 
-            # Retract the last candidate pin.
-            name, candidate = self.state.mapping.popitem()
-
-            # Restore criteria to before candidate was pinned.
-            self.state.criteria.clear()
-            self.state.criteria.update(self._states[-2].criteria)
+            # Retract the last candidate pin, and create a new (b).
+            name, candidate = self._states.pop().mapping.popitem()
+            self._push_new_state()
 
             try:
                 # Mark the retracted candidate as incompatible.
