@@ -222,10 +222,10 @@ class Resolution(object):
             try:
                 # Mark the retracted candidate as incompatible.
                 criterion = self.state.criteria[name].excluded_of(candidate)
-                self.state.criteria[name] = criterion
             except RequirementsConflicted:
                 # This state still does not work. Try the still previous state.
                 continue
+            self.state.criteria[name] = criterion
 
             return True
 
@@ -242,8 +242,7 @@ class Resolution(object):
             except RequirementsConflicted as e:
                 # If initial requirements conflict, nothing would ever work.
                 raise ResolutionImpossible(e.requirements + [r])
-            else:
-                self.state.criteria[name] = crit
+            self.state.criteria[name] = crit
 
         self._r.starting()
 
