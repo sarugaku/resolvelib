@@ -203,19 +203,18 @@ class Resolution(object):
 
     def _backtrack(self):
         # We need at least 3 states here:
-        # (a) One known not working, to drop.
-        # (b) One to backtrack to.
-        # (c) One to restore state (b) to its state prior to candidate-pinning,
-        #     so we can pin another one instead.
+        # (a) Known not working, to drop.
+        # (b) The one to actually backtrack.
+        # (c) Push a new state based on this, and continue.
         while len(self._states) >= 3:
             del self._states[-1]
 
             # Retract the last candidate pin.
             name, candidate = self.state.mapping.popitem()
 
-            # Restore criteria to before candidate was pinned.
-            self.state.criteria.clear()
-            self.state.criteria.update(self._states[-2].criteria)
+            # Create a new state based on state (c).
+            del self._states[-1]
+            self._push_new_state()
 
             try:
                 # Mark the retracted candidate as incompatible.
