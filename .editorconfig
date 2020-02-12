@@ -1,0 +1,17 @@
+root = true
+
+[*]
+indent_style = tab
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{py,rst,yml}]
+indent_style = space
+
+[*.{ini,json,toml,yml}]
+indent_size = 2
