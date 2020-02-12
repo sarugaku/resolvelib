@@ -1,0 +1,21 @@
+{
+	"index": "pypi-2020-02-13-chalice",
+	"requested": [
+		"chalice"
+	],
+	"resolved": {
+		"attrs": "19.3.0",
+		"botocore": "1.14.15",
+		"chalice": "1.12.0",
+		"click": "7.0.0",
+		"docutils": "0.15.2",
+		"enum-compat": "0.0.3",
+		"jmespath": "0.9.4",
+		"pip": "19.3.1",
+		"python-dateutil": "2.8.1",
+		"setuptools": "45.2.0",
+		"six": "1.14.0",
+		"urllib3": "1.25.8",
+		"wheel": "0.34.2"
+	}
+}
