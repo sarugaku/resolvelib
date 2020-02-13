@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import collections
 import dataclasses
-import datetime
 import email.parser
 import json
 import logging
@@ -50,11 +49,6 @@ logger = logging.getLogger()
 PythonVersion = Union[Tuple[int], Tuple[int, int]]
 
 
-def _auto_filename() -> str:
-    timestamp = datetime.date.today().strftime(r"%Y-%m-%d")
-    return f"pypi-{timestamp}.json"
-
-
 def _parse_python_version(s: str) -> PythonVersion:
     match = re.match(r"^(\d+)(?:\.(\d+))?$", s)
     if not match:
@@ -63,6 +57,13 @@ def _parse_python_version(s: str) -> PythonVersion:
     if more:
         return (int(major), int(more[0]))
     return (int(major),)
+
+
+def _parse_output_path(s: str) -> pathlib.Path:
+    path = pathlib.Path(s)
+    if path.is_absolute():
+        return path
+    return pathlib.Path(__file__).with_name("inputs").joinpath("index", path)
 
 
 def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
@@ -87,8 +88,8 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
     )
     parser.add_argument(
         "--output",
-        type=pathlib.Path,
-        default=pathlib.Path(__file__).with_name("inputs").joinpath("index"),
+        type=_parse_output_path,
+        required=True,
     )
     parser.add_argument(
         "--overwrite", action="store_true", default=False,
@@ -97,14 +98,11 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
 
 
 def get_output_path(path: pathlib.Path, overwrite: bool):
-    if path.suffix == ".json":
-        parent = path.parent
-    else:
-        parent = path
-        path = parent.joinpath(_auto_filename())
+    if path.suffix != ".json":
+        path = path.with_name(path.name + ".json")
     if path.is_file() and not overwrite:
         raise FileExistsError(os.fspath(path))
-    parent.mkdir(parents=True, exist_ok=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
     return path
 
 
