@@ -3,6 +3,7 @@ import json
 import operator
 import os
 
+import packaging.markers
 import packaging.requirements
 import packaging.utils
 import packaging.version
@@ -13,6 +14,12 @@ from resolvelib.resolvers import Resolver
 
 
 Candidate = collections.namedtuple("Candidate", "name version extras")
+
+
+def _eval_marker(v):
+    if not v:
+        return True
+    return packaging.markers.Marker(v).evaluate()
 
 
 class PythonInputProvider(AbstractProvider):
@@ -34,8 +41,9 @@ class PythonInputProvider(AbstractProvider):
         ]
         self.pinned_versions = {}
         self.expected_resolution = {
-            packaging.utils.canonicalize_name(k): packaging.version.parse(v)
+            k: packaging.version.parse(v["version"])
             for k, v in case_data["resolved"].items()
+            if _eval_marker(v.get("marker"))
         }
 
     def identify(self, dependency):
