@@ -1,0 +1,23 @@
+{
+	"index": "pypi-2020-02-13-chalice",
+	"requested": [
+		"chalice"
+	],
+	"resolved": {
+		"attrs": {"version": "19.3.0"},
+		"botocore": {"version": "1.14.15"},
+		"chalice": {"version": "1.12.0"},
+		"click": {"version": "7.0.0"},
+		"docutils": {"version": "0.15.2"},
+		"enum-compat": {"version": "0.0.3"},
+		"enum34": {"version": "1.1.6", "marker": "python_version < '3.4'"},
+		"jmespath": {"version": "0.9.4"},
+		"pip": {"version": "19.3.1"},
+		"python-dateutil": {"version": "2.8.1"},
+		"setuptools": {"version": "45.2.0"},
+		"six": {"version": "1.14.0"},
+		"typing": {"version": "3.6.4", "marker": "python_version < '3.7'"},
+		"urllib3": {"version": "1.25.8"},
+		"wheel": {"version": "0.34.2"}
+	}
+}
