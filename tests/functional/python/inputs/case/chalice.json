@@ -16,7 +16,7 @@
 		"python-dateutil": {"version": "2.8.1"},
 		"setuptools": {"version": "45.2.0"},
 		"six": {"version": "1.14.0"},
-		"typing": {"version": "3.6.4", "marker": "python_version < '3.6'"},
+		"typing": {"version": "3.6.4", "marker": "python_version < '3.7'"},
 		"urllib3": {"version": "1.25.8"},
 		"wheel": {"version": "0.34.2"}
 	}
