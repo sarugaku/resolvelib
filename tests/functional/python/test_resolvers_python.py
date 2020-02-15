@@ -106,7 +106,9 @@ CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 
 
 XFAIL_CASES = {
-    "different-extras.json": "Resolver seems stalled. Why?"
+    "different-extras.json": "Resolver seems stalled. Why?",
+    "with-without-extras.json": "Not ready",
+    "pyrex-1.9.8.json": "Not ready",
 }
 
 
