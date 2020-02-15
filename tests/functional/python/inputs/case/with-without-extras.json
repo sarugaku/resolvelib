@@ -1,0 +1,10 @@
+{
+	"#": "One package required once with extras and once without",
+	"index": "pypi-2020-02-13-pandas",
+	"requested": [
+		"pandas",
+		"pandas[test]"
+	],
+	"resolved": {
+	}
+}
