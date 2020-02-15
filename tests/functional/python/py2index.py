@@ -90,9 +90,7 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
         "--platform", dest="platforms", action="append", default=None,
     )
     parser.add_argument(
-        "--output",
-        type=_parse_output_path,
-        required=True,
+        "--output", type=_parse_output_path, required=True,
     )
     parser.add_argument(
         "--overwrite", action="store_true", default=False,
