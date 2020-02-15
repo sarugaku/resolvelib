@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import collections
 import json
 import operator
@@ -16,10 +18,12 @@ from resolvelib.resolvers import Resolver
 Candidate = collections.namedtuple("Candidate", "name version extras")
 
 
-def _eval_marker(v):
-    if not v:
+def _eval_marker(marker, extras=(None,)):
+    if not marker:
         return True
-    return packaging.markers.Marker(v).evaluate()
+    if not isinstance(marker, packaging.markers.Marker):
+        marker = packaging.markers.Marker(marker)
+    return any(marker.evaluate({"extra": extra}) for extra in extras)
 
 
 class PythonInputProvider(AbstractProvider):
@@ -49,7 +53,7 @@ class PythonInputProvider(AbstractProvider):
     def identify(self, dependency):
         name = packaging.utils.canonicalize_name(dependency.name)
         if dependency.extras:
-            return "{}[{}]".join(name, ",".join(sorted(dependency.extras)))
+            return "{}[{}]".format(name, ",".join(sorted(dependency.extras)))
         return name
 
     def get_preference(self, resolution, candidates, information):
@@ -84,10 +88,9 @@ class PythonInputProvider(AbstractProvider):
         if candidate.extras:
             r = "{}=={}".format(name, candidate.version)
             yield packaging.requirements.Requirement(r)
-        context = {"extra": candidate.extras}
         for r in self.index[name][str(candidate.version)]["dependencies"]:
             requirement = packaging.requirements.Requirement(r)
-            if requirement.marker and not requirement.marker.evaluate(context):
+            if not _eval_marker(requirement.marker, candidate.extras):
                 continue
             yield requirement
 
