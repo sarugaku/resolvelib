@@ -26,6 +26,13 @@ def _eval_marker(marker, extras=(None,)):
     return any(marker.evaluate({"extra": extra}) for extra in extras)
 
 
+def _iter_resolved(data):
+    for k, v in data.items():
+        if not isinstance(v, dict):
+            v = {"version": v}
+        yield k, v
+
+
 class PythonInputProvider(AbstractProvider):
     def __init__(self, filename):
         with open(filename) as f:
@@ -46,7 +53,7 @@ class PythonInputProvider(AbstractProvider):
         self.pinned_versions = {}
         self.expected_resolution = {
             k: packaging.version.parse(v["version"])
-            for k, v in case_data["resolved"].items()
+            for k, v in _iter_resolved(case_data["resolved"])
             if _eval_marker(v.get("marker"))
         }
 
@@ -107,7 +114,7 @@ CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 
 XFAIL_CASES = {
     "different-extras.json": "Resolver seems stalled. Why?",
-    "with-without-extras.json": "Not ready",
+    # "with-without-extras.json": "Not ready",
     "pyrex-1.9.8.json": "Not ready",
 }
 
