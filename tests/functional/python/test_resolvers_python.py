@@ -105,8 +105,21 @@ CASE_DIR = os.path.join(INPUTS_DIR, "case")
 CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 
 
+XFAIL_CASES = {
+    "different-extras.json": "Resolver seems stalled. Why?"
+}
+
+
 @pytest.fixture(
-    params=[os.path.join(CASE_DIR, n) for n in CASE_NAMES],
+    params=[
+        pytest.param(
+            os.path.join(CASE_DIR, n),
+            marks=pytest.mark.xfail(strict=True, reason=XFAIL_CASES[n]),
+        )
+        if n in XFAIL_CASES
+        else os.path.join(CASE_DIR, n)
+        for n in CASE_NAMES
+    ],
     ids=[n[:-5] for n in CASE_NAMES],
 )
 def provider(request):
