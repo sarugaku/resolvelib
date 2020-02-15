@@ -1,7 +1,7 @@
 {
-	"index": "pypi-2020-02-13-pyrex",
+	"index": "pypi-2020-02-15-pyrax",
 	"requested": [
-		"pyrex==1.9.8"
+		"pyrax==1.9.8"
 	],
 	"resolved": {
 	}
