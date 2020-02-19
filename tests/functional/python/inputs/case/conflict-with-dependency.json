@@ -1,0 +1,15 @@
+{
+	"#": [
+		"virtualenv>=20 requires six>=1.12.0",
+		"so we should choose an older virtualenv that works with an older six"
+	],
+	"index": "pypi-2020-02-19-virtualenv-six",
+	"requested": [
+		"six<1.12",
+		"virtualenv"
+	],
+	"resolved": {
+		"six": {"version": "1.11.0"},
+		"virtualenv": {"version": "16.7.9"}
+	}
+}
