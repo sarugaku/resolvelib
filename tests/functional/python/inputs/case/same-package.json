@@ -1,0 +1,12 @@
+{
+	"#": "Combine inputs referring to the same package",
+	"index": "same-package",
+	"requested": [
+		"package_a >=1.1",
+		"package_a >=1.0,<1.3",
+		"package_a >=1.2"
+	],
+	"resolved": {
+		"package-a": {"version": "1.2.0"}
+	}
+}
