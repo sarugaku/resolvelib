@@ -12,6 +12,8 @@ Intended Usage
 
 ::
 
+    import resolvelib
+
     # Things I want to resolve.
     requirements = [...]
 
@@ -20,10 +22,10 @@ Intended Usage
         ...
 
     provider = MyProvider()
+    reporter = resolvelib.BaseReporter()
 
     # Create the (reusable) resolver.
-    from resolvelib import Resolver
-    resolver = Resolver(provider)
+    resolver = resolvelib.Resolver(provider, reporter)
 
     # Kick off the resolution process, and get the final result.
     result = resolver.resolve(requirements)
