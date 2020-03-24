@@ -76,8 +76,10 @@ def release(ctx, type_, repo, prebump="patch"):
     """Make a new release.
     """
     version = _read_version()
-    version = _bump_release(version, type_)
-    _write_version(version)
+
+    if type_:
+        version = _bump_release(version, type_)
+        _write_version(version)
 
     ctx.run("towncrier")
 
@@ -85,7 +87,7 @@ def release(ctx, type_, repo, prebump="patch"):
 
     ctx.run(f'git tag -a {version} -m "Version {version}"')
 
-    ctx.run(f"python setup.py sdist bdist_wheel")
+    ctx.run(f"python setup.py egg_info sdist bdist_wheel")
 
     artifacts = list(ROOT.joinpath("dist").glob("resolvelib-*"))
     filename_display = "\n".join(f"  {a}" for a in artifacts)
@@ -97,9 +99,12 @@ def release(ctx, type_, repo, prebump="patch"):
         return
 
     arg_display = " ".join(f'"{n}"' for n in artifacts)
-    ctx.run(f'twine upload --repository="{repo}" {arg_display}')
+    if repo:
+        ctx.run(f'twine upload --repository="{repo}" {arg_display}')
+    else:
+        print(f"[release] Skipping upload due to empty repo")
 
-    version = _prebump(version, prebump)
-    _write_version(version)
-
-    ctx.run(f'git commit -am "Prebump to {version}"')
+    if prebump:
+        version = _prebump(version, prebump)
+        _write_version(version)
+        ctx.run(f'git commit -am "Prebump to {version}"')
