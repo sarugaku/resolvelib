@@ -10,6 +10,7 @@ import html5lib
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version, InvalidVersion
 from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
 
 from extras_provider import ExtrasProvider
 
@@ -18,13 +19,18 @@ PYTHON_VERSION = Version(platform.python_version())
 
 class Candidate:
     def __init__(self, name, version, url=None, extras=None):
-        self.name = name
+        self.name = canonicalize_name(name)
         self.version = version
         self.url = url
         self.extras = extras
 
         self._metadata = None
         self._dependencies = None
+
+    def __repr__(self):
+        if not self.extras:
+            return f"{self.name}=={self.version}"
+        return f"{self.name}[{','.join(self.extras)}]=={self.version}"
 
     @property
     def metadata(self):
@@ -105,7 +111,7 @@ def get_metadata_for_wheel(url):
 
 class PyPIProvider(ExtrasProvider):
     def identify(self, dependency):
-        return dependency.name
+        return canonicalize_name(dependency.name)
 
     def get_extras_for(self, dependency):
         # Extras is a set, which is not hashable
@@ -132,7 +138,7 @@ class PyPIProvider(ExtrasProvider):
         return candidates
 
     def is_satisfied_by(self, requirement, candidate):
-        if requirement.name != candidate.name:
+        if canonicalize_name(requirement.name) != candidate.name:
             return False
         return candidate.version in requirement.specifier
 
