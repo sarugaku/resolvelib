@@ -13,7 +13,7 @@ jobs:
         - flake8 .
     - install: pip install setl
       name: packaging
-      script: setl dist      
+      script: setl publish --no-upload
     - stage: primary
     - python: "2.7"
     - stage: secondary
