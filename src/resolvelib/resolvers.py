@@ -48,6 +48,13 @@ class Criterion(object):
         self.information = information
         self.incompatibilities = incompatibilities
 
+    def __repr__(self):
+        requirements = ", ".join(
+            "{!r} from {!r}".format(req, parent)
+            for req, parent in self.information
+        )
+        return "<Criterion {}>".format(requirements)
+
     @classmethod
     def from_requirement(cls, provider, requirement, parent):
         """Build an instance from a requirement.
