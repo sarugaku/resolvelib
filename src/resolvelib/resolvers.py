@@ -22,6 +22,24 @@ class RequirementsConflicted(ResolverException):
         super(RequirementsConflicted, self).__init__(criterion)
         self.criterion = criterion
 
+    def __str__(self):
+        return "Requirements conflict: {}".format(
+            ", ".join(repr(r) for r in self.criterion.iter_requirement()),
+        )
+
+
+class InconsistentCandidate(ResolverException):
+    def __init__(self, candidate, criterion):
+        super(InconsistentCandidate, self).__init__(candidate, criterion)
+        self.candidate = candidate
+        self.criterion = criterion
+
+    def __str__(self):
+        return "Provided candidate {!r} does not satisfy {}".format(
+            self.candidate,
+            ", ".join(repr(r) for r in self.criterion.iter_requirement()),
+        )
+
 
 class Criterion(object):
     """Representation of possible resolution results of a package.
@@ -202,11 +220,20 @@ class Resolution(object):
             except RequirementsConflicted as e:
                 causes.append(e.criterion)
                 continue
+
             # Put newly-pinned candidate at the end. This is essential because
             # backtracking looks at this mapping to get the last pin.
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
             self.state.criteria.update(criteria)
+
+            # Check the newly-pinned candidate actually works. This should
+            # always pass under normal circumstances, but in the case of a
+            # faulty provider, we will raise an error to notify the implementer
+            # to fix find_matches() and/or is_satisfied_by().
+            if not self._is_current_pin_satisfying(name, criterion):
+                raise InconsistentCandidate(candidate, criterion)
+
             return []
 
         # All candidates tried, nothing works. This criterion is a dead
