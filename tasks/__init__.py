@@ -1,5 +1,4 @@
 import pathlib
-import shutil
 import subprocess
 
 import invoke
@@ -9,17 +8,6 @@ import parver
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 INIT_PY = ROOT.joinpath("src", "resolvelib", "__init__.py")
-
-
-@invoke.task()
-def clean(ctx):
-    """Clean previously built package artifacts.
-    """
-    ctx.run(f"python setup.py clean")
-    dist = ROOT.joinpath("dist")
-    print(f"[clean] Removing {dist}")
-    if dist.exists():
-        shutil.rmtree(str(dist))
 
 
 def _read_version():
@@ -71,7 +59,7 @@ def _prebump(version, prebump):
     return next_version
 
 
-@invoke.task(pre=[clean])
+@invoke.task()
 def release(ctx, type_, repo, prebump="patch"):
     """Make a new release.
     """
@@ -87,22 +75,12 @@ def release(ctx, type_, repo, prebump="patch"):
 
     ctx.run(f'git tag -a {version} -m "Version {version}"')
 
-    ctx.run(f"python setup.py egg_info sdist bdist_wheel")
-
-    artifacts = list(ROOT.joinpath("dist").glob("resolvelib-*"))
-    filename_display = "\n".join(f"  {a}" for a in artifacts)
-    print(f"[release] Will upload:\n{filename_display}")
-    try:
-        input("[release] Release ready. ENTER to upload, CTRL-C to abort: ")
-    except KeyboardInterrupt:
-        print("\nAborted!")
-        return
-
-    arg_display = " ".join(f'"{n}"' for n in artifacts)
     if repo:
-        ctx.run(f'twine upload --repository="{repo}" {arg_display}')
+        print(f"[release] Releasing distributions to {repo}...")
+        ctx.run(f"setl publish --repository={repo}")
     else:
-        print(f"[release] Skipping upload due to empty repo")
+        print(f"[release] Building distributions locally...")
+        ctx.run(f"setl publish --no-upload")
 
     if prebump:
         version = _prebump(version, prebump)
