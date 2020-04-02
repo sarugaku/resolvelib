@@ -22,3 +22,15 @@ class BaseReporter(object):
     def ending(self, state):
         """Called before the resolution ends successfully.
         """
+
+    def adding_requirement(self, requirement):
+        """Adding a new requirement into the resolve criteria.
+        """
+
+    def backtracking(self, candidate):
+        """Backtracking - removing a candidate after failing to pin.
+        """
+
+    def pinning(self, candidate):
+        """Pinning - adding a candidate to the potential solution.
+        """
