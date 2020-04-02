@@ -24,13 +24,13 @@ class BaseReporter(object):
         """
 
     def adding_requirement(self, requirement):
-        """Adding a new requirement into the resolve criteria.
+        """Called when the resolver adds a new requirement into the resolve criteria.
         """
 
     def backtracking(self, candidate):
-        """Backtracking - removing a candidate after failing to pin.
+        """Called when the resolver rejects a candidate during backtracking.
         """
 
     def pinning(self, candidate):
-        """Pinning - adding a candidate to the potential solution.
+        """Called when adding a candidate to the potential solution.
         """

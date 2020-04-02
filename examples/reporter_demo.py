@@ -68,18 +68,12 @@ class Provider(resolvelib.AbstractProvider):
 
 class Reporter(resolvelib.BaseReporter):
     def adding_requirement(self, requirement):
-        """Adding a new requirement into the resolve criteria.
-        """
         print(f"Adding {requirement}")
 
     def backtracking(self, candidate):
-        """Backtracking - removing a candidate after failing to pin.
-        """
         print(f"Backtracking - removing {candidate}")
 
     def pinning(self, candidate):
-        """Pinning - adding a candidate to the potential solution.
-        """
         print(f"Pinned {candidate}")
 
 

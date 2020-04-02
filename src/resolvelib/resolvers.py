@@ -226,7 +226,7 @@ class Resolution(object):
 
             # Retract the last candidate pin, and create a new (b).
             name, candidate = self._states.pop().mapping.popitem()
-            self._r.backtrack(candidate)
+            self._r.backtracking(candidate)
             self._push_new_state()
 
             try:
