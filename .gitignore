@@ -3,6 +3,9 @@ __pycache__
 
 .pytest_cache
 .venv
+.nox
+.vscode
+.mypy_cache
 
 build
 dist
