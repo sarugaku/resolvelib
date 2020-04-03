@@ -110,13 +110,15 @@ class Criterion(object):
 
     def excluded_of(self, candidate):
         """Build a new instance from this, but excluding specified candidate.
+
+        Returns the new instance, or None if we still have no valid candidates.
         """
         incompats = list(self.incompatibilities)
         incompats.append(candidate)
         candidates = [c for c in self.candidates if c != candidate]
-        criterion = type(self)(candidates, list(self.information), incompats)
         if not candidates:
-            raise RequirementsConflicted(criterion)
+            return None
+        criterion = type(self)(candidates, list(self.information), incompats)
         return criterion
 
 
@@ -253,10 +255,9 @@ class Resolution(object):
             name, candidate = self._states.pop().mapping.popitem()
             self._push_new_state()
 
-            try:
-                # Mark the retracted candidate as incompatible.
-                criterion = self.state.criteria[name].excluded_of(candidate)
-            except RequirementsConflicted:
+            # Mark the retracted candidate as incompatible.
+            criterion = self.state.criteria[name].excluded_of(candidate)
+            if criterion is None:
                 # This state still does not work. Try the still previous state.
                 continue
             self.state.criteria[name] = criterion
