@@ -176,6 +176,7 @@ class Resolution(object):
         self._states.append(state)
 
     def _merge_into_criterion(self, requirement, parent):
+        self._r.adding_requirement(requirement)
         name = self._p.identify(requirement)
         try:
             crit = self.state.criteria[name]
@@ -223,6 +224,7 @@ class Resolution(object):
 
             # Put newly-pinned candidate at the end. This is essential because
             # backtracking looks at this mapping to get the last pin.
+            self._r.pinning(candidate)
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
             self.state.criteria.update(criteria)
@@ -251,6 +253,7 @@ class Resolution(object):
 
             # Retract the last candidate pin, and create a new (b).
             name, candidate = self._states.pop().mapping.popitem()
+            self._r.backtracking(candidate)
             self._push_new_state()
 
             try:
