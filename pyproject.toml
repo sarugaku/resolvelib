@@ -12,7 +12,7 @@ filename = 'CHANGELOG.rst'
 directory = 'news/'
 title_format = '{version} ({project_date})'
 issue_format = '`#{issue} <https://github.com/sarugaku/resolvelib/issues/{issue}>`_'
-template = 'tasks/CHANGELOG.rst.jinja2'
+template = 'news/CHANGELOG.rst.jinja2'
 
 [[tool.towncrier.type]]
 directory = 'feature'
