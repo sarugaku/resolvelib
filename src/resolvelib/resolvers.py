@@ -127,9 +127,10 @@ class ResolutionError(ResolverException):
 
 
 class ResolutionImpossible(ResolutionError):
-    def __init__(self, requirements):
-        super(ResolutionImpossible, self).__init__(requirements)
-        self.requirements = requirements
+    def __init__(self, causes):
+        super(ResolutionImpossible, self).__init__(causes)
+        # causes is a list of RequirementInformation objects
+        self.causes = causes
 
 
 class ResolutionTooDeep(ResolutionError):
@@ -278,9 +279,7 @@ class Resolution(object):
             try:
                 name, crit = self._merge_into_criterion(r, parent=None)
             except RequirementsConflicted as e:
-                # If initial requirements conflict, nothing would ever work.
-                conflict_reqs = list(e.criterion.iter_requirement()) + [r]
-                raise ResolutionImpossible(conflict_reqs)
+                raise ResolutionImpossible(e.criterion.information)
             self.state.criteria[name] = crit
 
         self._r.starting()
@@ -314,12 +313,10 @@ class Resolution(object):
             if failure_causes:
                 result = self._backtrack()
                 if not result:
-                    requirements = [
-                        requirement
-                        for crit in failure_causes
-                        for requirement in crit.iter_requirement()
+                    causes = [
+                        i for crit in failure_causes for i in crit.information
                     ]
-                    raise ResolutionImpossible(requirements)
+                    raise ResolutionImpossible(causes)
 
             self._r.ending_round(round_index, curr)
 
@@ -404,7 +401,9 @@ class Resolver(AbstractResolver):
         The following exceptions may be raised if a resolution cannot be found:
 
         * `ResolutionImpossible`: A resolution cannot be found for the given
-            combination of requirements.
+            combination of requirements. The `causes` attribute of the
+            exception is a list of (requirement, parent), giving the
+            requirements that could not be satisfied.
         * `ResolutionTooDeep`: The dependency tree is too deeply nested and
             the resolver gave up. This is usually caused by a circular
             dependency, but you can try to resolve this by increasing the
