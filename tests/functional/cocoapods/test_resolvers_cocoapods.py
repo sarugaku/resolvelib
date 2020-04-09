@@ -163,7 +163,7 @@ def provider(request):
 
 
 def _format_conflicts(exc):
-    return {r.name for (r, p) in exc.causes}
+    return {r.name for r, _ in exc.causes}
 
 
 def _format_resolution(result):

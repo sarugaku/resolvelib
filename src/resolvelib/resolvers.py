@@ -280,9 +280,9 @@ class Resolution(object):
                 name, crit = self._merge_into_criterion(r, parent=None)
             except RequirementsConflicted as e:
                 # If initial requirements conflict, nothing would ever work.
-                conflicts = [RequirementInformation(r, None)]
-                for req in e.criterion.iter_requirement():
-                    conflicts.append(RequirementInformation(req, None))
+                conflicts = e.criterion.information + [
+                    RequirementInformation(r, None)
+                ]
                 raise ResolutionImpossible(conflicts)
             self.state.criteria[name] = crit
 
