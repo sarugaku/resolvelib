@@ -318,9 +318,7 @@ class Resolution(object):
                 result = self._backtrack()
                 if not result:
                     causes = [
-                        i
-                        for crit in failure_causes
-                        for i in crit.information
+                        i for crit in failure_causes for i in crit.information
                     ]
                     raise ResolutionImpossible(causes)
 
