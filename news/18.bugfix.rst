@@ -1,4 +1,0 @@
-Make resolver backtrack when none of the candidates requested for a package
-are able to resolve due to them requesting unworkable requirements, or a
-package has no candidates at all. Previously the resolver would give up on the
-spot.

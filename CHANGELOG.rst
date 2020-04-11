@@ -1,3 +1,27 @@
+0.3.0 (2020-04-11)
+==================
+
+Features
+--------
+
+- Provide both the requirements and their parents as exceptiondata for the
+  ``ResolutionImpossible`` exception, via a ``causes`` attribute that replaces
+  the previous ``requirements`` attribute.  `#42 <https://github.com/sarugaku/resolvelib/issues/42>`_
+  
+
+Bug Fixes
+---------
+
+- Make resolver backtrack when none of the candidates requested for a package
+  are able to resolve due to them requesting unworkable requirements, or a
+  package has no candidates at all. Previously the resolver would give up on the
+  spot.  `#18 <https://github.com/sarugaku/resolvelib/issues/18>`_
+  
+- Ensure the result returned by the resolver only contains candidates that are
+  actually needed. This is done by tracing the graph after resolution completes,
+  snipping nodes that don’t have a route to the root.  `#4 <https://github.com/sarugaku/resolvelib/issues/4>`_
+
+
 0.2.2 (2018-09-03)
 ==================
 

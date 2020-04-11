@@ -1,3 +1,0 @@
-Provide both the requirements and their parents as exceptiondata for the
-``ResolutionImpossible`` exception, via a ``causes`` attribute that replaces
-the previous ``requirements`` attribute.
