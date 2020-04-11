@@ -40,14 +40,14 @@ def _write_package_version(v):
         f.write("".join(lines))
 
 
-@nox.session(python="3.8")
+@nox.session(python="3.8", reuse_venv=True)
 def release(session):
     session.install(".[release]")
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--version",
-        help="Version to release. Empty value uses the value in __init__.py",
+        help="Version to release. Empty value uses the value in __init__.py.",
     )
     parser.add_argument(
         "--repo",
