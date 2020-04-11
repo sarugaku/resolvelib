@@ -1,4 +1,5 @@
 import argparse
+import json
 import pathlib
 
 import nox
@@ -31,7 +32,7 @@ def _write_package_version(v):
     with INIT_PY.open() as f:
         for line in f:
             if line.startswith("__version__ = "):
-                line = version_line = f"__version__ = {repr(str(v))}\n"
+                line = version_line = f"__version__ = {json.dumps(str(v))}\n"
             lines.append(line)
     if not version_line:
         raise ValueError("__version__ not found in __init__.py")
