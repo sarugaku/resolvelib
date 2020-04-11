@@ -8,11 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 INIT_PY = ROOT.joinpath("src", "resolvelib", "__init__.py")
 
-
-@nox.session()
-def tests(session):
-    session.install(".[test]")
-    session.run("pytest", "tests")
+nox.options.sessions = ["lint", "tests-3.8"]
 
 
 @nox.session()
@@ -20,6 +16,12 @@ def lint(session):
     session.install(".[lint]")
     session.run("black", "--check", ".")
     session.run("flake8", "src", "tests", "noxfile.py")
+
+
+@nox.session(python=["3.8", "2.7"])
+def tests(session):
+    session.install(".[test]")
+    session.run("pytest", "tests")
 
 
 def _write_package_version(v):
@@ -55,7 +57,7 @@ def release(session):
         "--prebump",
         help="Version to bump to after release. Empty value disables bump.",
     )
-    options = parser.parse_args(session.postargs)
+    options = parser.parse_args(session.posargs)
 
     # Make sure the workspace is clean.
     session.run("git", "diff", "--no-patch", "--exit-code", external=True)
