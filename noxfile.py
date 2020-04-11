@@ -11,7 +11,7 @@ INIT_PY = ROOT.joinpath("src", "resolvelib", "__init__.py")
 nox.options.sessions = ["lint", "tests-3.8"]
 
 
-@nox.session()
+@nox.session(python="3.8")
 def lint(session):
     session.install(".[lint]")
     session.run("black", "--check", ".")
@@ -40,7 +40,7 @@ def _write_package_version(v):
         f.write("".join(lines))
 
 
-@nox.session()
+@nox.session(python="3.8")
 def release(session):
     session.install(".[release]")
 
