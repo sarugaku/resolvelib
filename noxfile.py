@@ -82,6 +82,7 @@ def release(session):
             "--annotate",
             "--message",
             f"Version {options.version}",
+            options.version,
             external=True,
         )
     else:
