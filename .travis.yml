@@ -11,8 +11,8 @@ jobs:
       script:
         - black --check .
         - flake8 .
-    - install: pip install setl
-      name: packaging
+    - name: packaging
+      install: pip install .[release]
       script: setl publish --no-upload
     - stage: primary
     - python: "2.7"
