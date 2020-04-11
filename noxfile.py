@@ -47,14 +47,17 @@ def release(session):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--version",
+        required=True,
         help="Version to release. Empty value uses the value in __init__.py.",
     )
     parser.add_argument(
         "--repo",
+        required=True,
         help="Repository to upload to. Empty value disables publish.",
     )
     parser.add_argument(
         "--prebump",
+        required=True,
         help="Version to bump to after release. Empty value disables bump.",
     )
     options = parser.parse_args(session.posargs)
@@ -89,7 +92,7 @@ def release(session):
         session.run("setl", "publish", "--repository", options.repo)
     else:
         session.log(f"Building distributions locally since --repo is empty")
-        session.run(f"setl publish --no-upload")
+        session.run("setl", "publish", "--no-upload")
 
     if options.prebump:
         _write_package_version(options.prebump)
