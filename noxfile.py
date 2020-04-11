@@ -4,7 +4,7 @@ import pathlib
 import nox
 
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+ROOT = pathlib.Path(__file__).resolve().parent
 
 INIT_PY = ROOT.joinpath("src", "resolvelib", "__init__.py")
 
