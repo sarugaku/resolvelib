@@ -12,17 +12,19 @@ INIT_PY = ROOT.joinpath("src", "resolvelib", "__init__.py")
 nox.options.sessions = ["lint", "tests-3.8"]
 
 
-@nox.session(python="3.8")
+@nox.session(python="3.8", reuse_venv=True)
 def lint(session):
     session.install(".[lint]")
     session.run("black", "--check", ".")
     session.run("flake8", "src", "tests", "noxfile.py")
 
 
-@nox.session(python=["3.8", "2.7"])
+@nox.session(python=["3.8", "2.7"], reuse_venv=True)
 def tests(session):
     session.install(".[test]")
-    session.run("pytest", "tests")
+
+    files = session.posargs or ["tests"]
+    session.run("pytest", *files)
 
 
 def _write_package_version(v):
