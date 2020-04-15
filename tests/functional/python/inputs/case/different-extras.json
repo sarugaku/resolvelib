@@ -1,0 +1,10 @@
+{
+	"#": "One package required multiple times with different extras",
+	"index": "pypi-2020-02-13-dask",
+	"requested": [
+		"dask[diagnostics]==2.10.1",
+		"dask[delayed]==2.10.1"
+	],
+	"resolved": {
+	}
+}

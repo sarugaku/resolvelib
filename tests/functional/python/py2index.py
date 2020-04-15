@@ -11,8 +11,8 @@ from __future__ import annotations
 import argparse
 import collections
 import dataclasses
-import datetime
 import email.parser
+import itertools
 import json
 import logging
 import os
@@ -50,11 +50,6 @@ logger = logging.getLogger()
 PythonVersion = Union[Tuple[int], Tuple[int, int]]
 
 
-def _auto_filename() -> str:
-    timestamp = datetime.date.today().strftime(r"%Y-%m-%d")
-    return f"pypi-{timestamp}.json"
-
-
 def _parse_python_version(s: str) -> PythonVersion:
     match = re.match(r"^(\d+)(?:\.(\d+))?$", s)
     if not match:
@@ -63,6 +58,15 @@ def _parse_python_version(s: str) -> PythonVersion:
     if more:
         return (int(major), int(more[0]))
     return (int(major),)
+
+
+def _parse_output_path(s: str) -> Optional[pathlib.Path]:
+    if s == "-":
+        return None
+    path = pathlib.Path(s)
+    if path.is_absolute():
+        return path
+    return pathlib.Path(__file__).with_name("inputs").joinpath("index", path)
 
 
 def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
@@ -86,9 +90,7 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
         "--platform", dest="platforms", action="append", default=None,
     )
     parser.add_argument(
-        "--output",
-        type=pathlib.Path,
-        default=pathlib.Path(__file__).with_name("inputs").joinpath("index"),
+        "--output", type=_parse_output_path, required=True,
     )
     parser.add_argument(
         "--overwrite", action="store_true", default=False,
@@ -96,15 +98,12 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def get_output_path(path: pathlib.Path, overwrite: bool):
-    if path.suffix == ".json":
-        parent = path.parent
-    else:
-        parent = path
-        path = parent.joinpath(_auto_filename())
+def get_output_path(path: pathlib.Path, overwrite: bool) -> pathlib.Path:
+    if path.suffix != ".json":
+        path = path.with_name(path.name + ".json")
     if path.is_file() and not overwrite:
         raise FileExistsError(os.fspath(path))
-    parent.mkdir(parents=True, exist_ok=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
     return path
 
 
@@ -130,7 +129,11 @@ class WheelMatcher:
         required_python = packaging.version.parse(
             ".".join(str(v) for v in python_version)
         )
-        tag_it = packaging.tags.compatible_tags(python_version, impl, plats)
+        # TODO: Add ABI customization.
+        tag_it = itertools.chain(
+            packaging.tags.compatible_tags(python_version, impl, plats),
+            packaging.tags.cpython_tags(python_version, None, plats),
+        )
         tags = {t: i for i, t in enumerate(tag_it)}
         return cls(required_python, tags)
 
@@ -282,7 +285,10 @@ class Finder:
 
 def main(args: Optional[List[str]]) -> int:
     options = parse_args(args)
-    output_path = get_output_path(options.output, options.overwrite)
+    if not options.output:
+        output_path: Optional[pathlib.Path] = None
+    else:
+        output_path = get_output_path(options.output, options.overwrite)
     matcher = WheelMatcher.compatible_with(
         options.python_version, options.interpreter, options.platforms
     )
@@ -290,9 +296,13 @@ def main(args: Optional[List[str]]) -> int:
     finder = Finder(["https://pypi.org/simple"], matcher, requests.Session())
     data = finder.find(options.package_names)
 
-    with output_path.open("w") as f:
-        json.dump(data, f)
-    logger.info("Written: %s", os.fspath(output_path))
+    if output_path is None:
+        json.dump(data, sys.stdout, indent=4)
+        print()
+    else:
+        with output_path.open("w") as f:
+            json.dump(data, f)
+        logger.info("Written: %s", os.fspath(output_path))
 
     return 0
 

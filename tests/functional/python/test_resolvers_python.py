@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import collections
 import json
 import operator
@@ -16,10 +18,19 @@ from resolvelib.resolvers import Resolver
 Candidate = collections.namedtuple("Candidate", "name version extras")
 
 
-def _eval_marker(v):
-    if not v:
+def _eval_marker(marker, extras=(None,)):
+    if not marker:
         return True
-    return packaging.markers.Marker(v).evaluate()
+    if not isinstance(marker, packaging.markers.Marker):
+        marker = packaging.markers.Marker(marker)
+    return any(marker.evaluate({"extra": extra}) for extra in extras)
+
+
+def _iter_resolved(data):
+    for k, v in data.items():
+        if not isinstance(v, dict):
+            v = {"version": v}
+        yield k, v
 
 
 class PythonInputProvider(AbstractProvider):
@@ -42,14 +53,14 @@ class PythonInputProvider(AbstractProvider):
         self.pinned_versions = {}
         self.expected_resolution = {
             k: packaging.version.parse(v["version"])
-            for k, v in case_data["resolved"].items()
+            for k, v in _iter_resolved(case_data["resolved"])
             if _eval_marker(v.get("marker"))
         }
 
     def identify(self, dependency):
         name = packaging.utils.canonicalize_name(dependency.name)
         if dependency.extras:
-            return "{}[{}]".join(name, ",".join(sorted(dependency.extras)))
+            return "{}[{}]".format(name, ",".join(sorted(dependency.extras)))
         return name
 
     def get_preference(self, resolution, candidates, information):
@@ -84,10 +95,9 @@ class PythonInputProvider(AbstractProvider):
         if candidate.extras:
             r = "{}=={}".format(name, candidate.version)
             yield packaging.requirements.Requirement(r)
-        context = {"extra": candidate.extras}
         for r in self.index[name][str(candidate.version)]["dependencies"]:
             requirement = packaging.requirements.Requirement(r)
-            if requirement.marker and not requirement.marker.evaluate(context):
+            if not _eval_marker(requirement.marker, candidate.extras):
                 continue
             yield requirement
 
@@ -102,8 +112,23 @@ CASE_DIR = os.path.join(INPUTS_DIR, "case")
 CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 
 
+XFAIL_CASES = {
+    "different-extras.json": "Resolver stalled",
+    "pyrex-1.9.8.json": "Resolver stalled",
+    "same-package-extras.json": "dictionary is empty (BUG!)",
+}
+
+
 @pytest.fixture(
-    params=[os.path.join(CASE_DIR, n) for n in CASE_NAMES],
+    params=[
+        pytest.param(
+            os.path.join(CASE_DIR, n),
+            marks=pytest.mark.xfail(strict=True, reason=XFAIL_CASES[n]),
+        )
+        if n in XFAIL_CASES
+        else os.path.join(CASE_DIR, n)
+        for n in CASE_NAMES
+    ],
     ids=[n[:-5] for n in CASE_NAMES],
 )
 def provider(request):

@@ -1,0 +1,8 @@
+{
+	"index": "pypi-2020-02-15-pyrax",
+	"requested": [
+		"pyrax==1.9.8"
+	],
+	"resolved": {
+	}
+}

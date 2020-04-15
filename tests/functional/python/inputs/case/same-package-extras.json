@@ -1,0 +1,15 @@
+{
+	"#": "Combine inputs referring to the same package (but different extras)",
+	"index": "same-package",
+	"requested": [
+		"package_a[x,z] >=1.1",
+		"package_a[x,y] >=1.0,<1.3",
+		"package_a >=1.2"
+	],
+	"resolved": {
+		"package-a": {"version": "1.2.0"},
+		"package-x": {"version": "1.2.0"},
+		"package-y": {"version": "1.2.0"},
+		"package-z": {"version": "1.2.0"}
+	}
+}
