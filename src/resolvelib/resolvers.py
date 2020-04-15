@@ -68,10 +68,10 @@ class Criterion(object):
 
     def __repr__(self):
         requirements = ", ".join(
-            "{!r} from {!r}".format(req, parent)
+            "({!r}, via={!r})".format(req, parent)
             for req, parent in self.information
         )
-        return "<Criterion {}>".format(requirements)
+        return "Criterion({})".format(requirements)
 
     @classmethod
     def from_requirement(cls, provider, requirement, parent):
@@ -246,23 +246,32 @@ class Resolution(object):
         return causes
 
     def _backtrack(self):
-        # We need at least 3 states here:
-        # (a) One known not working, to drop.
-        # (b) One to backtrack to.
-        # (c) One to restore state (b) to its state prior to candidate-pinning,
-        #     so we can pin another one instead.
-        while len(self._states) >= 3:
-            del self._states[-1]
+        # Drop the current state, it's known not to work.
+        del self._states[-1]
 
-            # Retract the last candidate pin, and create a new (b).
-            name, candidate = self._states.pop().mapping.popitem()
+        # We need at least 2 states here:
+        # (a) One to backtrack to.
+        # (b) One to restore state (a) to its state prior to candidate-pinning,
+        #     so we can pin another one instead.
+
+        while len(self._states) >= 2:
+            # Retract the last candidate pin.
+            prev_state = self._states.pop()
+            try:
+                name, candidate = prev_state.mapping.popitem()
+            except KeyError:
+                continue
             self._r.backtracking(candidate)
+
+            # Create a new state to work on, with the newly known not-working
+            # candidate excluded.
             self._push_new_state()
 
             # Mark the retracted candidate as incompatible.
             criterion = self.state.criteria[name].excluded_of(candidate)
             if criterion is None:
                 # This state still does not work. Try the still previous state.
+                del self._states[-1]
                 continue
             self.state.criteria[name] = criterion
 
