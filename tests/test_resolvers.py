@@ -23,8 +23,8 @@ def test_candidate_inconsistent_error():
         def get_dependencies(self, _):
             return []
 
-        def find_matches(self, r):
-            assert r is requirement
+        def iter_matches(self, rs):
+            assert rs[0] is requirement
             return [candidate]
 
         def is_satisfied_by(self, r, c):

@@ -77,7 +77,7 @@ class Criterion(object):
     def from_requirement(cls, provider, requirement, parent):
         """Build an instance from a requirement.
         """
-        candidates = provider.find_matches(requirement)
+        candidates = list(provider.iter_matches([requirement]))
         criterion = cls(
             candidates=candidates,
             information=[RequirementInformation(requirement, parent)],
@@ -98,11 +98,7 @@ class Criterion(object):
         """
         infos = list(self.information)
         infos.append(RequirementInformation(requirement, parent))
-        candidates = [
-            c
-            for c in self.candidates
-            if provider.is_satisfied_by(requirement, c)
-        ]
+        candidates = list(provider.iter_matches([r for r, _ in infos]))
         criterion = type(self)(candidates, infos, list(self.incompatibilities))
         if not candidates:
             raise RequirementsConflicted(criterion)
@@ -218,7 +214,7 @@ class Resolution(object):
 
     def _attempt_to_pin_criterion(self, name, criterion):
         causes = []
-        for candidate in reversed(criterion.candidates):
+        for candidate in criterion.candidates:
             try:
                 criteria = self._get_criteria_to_update(candidate)
             except RequirementsConflicted as e:
@@ -228,7 +224,7 @@ class Resolution(object):
             # Check the newly-pinned candidate actually works. This should
             # always pass under normal circumstances, but in the case of a
             # faulty provider, we will raise an error to notify the implementer
-            # to fix find_matches() and/or is_satisfied_by().
+            # to fix iter_matches() and/or is_satisfied_by().
             satisfied = all(
                 self._p.is_satisfied_by(r, candidate)
                 for r in criterion.iter_requirement()

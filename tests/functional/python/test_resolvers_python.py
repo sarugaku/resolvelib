@@ -67,26 +67,28 @@ class PythonInputProvider(AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def _iter_matches(self, requirement):
-        name = packaging.utils.canonicalize_name(requirement.name)
-
+    def _iter_matches(self, name, requirements):
+        extras = {e for r in requirements for e in r.extras}
         for key, value in self.index[name].items():
             version = packaging.version.parse(key)
-            if version not in requirement.specifier:
+            if any(version not in r.specifier for r in requirements):
                 continue
             yield Candidate(
-                name=requirement.name,
-                version=version,
-                extras=requirement.extras,
+                name=name, version=version, extras=extras,
             )
 
-    def find_matches(self, requirement):
-        mapping = {c.version: c for c in self._iter_matches(requirement)}
-        try:
-            version = self.pinned_versions[requirement.name]
-        except KeyError:
-            return sorted(mapping.values(), key=operator.attrgetter("version"))
-        return [mapping.pop(version)]
+    def iter_matches(self, requirements):
+        name = packaging.utils.canonicalize_name(requirements[0].name)
+        candidates = sorted(
+            (c for c in self._iter_matches(name, requirements)),
+            key=operator.attrgetter("version"),
+            reverse=True,
+        )
+        pinned = self.pinned_versions.get(name)
+        for candidate in candidates:
+            if pinned is not None and pinned != candidate.version:
+                continue
+            yield candidate
 
     def is_satisfied_by(self, requirement, candidate):
         return candidate.version in requirement.specifier

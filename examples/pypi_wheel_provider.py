@@ -123,19 +123,20 @@ class PyPIProvider(ExtrasProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def find_matches(self, requirement):
+    def iter_matches(self, requirements):
         candidates = []
-        name = requirement.name
-        extras = requirement.extras
+        name = requirements[0].name
+        extras = requirements[0].extras
 
         # Need to pass the extras to the search, so they
         # are added to the candidate at creation - we
         # treat candidates as immutable once created.
         for c in get_project_from_pypi(name, extras):
             version = c.version
-            if version in requirement.specifier:
+            if all(version in r.specifier for r in requirements):
                 candidates.append(c)
-        return candidates
+        for c in reversed(candidates):
+            yield c
 
     def is_satisfied_by(self, requirement, candidate):
         if canonicalize_name(requirement.name) != candidate.name:
