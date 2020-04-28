@@ -225,19 +225,23 @@ class Resolution(object):
                 causes.append(e.criterion)
                 continue
 
+            # Check the newly-pinned candidate actually works. This should
+            # always pass under normal circumstances, but in the case of a
+            # faulty provider, we will raise an error to notify the implementer
+            # to fix find_matches() and/or is_satisfied_by().
+            satisfied = all(
+                self._p.is_satisfied_by(r, candidate)
+                for r in criterion.iter_requirement()
+            )
+            if not satisfied:
+                raise InconsistentCandidate(candidate, criterion)
+
             # Put newly-pinned candidate at the end. This is essential because
             # backtracking looks at this mapping to get the last pin.
             self._r.pinning(candidate)
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
             self.state.criteria.update(criteria)
-
-            # Check the newly-pinned candidate actually works. This should
-            # always pass under normal circumstances, but in the case of a
-            # faulty provider, we will raise an error to notify the implementer
-            # to fix find_matches() and/or is_satisfied_by().
-            if not self._is_current_pin_satisfying(name, criterion):
-                raise InconsistentCandidate(candidate, criterion)
 
             return []
 
