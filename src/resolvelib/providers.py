@@ -65,6 +65,9 @@ class AbstractProvider(object):
     def is_satisfied_by(self, requirement, candidate):
         """Whether the given requirement can be satisfied by a candidate.
 
+        The candidate is guarenteed to have been generated from the
+        requirement.
+
         A boolean should be returned to indicate whether `candidate` is a
         viable solution to the requirement.
         """
@@ -92,30 +95,13 @@ class AbstractResolver(object):
     def resolve(self, requirements, **kwargs):
         """Take a collection of constraints, spit out the resolution result.
 
-        Parameters
-        ----------
-        requirements : Collection
-            A collection of constraints
-        kwargs : optional
-            Additional keyword arguments that subclasses may accept.
+        This returns a representation of the final resolution state, with one
+        guarenteed attribute ``mapping`` that contains resolved candidates as
+        values. The keys are their respective identifiers.
 
-        Raises
-        ------
-        self.base_exception
-            Any raised exception is guaranteed to be a subclass of
-            self.base_exception. The string representation of an exception
-            should be human readable and provide context for why it occurred.
+        :param requirements: A collection of constraints.
+        :param kwargs: Additional keyword arguments that subclasses may accept.
 
-        Returns
-        -------
-        retval : object
-            A representation of the final resolution state. It can be any object
-            with a `mapping` attribute that is a Mapping. Other attributes can
-            be used to provide resolver-specific information.
-
-            The `mapping` attribute MUST be key-value pair is an identifier of a
-            requirement (as returned by the provider's `identify` method) mapped
-            to the resolved candidate (chosen from the return value of the
-            provider's `find_matches` method).
+        :raises: ``self.base_exception`` or its subclass.
         """
         raise NotImplementedError

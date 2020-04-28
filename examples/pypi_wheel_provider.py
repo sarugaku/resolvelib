@@ -118,7 +118,7 @@ class PyPIProvider(ExtrasProvider):
         return tuple(sorted(dependency.extras))
 
     def get_base_requirement(self, candidate):
-        return Requirement("{} == {}".format(candidate.name, candidate.version))
+        return Requirement("{}=={}".format(candidate.name, candidate.version))
 
     def get_preference(self, resolution, candidates, information):
         return len(candidates)

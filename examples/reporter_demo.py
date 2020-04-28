@@ -60,7 +60,8 @@ class Provider(resolvelib.AbstractProvider):
         return deps
 
     def is_satisfied_by(self, requirement, candidate):
-        return candidate[0] == requirement[0] and candidate[1] in requirement[1]
+        assert candidate[0] == requirement[0]
+        return candidate[1] in requirement[1]
 
     def get_dependencies(self, candidate):
         return self.candidates[candidate]
