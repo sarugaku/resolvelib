@@ -68,7 +68,7 @@ class Provider(resolvelib.AbstractProvider):
 
 
 class Reporter(resolvelib.BaseReporter):
-    def adding_requirement(self, requirement):
+    def adding_requirement(self, requirement, parent):
         print(f"Adding {requirement}")
 
     def backtracking(self, candidate):

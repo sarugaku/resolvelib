@@ -23,7 +23,7 @@ class BaseReporter(object):
         """Called before the resolution ends successfully.
         """
 
-    def adding_requirement(self, requirement):
+    def adding_requirement(self, requirement, parent):
         """Called when adding a new requirement into the resolve criteria.
         """
 

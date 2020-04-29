@@ -179,7 +179,7 @@ class Resolution(object):
         self._states.append(state)
 
     def _merge_into_criterion(self, requirement, parent):
-        self._r.adding_requirement(requirement)
+        self._r.adding_requirement(requirement, parent)
         name = self._p.identify(requirement)
         try:
             crit = self.state.criteria[name]
