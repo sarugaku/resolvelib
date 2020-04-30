@@ -48,17 +48,19 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
-    def find_matches(self, requirement):
-        """Find all possible candidates that satisfy a requirement.
+    def find_matches(self, requirements):
+        """Find all possible candidates that satisfy the given requirements.
 
-        This should try to get candidates based on the requirement's type.
+        This should try to get candidates based on the requirements' types.
         For VCS, local, and archive requirements, the one-and-only match is
         returned, and for a "named" requirement, the index(es) should be
         consulted to find concrete candidates for this requirement.
 
-        The returned candidates should be sorted by reversed preference, e.g.
-        the most preferred should be LAST. This is done so list-popping can be
-        as efficient as possible.
+        :param requirements: A collection of requirements which all of the the
+            returned candidates must match. All requirements are guaranteed to
+            have the same identifier. The collection is never empty.
+        :returns: An iterable that orders candidates by preference, e.g. the
+            most preferred candidate should come first.
         """
         raise NotImplementedError
 

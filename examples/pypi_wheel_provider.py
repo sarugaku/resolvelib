@@ -1,9 +1,10 @@
-import platform
+from email.message import EmailMessage
+from email.parser import BytesParser
 from io import BytesIO
+from operator import attrgetter
+from platform import python_version
 from urllib.parse import urlparse
 from zipfile import ZipFile
-from email.parser import BytesParser
-from email.message import EmailMessage
 
 import requests
 import html5lib
@@ -14,7 +15,7 @@ from packaging.utils import canonicalize_name
 
 from extras_provider import ExtrasProvider
 
-PYTHON_VERSION = Version(platform.python_version())
+PYTHON_VERSION = Version(python_version())
 
 
 class Candidate:
@@ -123,19 +124,23 @@ class PyPIProvider(ExtrasProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def find_matches(self, requirement):
-        candidates = []
-        name = requirement.name
-        extras = requirement.extras
+    def find_matches(self, requirements):
+        assert requirements, "resolver promises at least one requirement"
+        assert not any(
+            r.extras for r in requirements[1:]
+        ), "extras not supported in this example"
+
+        name = canonicalize_name(requirements[0].name)
 
         # Need to pass the extras to the search, so they
         # are added to the candidate at creation - we
         # treat candidates as immutable once created.
-        for c in get_project_from_pypi(name, extras):
+        candidates = []
+        for c in get_project_from_pypi(name, set()):
             version = c.version
-            if version in requirement.specifier:
+            if all(version in r.specifier for r in requirements):
                 candidates.append(c)
-        return candidates
+        return sorted(candidates, key=attrgetter("version"), reverse=True)
 
     def is_satisfied_by(self, requirement, candidate):
         if canonicalize_name(requirement.name) != candidate.name:
