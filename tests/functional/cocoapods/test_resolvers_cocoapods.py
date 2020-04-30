@@ -106,14 +106,14 @@ class CocoaPodsInputProvider(AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def _iter_matches(self, requirement):
+    def _iter_matches(self, name, requirements):
         try:
-            data = self.index[requirement.name]
+            data = self.index[name]
         except KeyError:
             return
         for entry in data:
             version = packaging.version.parse(entry["version"])
-            if version not in requirement.spec:
+            if any(version not in r.spec for r in requirements):
                 continue
             # Some fixtures incorrectly set dependencies to an empty list.
             dependencies = entry["dependencies"] or {}
@@ -123,13 +123,18 @@ class CocoaPodsInputProvider(AbstractProvider):
             ]
             yield Candidate(entry["name"], version, dependencies)
 
-    def find_matches(self, requirement):
-        mapping = {c.ver: c for c in self._iter_matches(requirement)}
-        try:
-            version = self.pinned_versions[requirement.name]
-        except KeyError:
-            return sorted(mapping.values(), key=operator.attrgetter("ver"))
-        return [mapping.pop(version)]
+    def find_matches(self, requirements):
+        name = requirements[0].name
+        candidates = sorted(
+            self._iter_matches(name, requirements),
+            key=operator.attrgetter("ver"),
+            reverse=True,
+        )
+        pinned = self.pinned_versions.get(name)
+        for c in candidates:
+            if pinned is not None and c.ver != pinned:
+                continue
+            yield c
 
     def is_satisfied_by(self, requirement, candidate):
         return candidate.ver in requirement.spec

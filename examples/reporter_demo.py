@@ -27,12 +27,16 @@ third 3.0.0
 
 class Requirement(namedtuple("Requirement", "name spec")):  # noqa
     def __repr__(self):
-        return "Requirement({name}{spec})".format(name=self.name, spec=self.spec)
+        return "Requirement({name}{spec})".format(
+            name=self.name, spec=self.spec
+        )
 
 
 class Candidate(namedtuple("Candidate", "name version")):  # noqa
     def __repr__(self):
-        return "Candidate({name}, {version})".format(name=self.name, version=self.version)
+        return "Candidate({name}, {version})".format(
+            name=self.name, version=self.version
+        )
 
 
 def splitstrip(s, parts):
@@ -71,19 +75,15 @@ class Provider(resolvelib.AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def find_matches(self, requirement):
-        deps = list(
-            filter(
-                lambda candidate: self.is_satisfied_by(requirement, candidate),
-                sorted(self.candidates)
-            )
-        )
-        return deps
+    def find_matches(self, requirements):
+        for candidate in sorted(self.candidates, reverse=True):
+            if all(self.is_satisfied_by(r, candidate) for r in requirements):
+                yield candidate
 
     def is_satisfied_by(self, requirement, candidate):
         return (
-            candidate.name == requirement.name and
-            candidate.version in requirement.spec
+            candidate.name == requirement.name
+            and candidate.version in requirement.spec
         )
 
     def get_dependencies(self, candidate):
@@ -91,7 +91,6 @@ class Provider(resolvelib.AbstractProvider):
 
 
 class Reporter(resolvelib.BaseReporter):
-
     def starting(self):
         print("starting()")
 
@@ -102,7 +101,7 @@ class Reporter(resolvelib.BaseReporter):
         print(f"ending_round({index}, ...)")
 
     def ending(self, state):
-        print(f"ending(...)")
+        print("ending(...)")
 
     def adding_requirement(self, requirement, parent):
         print(f"  adding_requirement({requirement}, {parent})")
@@ -121,6 +120,7 @@ def print_result(result):
 
 if __name__ == "__main__":
     from pprint import pprint
+
     provider = Provider(spec.splitlines())
 
     root_reqs = [Requirement("first", SpecifierSet())]

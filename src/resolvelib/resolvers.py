@@ -1,5 +1,6 @@
 import collections
 
+from .compat import collections_abc
 from .providers import AbstractResolver
 from .structs import DirectedGraph
 
@@ -77,7 +78,9 @@ class Criterion(object):
     def from_requirement(cls, provider, requirement, parent):
         """Build an instance from a requirement.
         """
-        candidates = provider.find_matches(requirement)
+        candidates = provider.find_matches([requirement])
+        if not isinstance(candidates, collections_abc.Sequence):
+            candidates = list(candidates)
         criterion = cls(
             candidates=candidates,
             information=[RequirementInformation(requirement, parent)],
@@ -98,11 +101,9 @@ class Criterion(object):
         """
         infos = list(self.information)
         infos.append(RequirementInformation(requirement, parent))
-        candidates = [
-            c
-            for c in self.candidates
-            if provider.is_satisfied_by(requirement, c)
-        ]
+        candidates = provider.find_matches([r for r, _ in infos])
+        if not isinstance(candidates, collections_abc.Sequence):
+            candidates = list(candidates)
         criterion = type(self)(candidates, infos, list(self.incompatibilities))
         if not candidates:
             raise RequirementsConflicted(criterion)
@@ -218,7 +219,7 @@ class Resolution(object):
 
     def _attempt_to_pin_criterion(self, name, criterion):
         causes = []
-        for candidate in reversed(criterion.candidates):
+        for candidate in criterion.candidates:
             try:
                 criteria = self._get_criteria_to_update(candidate)
             except RequirementsConflicted as e:
