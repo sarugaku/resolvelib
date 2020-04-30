@@ -126,8 +126,9 @@ class PyPIProvider(ExtrasProvider):
 
     def iter_matches(self, requirements):
         assert requirements, "resolver promises at least one requirement"
-        assert not any(r.extras for r in requirements[1:]), \
-            "extras not supported in this example"
+        assert not any(
+            r.extras for r in requirements[1:]
+        ), "extras not supported in this example"
 
         name = canonicalize_name(requirements[0].name)
 
