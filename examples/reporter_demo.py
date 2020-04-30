@@ -4,14 +4,24 @@ from packaging.version import Version
 
 import resolvelib
 
-spec = """\
-A 1.0.0
-    B >= 1.0.0
-    C >= 2.0.0
-B 1.0.0
-C 1.0.0
-C 2.0.0
-C 3.0.0
+spec = """
+first 1.0.0
+    second == 1.0.0
+first 2.0.0
+    second == 2.0.0
+    third == 1.0.0
+first 3.0.0
+    second == 3.0.0
+    third == 2.0.0
+second 1.0.0
+    third == 1.0.0
+second 2.0.0
+    third == 2.0.0
+second 3.0.0
+    third == 3.0.0
+third 1.0.0
+third 2.0.0
+third 3.0.0
 """
 
 
@@ -113,7 +123,7 @@ if __name__ == "__main__":
     from pprint import pprint
     provider = Provider(spec.splitlines())
 
-    root_reqs = [Requirement("A", SpecifierSet())]
+    root_reqs = [Requirement("first", SpecifierSet())]
 
     resolver = resolvelib.Resolver(provider, Reporter())
     result = resolver.resolve(root_reqs)
