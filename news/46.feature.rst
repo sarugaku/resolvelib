@@ -1,1 +1,0 @@
-Add ``parent`` argument to the ``add_requirement()`` reporter hook.

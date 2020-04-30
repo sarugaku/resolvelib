@@ -1,3 +1,16 @@
+0.4.0 (2020-04-30)
+==================
+
+Features
+--------
+
+- Add ``parent`` argument to the ``add_requirement()`` reporter hook.  `#46 <https://github.com/sarugaku/resolvelib/issues/46>`_
+  
+- Redesign ``find_matches()`` to support a requirement "adding" candidates to
+  the set, and nudge the provider away from implementing ``find_matches()`` and
+  ``is_satisfied_by()`` with incorrect set properties.  `#49 <https://github.com/sarugaku/resolvelib/issues/49>`_
+
+
 0.3.0 (2020-04-11)
 ==================
 
