@@ -49,16 +49,16 @@ class AbstractProvider(object):
         raise NotImplementedError
 
     def iter_matches(self, requirements):
-        """Find all possible candidates that satisfy all given requirements.
+        """Find all possible candidates that satisfy the given requirements.
 
         This should try to get candidates based on the requirements' types.
         For VCS, local, and archive requirements, the one-and-only match is
         returned, and for a "named" requirement, the index(es) should be
         consulted to find concrete candidates for this requirement.
 
-        :param requirements: A collection of requirements to filter out
-            candidates from. All requirements are guarenteed to have the
-            same identifier. The collection is never empty.
+        :param requirements: A collection of requirements which all of the the
+            returned candidates must match. All requirements are guarenteed to
+            have the same identifier. The collection is never empty.
         :returns: An iterator that generates candidates by preference order,
             e.g. the most preferred candidate should come first.
         """
