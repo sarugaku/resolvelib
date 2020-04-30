@@ -23,8 +23,14 @@ class BaseReporter(object):
         """Called before the resolution ends successfully.
         """
 
-    def adding_requirement(self, requirement):
+    def adding_requirement(self, requirement, parent):
         """Called when adding a new requirement into the resolve criteria.
+
+        :param requirement: The additional requirement to be applied to filter
+            the available candidaites.
+        :param parent: The candidate that requires ``requirement`` as a
+            dependency, or None if ``requirement`` is one of the root
+            requirements passed in from ``Resolver.resolve()``.
         """
 
     def backtracking(self, candidate):
