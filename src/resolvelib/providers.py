@@ -27,7 +27,7 @@ class AbstractProvider(object):
 
         * `requirement` specifies a requirement contributing to the current
           candidate list
-        * `parent` specifies the candidate that provids (dependend on) the
+        * `parent` specifies the candidate that provides (dependend on) the
           requirement, or `None` to indicate a root requirement.
 
         The preference could depend on a various of issues, including (not
