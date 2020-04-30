@@ -24,7 +24,7 @@ def test_candidate_inconsistent_error():
             return []
 
         def iter_matches(self, rs):
-            assert rs[0] is requirement
+            assert len(rs) == 1 and rs[0] is requirement
             return [candidate]
 
         def is_satisfied_by(self, r, c):
