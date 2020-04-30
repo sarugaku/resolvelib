@@ -48,7 +48,7 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
-    def iter_matches(self, requirements):
+    def find_matches(self, requirements):
         """Find all possible candidates that satisfy the given requirements.
 
         This should try to get candidates based on the requirements' types.
@@ -59,8 +59,8 @@ class AbstractProvider(object):
         :param requirements: A collection of requirements which all of the the
             returned candidates must match. All requirements are guarenteed to
             have the same identifier. The collection is never empty.
-        :returns: An iterator that generates candidates by preference order,
-            e.g. the most preferred candidate should come first.
+        :returns: An iterable that orders candidates by preference, e.g. the
+            most preferred candidate should come first.
         """
         raise NotImplementedError
 

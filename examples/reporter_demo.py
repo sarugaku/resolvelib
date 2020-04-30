@@ -50,7 +50,7 @@ class Provider(resolvelib.AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def iter_matches(self, requirements):
+    def find_matches(self, requirements):
         for n, v in sorted(self.candidates, reverse=True):
             if all(n == r[0] and v in r[1] for r in requirements):
                 yield (n, v)

@@ -124,7 +124,7 @@ class PyPIProvider(ExtrasProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def iter_matches(self, requirements):
+    def find_matches(self, requirements):
         assert requirements, "resolver promises at least one requirement"
         assert not any(
             r.extras for r in requirements[1:]
@@ -140,8 +140,7 @@ class PyPIProvider(ExtrasProvider):
             version = c.version
             if all(version in r.specifier for r in requirements):
                 candidates.append(c)
-        for c in sorted(candidates, key=attrgetter("version"), reverse=True):
-            yield c
+        return sorted(candidates, key=attrgetter("version"), reverse=True)
 
     def is_satisfied_by(self, requirement, candidate):
         if canonicalize_name(requirement.name) != candidate.name:

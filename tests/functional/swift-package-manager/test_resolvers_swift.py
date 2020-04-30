@@ -97,7 +97,7 @@ class SwiftInputProvider(AbstractProvider):
             preference = _calculate_preference(ver)
             yield (preference, Candidate(container, version))
 
-    def iter_matches(self, requirements):
+    def find_matches(self, requirements):
         matches = sorted(
             self._iter_matches(requirements),
             key=operator.itemgetter(0),

@@ -77,7 +77,7 @@ class PythonInputProvider(AbstractProvider):
                 name=name, version=version, extras=extras,
             )
 
-    def iter_matches(self, requirements):
+    def find_matches(self, requirements):
         name = packaging.utils.canonicalize_name(requirements[0].name)
         candidates = sorted(
             (c for c in self._iter_matches(name, requirements)),

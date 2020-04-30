@@ -1,5 +1,6 @@
 import collections
 
+from .compat import collections_abc
 from .providers import AbstractResolver
 from .structs import DirectedGraph
 
@@ -77,7 +78,9 @@ class Criterion(object):
     def from_requirement(cls, provider, requirement, parent):
         """Build an instance from a requirement.
         """
-        candidates = list(provider.iter_matches([requirement]))
+        candidates = provider.find_matches([requirement])
+        if not isinstance(candidates, collections_abc.Sequence):
+            candidates = list(candidates)
         criterion = cls(
             candidates=candidates,
             information=[RequirementInformation(requirement, parent)],
@@ -98,7 +101,9 @@ class Criterion(object):
         """
         infos = list(self.information)
         infos.append(RequirementInformation(requirement, parent))
-        candidates = list(provider.iter_matches([r for r, _ in infos]))
+        candidates = provider.find_matches([r for r, _ in infos])
+        if not isinstance(candidates, collections_abc.Sequence):
+            candidates = list(candidates)
         criterion = type(self)(candidates, infos, list(self.incompatibilities))
         if not candidates:
             raise RequirementsConflicted(criterion)
@@ -224,7 +229,7 @@ class Resolution(object):
             # Check the newly-pinned candidate actually works. This should
             # always pass under normal circumstances, but in the case of a
             # faulty provider, we will raise an error to notify the implementer
-            # to fix iter_matches() and/or is_satisfied_by().
+            # to fix find_matches() and/or is_satisfied_by().
             satisfied = all(
                 self._p.is_satisfied_by(r, candidate)
                 for r in criterion.iter_requirement()
