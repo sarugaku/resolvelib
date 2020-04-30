@@ -1,3 +1,4 @@
+from collections import namedtuple
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 
@@ -14,6 +15,16 @@ C 3.0.0
 """
 
 
+class Requirement(namedtuple("Requirement", "name spec")):  # noqa
+    def __repr__(self):
+        return "Requirement({name}{spec})".format(name=self.name, spec=self.spec)
+
+
+class Candidate(namedtuple("Candidate", "name version")):  # noqa
+    def __repr__(self):
+        return "Candidate({name}, {version})".format(name=self.name, version=self.version)
+
+
 def splitstrip(s, parts):
     return [item.strip() for item in s.strip().split(maxsplit=parts - 1)]
 
@@ -27,7 +38,7 @@ def read_spec(lines):
         if not line.startswith(" "):
             name, version = splitstrip(line, 2)
             version = Version(version)
-            latest = (name, version)
+            latest = Candidate(name, version)
             candidates[latest] = set()
         else:
             if latest is None:
@@ -36,7 +47,7 @@ def read_spec(lines):
                 )
             name, spec = splitstrip(line, 2)
             spec = SpecifierSet(spec)
-            candidates[latest].add((name, spec))
+            candidates[latest].add(Requirement(name, spec))
     return candidates
 
 
@@ -51,31 +62,46 @@ class Provider(resolvelib.AbstractProvider):
         return len(candidates)
 
     def find_matches(self, requirement):
-        deps = [
-            (n, v)
-            for (n, v) in sorted(self.candidates, reverse=True)
-            if n == requirement[0] and v in requirement[1]
-        ]
-        deps.sort()
+        deps = list(
+            filter(
+                lambda candidate: self.is_satisfied_by(requirement, candidate),
+                sorted(self.candidates)
+            )
+        )
         return deps
 
     def is_satisfied_by(self, requirement, candidate):
-        assert candidate[0] == requirement[0]
-        return candidate[1] in requirement[1]
+        return (
+            candidate.name == requirement.name and
+            candidate.version in requirement.spec
+        )
 
     def get_dependencies(self, candidate):
         return self.candidates[candidate]
 
 
 class Reporter(resolvelib.BaseReporter):
+
+    def starting(self):
+        print("starting()")
+
+    def starting_round(self, index):
+        print(f"starting_round({index})")
+
+    def ending_round(self, index, state):
+        print(f"ending_round({index}, ...)")
+
+    def ending(self, state):
+        print(f"ending(...)")
+
     def adding_requirement(self, requirement, parent):
-        print(f"Adding {requirement}")
+        print(f"  adding_requirement({requirement}, {parent})")
 
     def backtracking(self, candidate):
-        print(f"Backtracking - removing {candidate}")
+        print(f"  backtracking({candidate})")
 
     def pinning(self, candidate):
-        print(f"Pinned {candidate}")
+        print(f"  pinning({candidate})")
 
 
 def print_result(result):
@@ -84,10 +110,12 @@ def print_result(result):
 
 
 if __name__ == "__main__":
-    provider = Provider(spec.splitlines())
     from pprint import pprint
+    provider = Provider(spec.splitlines())
 
-    pprint(provider.candidates)
+    root_reqs = [Requirement("A", SpecifierSet())]
+
     resolver = resolvelib.Resolver(provider, Reporter())
-    result = resolver.resolve([("A", SpecifierSet(">=1.0"))])
-    print_result(result)
+    result = resolver.resolve(root_reqs)
+
+    pprint(result.mapping)
