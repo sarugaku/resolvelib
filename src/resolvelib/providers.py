@@ -57,7 +57,7 @@ class AbstractProvider(object):
         consulted to find concrete candidates for this requirement.
 
         :param requirements: A collection of requirements which all of the the
-            returned candidates must match. All requirements are guarenteed to
+            returned candidates must match. All requirements are guaranteed to
             have the same identifier. The collection is never empty.
         :returns: An iterable that orders candidates by preference, e.g. the
             most preferred candidate should come first.
