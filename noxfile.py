@@ -95,7 +95,7 @@ def release(session):
         session.log(f"Releasing distributions to {options.repo}...")
         session.run("setl", "publish", "--repository", options.repo)
     else:
-        session.log(f"Building distributions locally since --repo is empty")
+        session.log("Building distributions locally since --repo is empty")
         session.run("setl", "publish", "--no-upload")
 
     if options.prebump:
