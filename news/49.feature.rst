@@ -1,0 +1,3 @@
+Redesign ``find_matches()`` to support a requirement "adding" candidates to
+the set, and nudge the provider away from implementing ``find_matches()`` and
+``is_satisfied_by()`` with incorrect set properties.
