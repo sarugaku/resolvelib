@@ -1,10 +1,7 @@
+from pypi_wheel_provider import PyPIProvider, Requirement  # isort: skip
 from resolvelib import Resolver  # isort: skip
 from visualization.generate import generate_html  # isort: skip
 from visualization.reporter import GraphGeneratingReporter  # isort: skip
-from pypi_wheel_provider import (  # isort: skip
-    Requirement,
-    PyPIProvider,
-)
 
 if __name__ == "__main__":
     provider = PyPIProvider()
