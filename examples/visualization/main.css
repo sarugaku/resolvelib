@@ -1,0 +1,127 @@
+/* Scaffolding */
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0 25px;
+  color: #424949;
+  background-color: #ECF0F1;
+  font-family: sans-serif;
+  font-weight: 500;
+}
+
+.graph-container {
+  margin-bottom: 25px;
+  border-radius: 1em;
+  text-align: center;
+  background-color: white;
+  overflow: auto;
+
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* State */
+.state-container h2 {
+  text-align: center;
+}
+
+/* General Buttons */
+button {
+  position: relative;
+
+  width: 120px;
+  height: 40px;
+
+  color: #fbfbfb;
+  background: linear-gradient(to bottom, #4eb5e5 0%,#389ed5 100%); /* W3C */
+
+  border: none;
+  border-bottom: 4px solid #2b8bc6;
+  border-radius: 5px;
+
+  margin: 0 5px;
+
+  box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
+  text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+
+  font-size: 15px;
+  font-weight: 600;
+  /* font-family: 'Open Sans', sans-serif; */
+
+  text-align: center;
+  text-indent: 0;
+
+  cursor: pointer;
+}
+
+button:active {
+  top: 1px;
+  box-shadow: 0px 2px 0px 0px rgba(0,0,0,.2);
+}
+
+/* Button pointing left */
+button.prev {
+  text-align: right;
+  text-indent: 5px;
+
+  padding-right: 12px;
+  box-sizing: border-box;
+}
+button.prev:after {
+  content: "";
+  width: 0;
+  height: 0;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  opacity: 0.6;
+  border-top: 20px solid #187dbc;
+  border-bottom: 20px solid #187dbc;
+  border-right: 16px solid transparent;
+  border-left: 20px solid #187dbc;
+
+  border-radius: 5px 0 0 5px;
+}
+
+/* Next button */
+button.next {
+  text-align: left;
+  text-indent: 5px;
+}
+
+button.next:after {
+  content: "";
+  width: 0;
+  height: 0;
+  display: block;
+  border-top: 20px solid #187dbc;
+  border-bottom: 20px solid #187dbc;
+  border-left: 16px solid transparent;
+  border-right: 20px solid #187dbc;
+  position: absolute;
+  opacity: 0.6;
+  right: 0;
+  top: 0;
+  border-radius: 0 5px 5px 0;
+}
+
+.controls-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+}
+
+.slider-container {
+  text-align: center;
+  width: 75%;
+  margin: 1em auto;
+}
+#slider {
+  width: 100%;
+}

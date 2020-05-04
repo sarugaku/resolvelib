@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Resolvelib Visualization</title>
+
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://unpkg.com/@hpcc-js/wasm@0.3.6/dist/index.min.js"></script>
+  <script src="https://unpkg.com/d3-graphviz@3.0.0/build/d3-graphviz.js"></script>
+
+  <script>
+    {% include 'main.js' %}
+  </script>
+  <style>
+    {% include 'main.css' %}
+  </style>
+
+</head>
+
+<body>
+  <div class="state-container">
+    <h2>State <span id="index">0</span></h2>
+    <div class="controls-container">
+      <button id="prev" class="prev">Prev</button>
+      <button id="toggle" class="toggle">...</button>
+      <button id="next" class="next">Next</button>
+    </div>
+    <div class="slider-container">
+      <input id="slider" type="range" min="0" max="0" value="0">
+    </div>
+  </div>
+  <div class="graph-container">
+    <div id="graph"></div>
+  </div>
+</body>
+
+</html>

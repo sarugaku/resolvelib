@@ -1,15 +1,18 @@
 import json
 import os
 
-TEMPLATE_FILE = os.path.join(os.path.dirname(__file__), "template.html")
-MARKER = '["graph { goes -> here }"]'
+import jinja2
+
+
+environment = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    autoescape=True,
+)
 
 
 def generate_html(dot_source_list, outfile):
-    graphs = json.dumps(dot_source_list, indent=2)
+    template = environment.get_template("template.html")
+    iterable = template.generate(dot_source_list=dot_source_list)
 
-    with open(TEMPLATE_FILE) as template:
-        for line in template:
-            if MARKER in line:
-                line = line.replace(MARKER, graphs)
-            outfile.write(line)
+    for item in iterable:
+        outfile.write(item)
