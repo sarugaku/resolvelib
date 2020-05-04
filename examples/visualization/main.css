@@ -122,6 +122,91 @@ button.next:after {
   width: 75%;
   margin: 1em auto;
 }
+
+/* Slider Styling, thanks range.css! */
 #slider {
+  -webkit-appearance: none;
   width: 100%;
+  margin: 6.5px 0;
+  background: inherit;
+}
+#slider:focus {
+  outline: none;
+}
+#slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 3px;
+  cursor: pointer;
+  box-shadow: 0px 0px 1px #000000, 0px 0px 0px #0d0d0d;
+  background: #4eb5e5;
+  border-radius: 1.6px;
+  border: 0px solid #010101;
+}
+#slider::-webkit-slider-thumb {
+  box-shadow: 0px 0px 3px rgba(43, 139, 198, 0.49), 0px 0px 0px rgba(55, 152, 212, 0.49);
+  border: 1px solid #2b8bc6;
+  height: 16px;
+  width: 20px;
+  border-radius: 16px;
+  background: rgba(24, 125, 188, 0.93);
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -6.5px;
+}
+#slider:focus::-webkit-slider-runnable-track {
+  background: #64bee8;
+}
+#slider::-moz-range-track {
+  width: 100%;
+  height: 3px;
+  cursor: pointer;
+  box-shadow: 0px 0px 1px #000000, 0px 0px 0px #0d0d0d;
+  background: #4eb5e5;
+  border-radius: 1.6px;
+  border: 0px solid #010101;
+}
+#slider::-moz-range-thumb {
+  box-shadow: 0px 0px 3px rgba(43, 139, 198, 0.49), 0px 0px 0px rgba(55, 152, 212, 0.49);
+  border: 1px solid #2b8bc6;
+  height: 16px;
+  width: 20px;
+  border-radius: 16px;
+  background: rgba(24, 125, 188, 0.93);
+  cursor: pointer;
+}
+#slider::-ms-track {
+  width: 100%;
+  height: 3px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+#slider::-ms-fill-lower {
+  background: #38ace2;
+  border: 0px solid #010101;
+  border-radius: 3.2px;
+  box-shadow: 0px 0px 1px #000000, 0px 0px 0px #0d0d0d;
+}
+#slider::-ms-fill-upper {
+  background: #4eb5e5;
+  border: 0px solid #010101;
+  border-radius: 3.2px;
+  box-shadow: 0px 0px 1px #000000, 0px 0px 0px #0d0d0d;
+}
+#slider::-ms-thumb {
+  box-shadow: 0px 0px 3px rgba(43, 139, 198, 0.49), 0px 0px 0px rgba(55, 152, 212, 0.49);
+  border: 1px solid #2b8bc6;
+  height: 16px;
+  width: 20px;
+  border-radius: 16px;
+  background: rgba(24, 125, 188, 0.93);
+  cursor: pointer;
+  height: 3px;
+}
+#slider:focus::-ms-fill-lower {
+  background: #4eb5e5;
+}
+#slider:focus::-ms-fill-upper {
+  background: #64bee8;
 }
