@@ -96,6 +96,13 @@ class GraphGeneratingReporter(BaseReporter):
         else:
             existing.attr.update(attrs)
 
+    def _track_evaluating(self, candidate):
+        if self._evaluating != candidate:
+            if self._evaluating is not None:
+                self.backtracking(self._evaluating, internal=True)
+                self.evolution.append(self.graph.to_string())
+            self._evaluating = candidate
+
     #
     # Public reporter API
     #
@@ -118,11 +125,7 @@ class GraphGeneratingReporter(BaseReporter):
 
     def adding_requirement(self, req, parent):
         print(f"adding_requirement(self, {req!r}, {parent!r})")
-        if self._evaluating != parent:
-            if self._evaluating is not None:
-                self.backtracking(self._evaluating, internal=True)
-                self.evolution.append(self.graph.to_string())
-            self._evaluating = parent
+        self._track_evaluating(parent)
 
         self._add_candidate(parent)
         self._add_requirement(req)
@@ -143,11 +146,7 @@ class GraphGeneratingReporter(BaseReporter):
 
     def backtracking(self, candidate, internal=False):
         print(f"backtracking(self, {candidate!r}, internal={internal})")
-        if self._evaluating != candidate:
-            # We're backtracking the last pin, but need to backtrack any edges
-            # we added as part of this round as well.
-            self.backtracking(self._evaluating, internal=True)
-
+        self._track_evaluating(candidate)
         self._evaluating = None
 
         # Update the graph!
