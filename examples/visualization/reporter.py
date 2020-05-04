@@ -96,6 +96,12 @@ class GraphGeneratingReporter(BaseReporter):
         else:
             existing.attr.update(attrs)
 
+    def _get_node_for(self, obj):
+        node_name = self._node_names[self._key(obj)]
+        node = self.graph.get_node(node_name)
+        assert node is not None
+        return node_name, node
+
     def _track_evaluating(self, candidate):
         if self._evaluating != candidate:
             if self._evaluating is not None:
@@ -150,9 +156,7 @@ class GraphGeneratingReporter(BaseReporter):
         self._evaluating = None
 
         # Update the graph!
-        node_name = self._node_names[self._key(candidate)]
-        node = self.graph.get_node(node_name)
-        assert node is not None
+        node_name, node = self._get_node_for(candidate)
         node.attr.update(shape="signature", color="red")
 
         for edge in self.graph.out_edges_iter([node_name]):
@@ -184,9 +188,7 @@ class GraphGeneratingReporter(BaseReporter):
             self._ensure_edge(req, to=candidate, color="#80CC80")
 
         # Update the graph!
-        node_name = self._node_names[self._key(candidate)]
-        node = self.graph.get_node(node_name)
-        assert node is not None
+        node_name, node = self._get_node_for(candidate)
         node.attr.update(color="#80CC80")
 
         for edge in self.graph.out_edges_iter([node_name]):
