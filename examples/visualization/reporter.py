@@ -184,13 +184,15 @@ class GraphGeneratingReporter(BaseReporter):
 
         self._add_candidate(candidate)
 
-        for req in self._active_requirements[canonicalize_name(candidate.name)]:
-            self._ensure_edge(req, to=candidate, color="#80CC80")
-
         # Update the graph!
         node_name, node = self._get_node_for(candidate)
         node.attr.update(color="#80CC80")
 
+        # Requirement -> Candidate edges, from this candidate.
+        for req in self._active_requirements[canonicalize_name(candidate.name)]:
+            self._ensure_edge(req, to=candidate, arrowhead="vee", color="#80CC80")
+
+        # Candidate -> Requirement edges, from this candidate.
         for edge in self.graph.out_edges_iter([node_name]):
             edge.attr.update(style="solid", arrowhead="vee", color="#80CC80")
             _, to = edge
