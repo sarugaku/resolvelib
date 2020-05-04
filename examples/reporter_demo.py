@@ -4,7 +4,7 @@ from packaging.version import Version
 
 import resolvelib
 
-spec = """
+index = """
 first 1.0.0
     second == 1.0.0
 first 2.0.0
@@ -62,8 +62,8 @@ def read_spec(lines):
 
 
 class Provider(resolvelib.AbstractProvider):
-    def __init__(self, spec):
-        self.candidates = read_spec(spec)
+    def __init__(self, index):
+        self.candidates = read_spec(index)
 
     def identify(self, dependency):
         return dependency[0]
@@ -91,6 +91,7 @@ class Provider(resolvelib.AbstractProvider):
 
 
 class Reporter(resolvelib.BaseReporter):
+
     def starting(self):
         print("starting()")
 
@@ -120,12 +121,12 @@ def print_result(result):
 
 if __name__ == "__main__":
     from pprint import pprint
+    provider = Provider(index.splitlines())
+    reporter = Reporter()
+    resolver = resolvelib.Resolver(provider, reporter)
 
-    provider = Provider(spec.splitlines())
 
     root_reqs = [Requirement("first", SpecifierSet())]
-
-    resolver = resolvelib.Resolver(provider, Reporter())
     result = resolver.resolve(root_reqs)
 
     pprint(result.mapping)
