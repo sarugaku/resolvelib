@@ -25,18 +25,14 @@ third 3.0.0
 """
 
 
-class Requirement(namedtuple("Requirement", "name spec")):  # noqa
+class Requirement(namedtuple("Requirement", "name specifier")):  # noqa
     def __repr__(self):
-        return "Requirement({name}{spec})".format(
-            name=self.name, spec=self.spec
-        )
+        return "<Requirement({name}{specifier})>".format(name=self.name, specifier=self.specifier)
 
 
 class Candidate(namedtuple("Candidate", "name version")):  # noqa
     def __repr__(self):
-        return "Candidate({name}, {version})".format(
-            name=self.name, version=self.version
-        )
+        return "<{name}=={version}>".format(name=self.name, version=self.version)
 
 
 def splitstrip(s, parts):
@@ -59,9 +55,9 @@ def read_spec(lines):
                 raise RuntimeError(
                     "Spec has dependencies before first candidate"
                 )
-            name, spec = splitstrip(line, 2)
-            spec = SpecifierSet(spec)
-            candidates[latest].add(Requirement(name, spec))
+            name, specifier = splitstrip(line, 2)
+            specifier = SpecifierSet(specifier)
+            candidates[latest].add(Requirement(name, specifier))
     return candidates
 
 
@@ -75,15 +71,19 @@ class Provider(resolvelib.AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def find_matches(self, requirements):
-        for candidate in sorted(self.candidates, reverse=True):
-            if all(self.is_satisfied_by(r, candidate) for r in requirements):
-                yield candidate
+    def find_matches(self, requirement):
+        deps = list(
+            filter(
+                lambda candidate: self.is_satisfied_by(requirement, candidate),
+                sorted(self.candidates)
+            )
+        )
+        return deps
 
     def is_satisfied_by(self, requirement, candidate):
         return (
-            candidate.name == requirement.name
-            and candidate.version in requirement.spec
+            candidate.name == requirement.name and
+            candidate.version in requirement.specifier
         )
 
     def get_dependencies(self, candidate):
