@@ -114,19 +114,13 @@ class Reporter(resolvelib.BaseReporter):
         print(f"  pinning({candidate})")
 
 
-def print_result(result):
-    for k, v in result.mapping.items():
-        print(f"{k}: {v}")
-
-
 if __name__ == "__main__":
     from pprint import pprint
     provider = Provider(index.splitlines())
     reporter = Reporter()
     resolver = resolvelib.Resolver(provider, reporter)
 
-
     root_reqs = [Requirement("first", SpecifierSet())]
     result = resolver.resolve(root_reqs)
 
-    pprint(result.mapping)
+    # pprint(result.mapping)
