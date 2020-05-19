@@ -106,8 +106,8 @@ function prepareGraph() {
     .transition(function () {
       return d3.transition("main")
         .ease(d3.easeExpOut)
-        .duration(750)
-        .delay(state.transitionDelay);
+        .duration(500)
+        // .delay(state.transitionDelay);
     })
     .on("initEnd", showThisGraph);
 
