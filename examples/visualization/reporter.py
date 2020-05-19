@@ -32,6 +32,7 @@ class GraphGeneratingReporter(BaseReporter):
         self.graph.add_node("root", label=":root:", shape="Mdiamond")
         self._node_names[self._key(None)] = "root"
 
+        del self.graph.node_attr["label"]
         self.graph.edge_attr.update(
             {"arrowhead": "empty", "style": "dashed", "color": "#808080"}
         )
@@ -98,6 +99,7 @@ class GraphGeneratingReporter(BaseReporter):
         try:
             existing = self.graph.get_edge(from_node, to_node)
         except KeyError:
+            attrs.update(headport="w", tailport="e")
             self.graph.add_edge(from_node, to_node, **attrs)
         else:
             existing.attr.update(attrs)
