@@ -9,7 +9,7 @@ environment = jinja2.Environment(
 
 
 def generate_html(dot_source_list, outfile):
-    template = environment.get_template("template.html")
+    template = environment.get_template("main.html")
     iterable = template.generate(dot_source_list=dot_source_list)
 
     for item in iterable:
