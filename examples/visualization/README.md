@@ -27,3 +27,8 @@ There's 2 ways to try out the reporter defined in this directory:
    $ python visualization/run_pypi.py out.html
    ...
    ```
+
+> NOTE: This code mainly serves to demonstrate what can be done with
+> resolvelib's Reporter API. It likely contains bugs and there's definitely a
+> lot of scope for improvement here (more interactive visualization, making it
+> easier to look at and work with larger dependency graphs and more).
