@@ -30,8 +30,8 @@ class Candidate:
 
     def __repr__(self):
         if not self.extras:
-            return f"{self.name}=={self.version}"
-        return f"{self.name}[{','.join(self.extras)}]=={self.version}"
+            return f"<{self.name}=={self.version}>"
+        return f"<{self.name}[{','.join(self.extras)}]=={self.version}>"
 
     @property
     def metadata(self):
