@@ -1,6 +1,5 @@
 from collections import Counter, defaultdict
 from itertools import count
-from typing import NamedTuple
 
 from packaging.utils import canonicalize_name
 from pygraphviz import AGraph
@@ -121,8 +120,7 @@ class GraphGeneratingReporter(BaseReporter):
     # Public reporter API
     #
     def starting(self):
-        print(f"starting(self)")
-        pass
+        print("starting(self)")
 
     def starting_round(self, index):
         print(f"starting_round(self, {index})")
@@ -131,11 +129,9 @@ class GraphGeneratingReporter(BaseReporter):
 
     def ending_round(self, index, state):
         print(f"ending_round(self, {index}, state)")
-        pass
 
     def ending(self, state):
-        print(f"ending(self, state)")
-        pass
+        print("ending(self, state)")
 
     def adding_requirement(self, req, parent):
         print(f"adding_requirement(self, {req!r}, {parent!r})")
@@ -177,7 +173,7 @@ class GraphGeneratingReporter(BaseReporter):
         for edge in self.graph.in_edges_iter([node_name]):
             edge.attr.update(style="dotted", color="#808080")
 
-        # Trim "active" requirements, to remove anything that's not relevant now.
+        # Trim "active" requirements to remove anything not relevant now.
         for requirement in self._dependencies[candidate]:
             active = self._active_requirements[
                 canonicalize_name(requirement.name)

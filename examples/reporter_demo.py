@@ -127,4 +127,4 @@ if __name__ == "__main__":
     root_reqs = [Requirement("first", SpecifierSet())]
     result = resolver.resolve(root_reqs)
 
-    # pprint(result.mapping)
+    pprint(result.mapping)
