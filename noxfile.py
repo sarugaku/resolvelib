@@ -9,17 +9,19 @@ ROOT = pathlib.Path(__file__).resolve().parent
 
 INIT_PY = ROOT.joinpath("src", "resolvelib", "__init__.py")
 
-nox.options.sessions = ["lint", "tests-3.8"]
+nox.options.sessions = ["lint", "tests"]
+nox.options.reuse_existing_virtualenvs = True
 
 
-@nox.session(python="3.8", reuse_venv=True)
+@nox.session
 def lint(session):
     session.install(".[lint]")
+
     session.run("black", "--check", ".")
-    session.run("flake8", "src", "tests", "noxfile.py")
+    session.run("flake8", ".")
 
 
-@nox.session(python=["3.8", "2.7"], reuse_venv=True)
+@nox.session(python=["3.8", "3.7", "3.6", "3.5", "2.7"])
 def tests(session):
     session.install(".[test]")
 
@@ -43,7 +45,7 @@ def _write_package_version(v):
         f.write("".join(lines))
 
 
-@nox.session(python="3.8", reuse_venv=True)
+@nox.session
 def release(session):
     session.install(".[release]")
 
