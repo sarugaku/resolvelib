@@ -74,8 +74,8 @@ people sometimes call this a "locked" or "pinned" dependency. Both of
 "requirement" and "dependency", however, SHOULD NOT be used when describing a
 Candidate, to avoid confusion.
 
-Some resolver architectures (e.g. Molinillo) refer this as a "specification",
-but this is not chosen to avoid confusion with a *Specifier*.
+Some resolver architectures refer this as a "specification", but it is not
+used here to avoid confusion with a *Specifier*.
 
 Requirement
 -----------
