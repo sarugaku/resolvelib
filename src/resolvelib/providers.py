@@ -13,7 +13,7 @@ class AbstractProvider(object):
         raise NotImplementedError
 
     def get_preference(self, resolution, candidates, information):
-        """Produce a sort key for given specification based on preference.
+        """Produce a sort key for given requirement based on preference.
 
         The preference is defined as "I think this requirement should be
         resolved first". The lower the return value is, the more preferred
@@ -43,7 +43,7 @@ class AbstractProvider(object):
 
         A sortable value should be returned (this will be used as the `key`
         parameter of the built-in sorting function). The smaller the value is,
-        the more preferred this specification is (i.e. the sorting function
+        the more preferred this requirement is (i.e. the sorting function
         is called with `reverse=False`).
         """
         raise NotImplementedError
