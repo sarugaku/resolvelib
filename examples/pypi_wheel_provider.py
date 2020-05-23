@@ -111,12 +111,12 @@ def get_metadata_for_wheel(url):
 
 
 class PyPIProvider(ExtrasProvider):
-    def identify(self, dependency):
-        return canonicalize_name(dependency.name)
+    def identify(self, requirement_or_candidate):
+        return canonicalize_name(requirement_or_candidate.name)
 
-    def get_extras_for(self, dependency):
+    def get_extras_for(self, requirement_or_candidate):
         # Extras is a set, which is not hashable
-        return tuple(sorted(dependency.extras))
+        return tuple(sorted(requirement_or_candidate.extras))
 
     def get_base_requirement(self, candidate):
         return Requirement("{}=={}".format(candidate.name, candidate.version))

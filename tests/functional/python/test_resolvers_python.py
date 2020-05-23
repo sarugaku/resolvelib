@@ -58,10 +58,11 @@ class PythonInputProvider(AbstractProvider):
             if _eval_marker(v.get("marker"))
         }
 
-    def identify(self, dependency):
-        name = packaging.utils.canonicalize_name(dependency.name)
-        if dependency.extras:
-            return "{}[{}]".format(name, ",".join(sorted(dependency.extras)))
+    def identify(self, requirement_or_candidate):
+        name = packaging.utils.canonicalize_name(requirement_or_candidate.name)
+        if requirement_or_candidate.extras:
+            extras_str = ",".join(sorted(requirement_or_candidate.extras))
+            return "{}[{}]".format(name, extras_str)
         return name
 
     def get_preference(self, resolution, candidates, information):

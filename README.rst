@@ -84,10 +84,3 @@ An intention to acquire a needed package, i.e. an "abstract requirement". A
 "dependency", if not clarified otherwise, also refers to this concept.
 
 A Requirement should specify two things: a Package, and a Specifier.
-
-
-Dependency
-----------
-
-A dependency can be either a requirement, or a candidate. In implementations
-you can treat it as the parent class and/or a protocol of the two.

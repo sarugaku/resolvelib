@@ -100,8 +100,8 @@ class CocoaPodsInputProvider(AbstractProvider):
         self.expected_resolution = dict(_iter_resolved(case_data["resolved"]))
         self.expected_conflicts = set(case_data["conflicts"])
 
-    def identify(self, dependency):
-        return dependency.name
+    def identify(self, requirement_or_candidate):
+        return requirement_or_candidate.name
 
     def get_preference(self, resolution, candidates, information):
         return len(candidates)

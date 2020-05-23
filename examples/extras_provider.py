@@ -25,8 +25,8 @@ class ExtrasProvider(AbstractProvider):
     """A provider that handles extras.
     """
 
-    def get_extras_for(self, dependency):
-        """Given a dependency, return its extras.
+    def get_extras_for(self, requirement_or_candidate):
+        """Given a requirement or candidate, return its extras.
 
         The extras should be a hashable value.
         """
@@ -39,9 +39,9 @@ class ExtrasProvider(AbstractProvider):
         """
         raise NotImplementedError
 
-    def identify(self, dependency):
-        base = super(ExtrasProvider, self).identify(dependency)
-        extras = self.get_extras_for(dependency)
+    def identify(self, requirement_or_candidate):
+        base = super(ExtrasProvider, self).identify(requirement_or_candidate)
+        extras = self.get_extras_for(requirement_or_candidate)
         if extras:
             return (base, extras)
         else:
