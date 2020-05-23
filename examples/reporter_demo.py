@@ -69,8 +69,8 @@ class Provider(resolvelib.AbstractProvider):
     def __init__(self, index):
         self.candidates = read_spec(index)
 
-    def identify(self, dependency):
-        return dependency[0]
+    def identify(self, requirement_or_candidate):
+        return requirement_or_candidate.name
 
     def get_preference(self, resolution, candidates, information):
         return len(candidates)

@@ -78,8 +78,8 @@ class SwiftInputProvider(AbstractProvider):
         ]
         self.expectation = input_data["result"]
 
-    def identify(self, dependency):
-        return dependency.container["identifier"]
+    def identify(self, requirement_or_candidate):
+        return requirement_or_candidate.container["identifier"]
 
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
