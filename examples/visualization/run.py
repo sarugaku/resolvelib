@@ -1,6 +1,5 @@
 import re
 import sys
-from os.path import dirname
 
 from reporter_demo import Candidate, Requirement
 from visualization.generate import generate_html
