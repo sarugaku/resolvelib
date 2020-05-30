@@ -2,7 +2,7 @@
 ResolveLib
 ==========
 
-ResolveLib at the highest level provides a `Resolver` class that includes
+ResolveLib at the highest level provides a ``Resolver`` class that includes
 dependency resolution logic. You give it some things, and a little information
 on how it should interact with them, and it will spit out a resolution result.
 
@@ -41,11 +41,10 @@ The intention of this section is to unify the terms we use when talking about
 this code base, and packaging in general, to avoid confusion. Class and
 variable names in the code base should try to stick to terms defined here.
 
-Things passed into `Resolver.resolve()` and provided by the provider are all
+Things passed into ``Resolver.resolve()`` and provided by the provider are all
 considered opaque. They don't need to adhere to this set of terminologies.
 Nothing can go wrong as long as the provider implementers can keep their heads
 straight.
-
 
 Package
 -------
