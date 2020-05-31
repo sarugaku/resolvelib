@@ -1,3 +1,4 @@
+import sys
 from email.message import EmailMessage
 from email.parser import BytesParser
 from io import BytesIO
@@ -12,6 +13,7 @@ from packaging.specifiers import SpecifierSet
 from packaging.version import Version, InvalidVersion
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
+from resolvelib import BaseReporter, Resolver
 
 from extras_provider import ExtrasProvider
 
@@ -64,13 +66,13 @@ class Candidate:
 
 
 def get_project_from_pypi(project, extras):
+    """Return candidates created from the project name and extras."""
     url = "https://pypi.org/simple/{}".format(project)
     data = requests.get(url).content
     doc = html5lib.parse(data, namespaceHTMLElements=False)
     for i in doc.findall(".//a"):
         url = i.attrib["href"]
         py_req = i.attrib.get("data-requires-python")
-
         # Skip items that need a different Python version
         if py_req:
             spec = SpecifierSet(py_req)
@@ -79,7 +81,6 @@ def get_project_from_pypi(project, extras):
 
         path = urlparse(url).path
         filename = path.rpartition("/")[-1]
-
         # We only handle wheels
         if not filename.endswith(".whl"):
             continue
@@ -88,7 +89,6 @@ def get_project_from_pypi(project, extras):
 
         # Very primitive wheel filename parsing
         name, version = filename[:-4].split("-")[:2]
-
         try:
             version = Version(version)
         except InvalidVersion:
@@ -151,36 +151,44 @@ class PyPIProvider(ExtrasProvider):
         return candidate.dependencies
 
 
+def display_resolution(result):
+    """Print pinned candidates and dependency graph to stdout."""
+    print("\n--- Pinned Candidates ---")
+    for name, candidate in result.mapping.items():
+        print(f"{name}: {candidate.name} {candidate.version}")
+
+    print("\n--- Dependency Graph ---")
+    for name in result.graph:
+        targets = ", ".join(result.graph.iter_children(name))
+        print(f"{name} -> {targets}")
+
+
+def main():
+    """Resolve requirements as project names on PyPI.
+
+    The requirements are taken as command-line arguments
+    and the resolution result will be printed to stdout.
+    """
+    if len(sys.argv) == 1:
+        print("Usage:", sys.argv[0], "<PyPI project name(s)>")
+        return
+    # Things I want to resolve.
+    reqs = sys.argv[1:]
+    requirements = [Requirement(r) for r in reqs]
+
+    # Create the (reusable) resolver.
+    provider = PyPIProvider()
+    reporter = BaseReporter()
+    resolver = Resolver(provider, reporter)
+
+    # Kick off the resolution process, and get the final result.
+    print("Resolving", ", ".join(reqs))
+    result = resolver.resolve(requirements)
+    display_resolution(result)
+
+
 if __name__ == "__main__":
-    import sys
-    from resolvelib import BaseReporter, Resolver
-
-    def display_resolution(result):
-
-        print("--- Pinned Candidates ---")
-        for name, candidate in result.mapping.items():
-            print(f"{name}: {candidate.name} {candidate.version}")
-
+    try:
+        main()
+    except KeyboardInterrupt:
         print()
-        print("--- Dependency Graph ---")
-        for name in result.graph:
-            targets = ", ".join(result.graph.iter_children(name))
-            print(f"{name} -> {targets}")
-
-    def main(reqs):
-        # Things I want to resolve.
-        requirements = [Requirement(r) for r in reqs]
-
-        provider = PyPIProvider()
-        reporter = BaseReporter()
-
-        # Create the (reusable) resolver.
-        resolver = Resolver(provider, reporter)
-
-        # Kick off the resolution process, and get the final result.
-        result = resolver.resolve(requirements)
-
-        display_resolution(result)
-
-    # Run the demo program
-    main(sys.argv[1:])
