@@ -146,7 +146,8 @@ class Resolution(object):
             state = State(mapping=collections.OrderedDict(), criteria={})
         else:
             state = State(
-                mapping=base.mapping.copy(), criteria=base.criteria.copy(),
+                mapping=base.mapping.copy(),
+                criteria=base.criteria.copy(),
             )
         self._states.append(state)
 
@@ -178,7 +179,9 @@ class Resolution(object):
         except KeyError:
             pinned = None
         return self._p.get_preference(
-            pinned, criterion.candidates, criterion.information,
+            pinned,
+            criterion.candidates,
+            criterion.information,
         )
 
     def _is_current_pin_satisfying(self, name, criterion):
@@ -371,8 +374,7 @@ def _build_result(state):
 
 
 class Resolver(AbstractResolver):
-    """The thing that performs the actual resolution work.
-    """
+    """The thing that performs the actual resolution work."""
 
     base_exception = ResolverException
 

@@ -28,8 +28,7 @@ def _parse_version(s):
 
 
 def _is_version_allowed(version, ranges):
-    """Check version compatibility with Sematic Versioning.
-    """
+    """Check version compatibility with Sematic Versioning."""
     for r in ranges:
         r = _parse_version(r)
         if r[0] != version[0]:
@@ -44,8 +43,7 @@ def _is_version_allowed(version, ranges):
 
 
 def _calculate_preference(parsed_version):
-    """Calculate preference of a version with Minimal Version Selection.
-    """
+    """Calculate preference of a version with Minimal Version Selection."""
     if parsed_version[0] == 0:
         return (
             0,
