@@ -23,7 +23,8 @@ def test_candidate_inconsistent_error():
         def get_dependencies(self, _):
             return []
 
-        def find_matches(self, rs):
+        def find_matches(self, identifier, all_requirements):
+            rs = all_requirements[identifier]
             assert len(rs) == 1 and rs[0] is requirement
             return [candidate]
 

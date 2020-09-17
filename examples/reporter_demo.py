@@ -75,7 +75,8 @@ class Provider(resolvelib.AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def find_matches(self, requirement):
+    def find_matches(self, identifier, all_requirements):
+        requirement = all_requirements[identifier]
         deps = list(
             filter(
                 lambda candidate: self.is_satisfied_by(requirement, candidate),

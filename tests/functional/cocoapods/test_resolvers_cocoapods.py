@@ -123,7 +123,8 @@ class CocoaPodsInputProvider(AbstractProvider):
             ]
             yield Candidate(entry["name"], version, dependencies)
 
-    def find_matches(self, requirements):
+    def find_matches(self, identifier, all_requirements):
+        requirements = all_requirements[identifier]
         name = requirements[0].name
         candidates = sorted(
             self._iter_matches(name, requirements),

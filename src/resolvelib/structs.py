@@ -1,3 +1,8 @@
+import itertools
+
+from .compat import collections_abc
+
+
 class DirectedGraph(object):
     """A graph structure with directed edges.
     """
@@ -66,3 +71,36 @@ class DirectedGraph(object):
 
     def iter_parents(self, key):
         return iter(self._backwards[key])
+
+
+class RequirementsView(collections_abc.Mapping):
+    """A view to the current requirements state for the provider.
+
+    :type criteria: Mapping[Identifier, Criterion]
+    :type override: Mapping[Identifier, Collection[RequirementInformation]]
+    """
+
+    def __init__(self, criteria, override):
+        self._criteria = criteria
+        self._override = override
+
+    def __getitem__(self, key):
+        if key in self._override:
+            infos = self._override[key]
+        elif key in self._criteria:
+            infos = self._criteria[key].information
+        else:
+            raise KeyError(key)
+        return [r for r, _ in infos]
+
+    def __iter__(self):
+        return itertools.chain(
+            self._override,
+            (key for key in self._criteria if key not in self._override)
+        )
+
+    def __len__(self):
+        count = itertools.count(
+            key for key in self._override if key not in self._criteria
+        )
+        return count + len(self._criteria)

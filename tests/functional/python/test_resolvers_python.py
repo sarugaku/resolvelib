@@ -78,7 +78,8 @@ class PythonInputProvider(AbstractProvider):
                 name=name, version=version, extras=extras,
             )
 
-    def find_matches(self, requirements):
+    def find_matches(self, identifier, all_requirements):
+        requirements = all_requirements[identifier]
         name = packaging.utils.canonicalize_name(requirements[0].name)
         candidates = sorted(
             (c for c in self._iter_matches(name, requirements)),

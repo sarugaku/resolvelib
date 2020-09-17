@@ -124,7 +124,8 @@ class PyPIProvider(ExtrasProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def find_matches(self, requirements):
+    def find_matches(self, identifier, all_requirements):
+        requirements = all_requirements[identifier]
         assert requirements, "resolver promises at least one requirement"
         assert not any(
             r.extras for r in requirements[1:]

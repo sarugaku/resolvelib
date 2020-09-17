@@ -48,17 +48,20 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
-    def find_matches(self, requirements):
-        """Find all possible candidates that satisfy the given requirements.
+    def find_matches(self, identifier, requirements):
+        """Find all possible candidates satisfying all identified requirements.
 
         This should try to get candidates based on the requirements' types.
         For VCS, local, and archive requirements, the one-and-only match is
         returned, and for a "named" requirement, the index(es) should be
         consulted to find concrete candidates for this requirement.
 
-        :param requirements: A collection of requirements which all of the
-            returned candidates must match. All requirements are guaranteed to
-            have the same identifier. The collection is never empty.
+        :param identifier: An identifier as returned by ``identify()``, that
+            candidates returned by this function should identify as.
+        :param requirements: A mapping of requirements the resolver knows.
+            Each key is a requirement identifiers. Each value is a non-empty
+            collection of requirements of that identifier. ``identifier`` is
+            guarenteed to exist in the mapping.
         :returns: An iterable that orders candidates by preference, e.g. the
             most preferred candidate should come first.
         """
