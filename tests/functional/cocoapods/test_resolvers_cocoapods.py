@@ -85,7 +85,9 @@ class CocoaPodsInputProvider(AbstractProvider):
         case_data = _safe_json_load(filename)
 
         index_name = os.path.join(
-            INPUTS_DIR, "index", case_data.get("index", "awesome") + ".json",
+            INPUTS_DIR,
+            "index",
+            case_data.get("index", "awesome") + ".json",
         )
         self.index = _safe_json_load(index_name)
 
@@ -123,7 +125,8 @@ class CocoaPodsInputProvider(AbstractProvider):
             ]
             yield Candidate(entry["name"], version, dependencies)
 
-    def find_matches(self, requirements):
+    def find_matches(self, identifier, all_requirements):
+        requirements = all_requirements[identifier]
         name = requirements[0].name
         candidates = sorted(
             self._iter_matches(name, requirements),

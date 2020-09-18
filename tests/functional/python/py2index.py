@@ -84,16 +84,24 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
         default=".".join(str(v) for v in sys.version_info[:2]),
     )
     parser.add_argument(
-        "--interpreter", default=None,
+        "--interpreter",
+        default=None,
     )
     parser.add_argument(
-        "--platform", dest="platforms", action="append", default=None,
+        "--platform",
+        dest="platforms",
+        action="append",
+        default=None,
     )
     parser.add_argument(
-        "--output", type=_parse_output_path, required=True,
+        "--output",
+        type=_parse_output_path,
+        required=True,
     )
     parser.add_argument(
-        "--overwrite", action="store_true", default=False,
+        "--overwrite",
+        action="store_true",
+        default=False,
     )
     return parser.parse_args(args)
 

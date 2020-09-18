@@ -28,8 +28,7 @@ def _parse_version(s):
 
 
 def _is_version_allowed(version, ranges):
-    """Check version compatibility with Sematic Versioning.
-    """
+    """Check version compatibility with Sematic Versioning."""
     for r in ranges:
         r = _parse_version(r)
         if r[0] != version[0]:
@@ -44,8 +43,7 @@ def _is_version_allowed(version, ranges):
 
 
 def _calculate_preference(parsed_version):
-    """Calculate preference of a version with Minimal Version Selection.
-    """
+    """Calculate preference of a version with Minimal Version Selection."""
     if parsed_version[0] == 0:
         return (
             0,
@@ -97,9 +95,9 @@ class SwiftInputProvider(AbstractProvider):
             preference = _calculate_preference(ver)
             yield (preference, Candidate(container, version))
 
-    def find_matches(self, requirements):
+    def find_matches(self, identifier, all_requirements):
         matches = sorted(
-            self._iter_matches(requirements),
+            self._iter_matches(all_requirements[identifier]),
             key=operator.itemgetter(0),
             reverse=True,
         )

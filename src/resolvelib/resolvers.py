@@ -2,7 +2,7 @@ import collections
 
 from .compat import collections_abc
 from .providers import AbstractResolver
-from .structs import DirectedGraph
+from .structs import DirectedGraph, RequirementsView
 
 
 RequirementInformation = collections.namedtuple(
@@ -74,40 +74,11 @@ class Criterion(object):
         )
         return "Criterion({})".format(requirements)
 
-    @classmethod
-    def from_requirement(cls, provider, requirement, parent):
-        """Build an instance from a requirement.
-        """
-        candidates = provider.find_matches([requirement])
-        if not isinstance(candidates, collections_abc.Sequence):
-            candidates = list(candidates)
-        criterion = cls(
-            candidates=candidates,
-            information=[RequirementInformation(requirement, parent)],
-            incompatibilities=[],
-        )
-        if not candidates:
-            raise RequirementsConflicted(criterion)
-        return criterion
-
     def iter_requirement(self):
         return (i.requirement for i in self.information)
 
     def iter_parent(self):
         return (i.parent for i in self.information)
-
-    def merged_with(self, provider, requirement, parent):
-        """Build a new instance from this and a new requirement.
-        """
-        infos = list(self.information)
-        infos.append(RequirementInformation(requirement, parent))
-        candidates = provider.find_matches([r for r, _ in infos])
-        if not isinstance(candidates, collections_abc.Sequence):
-            candidates = list(candidates)
-        criterion = type(self)(candidates, infos, list(self.incompatibilities))
-        if not candidates:
-            raise RequirementsConflicted(criterion)
-        return criterion
 
     def excluded_of(self, candidate):
         """Build a new instance from this, but excluding specified candidate.
@@ -175,7 +146,8 @@ class Resolution(object):
             state = State(mapping=collections.OrderedDict(), criteria={})
         else:
             state = State(
-                mapping=base.mapping.copy(), criteria=base.criteria.copy(),
+                mapping=base.mapping.copy(),
+                criteria=base.criteria.copy(),
             )
         self._states.append(state)
 
@@ -183,12 +155,22 @@ class Resolution(object):
         self._r.adding_requirement(requirement, parent)
         name = self._p.identify(requirement)
         try:
-            crit = self.state.criteria[name]
+            criterion = self.state.criteria[name]
         except KeyError:
-            crit = Criterion.from_requirement(self._p, requirement, parent)
+            infos = [RequirementInformation(requirement, parent)]
+            incompatibilities = []
         else:
-            crit = crit.merged_with(self._p, requirement, parent)
-        return name, crit
+            infos = list(criterion.information)
+            infos.append(RequirementInformation(requirement, parent))
+            incompatibilities = list(criterion.incompatibilities)
+        view = RequirementsView(self.state.criteria, {name: infos})
+        candidates = self._p.find_matches(name, view)
+        if not isinstance(candidates, collections_abc.Sequence):
+            candidates = list(candidates)
+        criterion = Criterion(candidates, infos, incompatibilities)
+        if not candidates:
+            raise RequirementsConflicted(criterion)
+        return name, criterion
 
     def _get_criterion_item_preference(self, item):
         name, criterion = item
@@ -197,7 +179,9 @@ class Resolution(object):
         except KeyError:
             pinned = None
         return self._p.get_preference(
-            pinned, criterion.candidates, criterion.information,
+            pinned,
+            criterion.candidates,
+            criterion.information,
         )
 
     def _is_current_pin_satisfying(self, name, criterion):
@@ -390,8 +374,7 @@ def _build_result(state):
 
 
 class Resolver(AbstractResolver):
-    """The thing that performs the actual resolution work.
-    """
+    """The thing that performs the actual resolution work."""
 
     base_exception = ResolverException
 

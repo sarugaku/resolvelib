@@ -22,8 +22,7 @@ from resolvelib.providers import AbstractProvider
 
 
 class ExtrasProvider(AbstractProvider):
-    """A provider that handles extras.
-    """
+    """A provider that handles extras."""
 
     def get_extras_for(self, requirement_or_candidate):
         """Given a requirement or candidate, return its extras.
