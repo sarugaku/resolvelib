@@ -62,3 +62,63 @@ class DirectedGraph(object):
 
     def iter_parents(self, key):
         return iter(self._backwards[key])
+
+
+class _FactoryIterableView(object):
+    """Wrap an iterator factory returned by `find_matches()`.
+
+    Calling `iter()` on this class would invoke the underlying iterator
+    factory, making it a "collection with ordering" that can be iterated
+    through multiple times, but lacks random access methods presented in
+    built-in Python sequence types.
+    """
+
+    def __init__(self, factory):
+        self._factory = factory
+
+    def __bool__(self):
+        try:
+            next(self._factory())
+        except StopIteration:
+            return False
+        return True
+
+    __nonzero__ = __bool__  # XXX: Python 2.
+
+    def __iter__(self):
+        return self._factory()
+
+    def for_preference(self):
+        """Provide an candidate iterable for `get_preference()`"""
+        return self._factory()
+
+    def excluding(self, candidate):
+        """Create a new `Candidates` instance excluding `candidate`."""
+
+        def factory():
+            return (c for c in self._factory() if c != candidate)
+
+        return type(self)(factory)
+
+
+class _SequenceIterableView(list):
+    """Wrap an iterable returned by find_matches().
+
+    This is essentially just a proxy to the underlying sequence that provides
+    the same interface as `_FactoryIterableView`.
+    """
+
+    def for_preference(self):
+        """Provide an candidate iterable for `get_preference()`"""
+        return self
+
+    def excluding(self, candidate):
+        """Create a new instance excluding `candidate`."""
+        return type(self)(c for c in self if c != candidate)
+
+
+def build_iter_view(matches):
+    """Build an iterable view from the value returned by `find_matches()`."""
+    if callable(matches):
+        return _FactoryIterableView(matches)
+    return _SequenceIterableView(matches)

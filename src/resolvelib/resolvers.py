@@ -1,8 +1,7 @@
 import collections
 
-from .compat import collections_abc
 from .providers import AbstractResolver
-from .structs import DirectedGraph
+from .structs import DirectedGraph, build_iter_view
 
 
 RequirementInformation = collections.namedtuple(
@@ -77,15 +76,10 @@ class Criterion(object):
     @classmethod
     def from_requirement(cls, provider, requirement, parent):
         """Build an instance from a requirement."""
-        candidates = provider.find_matches([requirement])
-        if not isinstance(candidates, collections_abc.Sequence):
-            candidates = list(candidates)
-        criterion = cls(
-            candidates=candidates,
-            information=[RequirementInformation(requirement, parent)],
-            incompatibilities=[],
-        )
-        if not candidates:
+        cands = build_iter_view(provider.find_matches([requirement]))
+        infos = [RequirementInformation(requirement, parent)]
+        criterion = cls(cands, infos, incompatibilities=[])
+        if not cands:
             raise RequirementsConflicted(criterion)
         return criterion
 
@@ -99,11 +93,9 @@ class Criterion(object):
         """Build a new instance from this and a new requirement."""
         infos = list(self.information)
         infos.append(RequirementInformation(requirement, parent))
-        candidates = provider.find_matches([r for r, _ in infos])
-        if not isinstance(candidates, collections_abc.Sequence):
-            candidates = list(candidates)
-        criterion = type(self)(candidates, infos, list(self.incompatibilities))
-        if not candidates:
+        cands = build_iter_view(provider.find_matches([r for r, _ in infos]))
+        criterion = type(self)(cands, infos, list(self.incompatibilities))
+        if not cands:
             raise RequirementsConflicted(criterion)
         return criterion
 
@@ -112,13 +104,12 @@ class Criterion(object):
 
         Returns the new instance, or None if we still have no valid candidates.
         """
+        cands = self.candidates.excluding(candidate)
+        if not cands:
+            return None
         incompats = list(self.incompatibilities)
         incompats.append(candidate)
-        candidates = [c for c in self.candidates if c != candidate]
-        if not candidates:
-            return None
-        criterion = type(self)(candidates, list(self.information), incompats)
-        return criterion
+        return type(self)(cands, list(self.information), incompats)
 
 
 class ResolutionError(ResolverException):
@@ -193,7 +184,7 @@ class Resolution(object):
         name, criterion = item
         return self._p.get_preference(
             self.state.mapping.get(name),
-            criterion.candidates,
+            criterion.candidates.for_preference(),
             criterion.information,
         )
 
