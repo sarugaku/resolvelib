@@ -75,7 +75,9 @@ class PythonInputProvider(AbstractProvider):
             if any(version not in r.specifier for r in requirements):
                 continue
             yield Candidate(
-                name=name, version=version, extras=extras,
+                name=name,
+                version=version,
+                extras=extras,
             )
 
     def find_matches(self, requirements):

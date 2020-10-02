@@ -85,7 +85,9 @@ class CocoaPodsInputProvider(AbstractProvider):
         case_data = _safe_json_load(filename)
 
         index_name = os.path.join(
-            INPUTS_DIR, "index", case_data.get("index", "awesome") + ".json",
+            INPUTS_DIR,
+            "index",
+            case_data.get("index", "awesome") + ".json",
         )
         self.index = _safe_json_load(index_name)
 

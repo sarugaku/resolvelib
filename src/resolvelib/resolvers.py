@@ -76,8 +76,7 @@ class Criterion(object):
 
     @classmethod
     def from_requirement(cls, provider, requirement, parent):
-        """Build an instance from a requirement.
-        """
+        """Build an instance from a requirement."""
         candidates = provider.find_matches([requirement])
         if not isinstance(candidates, collections_abc.Sequence):
             candidates = list(candidates)
@@ -97,8 +96,7 @@ class Criterion(object):
         return (i.parent for i in self.information)
 
     def merged_with(self, provider, requirement, parent):
-        """Build a new instance from this and a new requirement.
-        """
+        """Build a new instance from this and a new requirement."""
         infos = list(self.information)
         infos.append(RequirementInformation(requirement, parent))
         candidates = provider.find_matches([r for r, _ in infos])
@@ -175,7 +173,8 @@ class Resolution(object):
             state = State(mapping=collections.OrderedDict(), criteria={})
         else:
             state = State(
-                mapping=base.mapping.copy(), criteria=base.criteria.copy(),
+                mapping=base.mapping.copy(),
+                criteria=base.criteria.copy(),
             )
         self._states.append(state)
 
@@ -192,12 +191,10 @@ class Resolution(object):
 
     def _get_criterion_item_preference(self, item):
         name, criterion = item
-        try:
-            pinned = self.state.mapping[name]
-        except KeyError:
-            pinned = None
         return self._p.get_preference(
-            pinned, criterion.candidates, criterion.information,
+            self.state.mapping.get(name),
+            criterion.candidates,
+            criterion.information,
         )
 
     def _is_current_pin_satisfying(self, name, criterion):
@@ -390,8 +387,7 @@ def _build_result(state):
 
 
 class Resolver(AbstractResolver):
-    """The thing that performs the actual resolution work.
-    """
+    """The thing that performs the actual resolution work."""
 
     base_exception = ResolverException
 
