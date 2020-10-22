@@ -17,13 +17,14 @@ jobs:
     - stage: primary
     - python: "2.7"
     - stage: secondary
-      python: "3.7"
+      python: "3.8"
+    - python: "3.7"
     - python: "3.6"
     - python: "nightly"
   allow_failures:
     - python: "nightly"
 
-python: "3.8"
+python: "3.9-dev"
 
 install: pip install .[test]
 

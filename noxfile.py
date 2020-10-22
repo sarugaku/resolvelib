@@ -21,7 +21,7 @@ def lint(session):
     session.run("flake8", ".")
 
 
-@nox.session(python=["3.8", "3.7", "3.6", "3.5", "2.7"])
+@nox.session(python=["3.9", "3.8", "3.7", "3.6", "3.5", "2.7"])
 def tests(session):
     session.install(".[test]")
 
