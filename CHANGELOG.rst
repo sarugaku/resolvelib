@@ -1,3 +1,14 @@
+0.5.1 (2020-10-22)
+==================
+
+Features
+--------
+
+- ``find_matches()`` now may return a ``Callable[[], Iterator[Candidate]]`` to
+  avoid needing to provide all candidates eagerly for the resolver. This improves
+  performance when fetching candidates is costly, but not always required.  `#57 <https://github.com/sarugaku/resolvelib/issues/57>`_
+
+
 0.4.0 (2020-04-30)
 ==================
 
@@ -5,7 +16,7 @@ Features
 --------
 
 - Add ``parent`` argument to the ``add_requirement()`` reporter hook.  `#46 <https://github.com/sarugaku/resolvelib/issues/46>`_
-  
+
 - Redesign ``find_matches()`` to support a requirement "adding" candidates to
   the set, and nudge the provider away from implementing ``find_matches()`` and
   ``is_satisfied_by()`` with incorrect set properties.  `#49 <https://github.com/sarugaku/resolvelib/issues/49>`_
@@ -20,7 +31,7 @@ Features
 - Provide both the requirements and their parents as exceptiondata for the
   ``ResolutionImpossible`` exception, via a ``causes`` attribute that replaces
   the previous ``requirements`` attribute.  `#42 <https://github.com/sarugaku/resolvelib/issues/42>`_
-  
+
 
 Bug Fixes
 ---------
@@ -29,7 +40,7 @@ Bug Fixes
   are able to resolve due to them requesting unworkable requirements, or a
   package has no candidates at all. Previously the resolver would give up on the
   spot.  `#18 <https://github.com/sarugaku/resolvelib/issues/18>`_
-  
+
 - Ensure the result returned by the resolver only contains candidates that are
   actually needed. This is done by tracing the graph after resolution completes,
   snipping nodes that don’t have a route to the root.  `#4 <https://github.com/sarugaku/resolvelib/issues/4>`_
