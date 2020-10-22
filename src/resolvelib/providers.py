@@ -19,13 +19,18 @@ class AbstractProvider(object):
         this group of arguments is.
 
         :param resolution: Currently pinned candidate, or `None`.
-        :param candidates: A list of possible candidates.
+        :param candidates: An iterable of possible candidates.
         :param information: A list of requirement information.
 
-        Each information instance is a named tuple with two entries:
+        The `candidates` iterable's exact type depends on the return type of
+        `find_matches()`. A sequence is passed-in as-is if possible. If it
+        returns a callble, the iterator returned by that callable is passed
+        in here.
+
+        Each element in `information` is a named tuple with two entries:
 
         * `requirement` specifies a requirement contributing to the current
-          candidate list
+          candidate list.
         * `parent` specifies the candidate that provides (dependend on) the
           requirement, or `None` to indicate a root requirement.
 
@@ -55,11 +60,18 @@ class AbstractProvider(object):
         returned, and for a "named" requirement, the index(es) should be
         consulted to find concrete candidates for this requirement.
 
+        The return value should produce candidates ordered by preference; the
+        most preferred candidate should come first. The return type may be one
+        of the following:
+
+        * A callable that returns an iterator that yields candidates.
+        * An collection of candidates.
+        * An iterable of candidates. This will be consumed immediately into a
+          list of candidates.
+
         :param requirements: A collection of requirements which all of the
             returned candidates must match. All requirements are guaranteed to
             have the same identifier. The collection is never empty.
-        :returns: An iterable that orders candidates by preference, e.g. the
-            most preferred candidate should come first.
         """
         raise NotImplementedError
 

@@ -1,0 +1,3 @@
+``find_matches()`` now may return a ``Callable[[], Iterator[Candidate]]`` to
+avoid needing to provide all candidates eagerly for the resolver. This improves
+performance when fetching candidates is costly, but not always required.
