@@ -30,7 +30,7 @@ def _generate():
     yield 1
 
 
-@pytest.mark.parametrize("source", [_generate, (0, 1), iter((0, 1))])
+@pytest.mark.parametrize("source", [_generate, [0, 1], iter([0, 1])])
 def test_iter_view_iterable(source):
     """Iterable protocol for the iterator view."""
     iterator = iter(build_iter_view(source))
@@ -40,7 +40,7 @@ def test_iter_view_iterable(source):
         next(iterator)
 
 
-@pytest.mark.parametrize("source", [_generate, (0, 1), iter((0, 1))])
+@pytest.mark.parametrize("source", [_generate, [0, 1], iter([0, 1])])
 def test_iter_view_multiple_iterable(source):
     """Iterator view can be independently iter-ed multiple times."""
     view = build_iter_view(source)
@@ -61,14 +61,14 @@ def test_iter_view_for_preference_based_on_factory(source):
     assert list(iterator) == [0, 1]
 
 
-@pytest.mark.parametrize("source", [(0, 1), iter((0, 1))])
+@pytest.mark.parametrize("source", [[0, 1], iter([0, 1])])
 def test_iter_view_for_preference_based_on_sequence(source):
     """Sequence-based view returns a sequence for preference."""
     view = build_iter_view(source)
     assert view.for_preference() == [0, 1]
 
 
-@pytest.mark.parametrize("source", [_generate, (0, 1), iter((0, 1))])
+@pytest.mark.parametrize("source", [_generate, [0, 1], iter([0, 1])])
 def test_itera_view_excluding(source):
     view = build_iter_view(source)
 

@@ -1,3 +1,6 @@
+from .compat import collections_abc
+
+
 class DirectedGraph(object):
     """A graph structure with directed edges."""
 
@@ -101,24 +104,40 @@ class _FactoryIterableView(object):
         return type(self)(factory)
 
 
-class _SequenceIterableView(list):
+class _SequenceIterableView(object):
     """Wrap an iterable returned by find_matches().
 
     This is essentially just a proxy to the underlying sequence that provides
     the same interface as `_FactoryIterableView`.
     """
 
+    def __init__(self, sequence):
+        self._sequence = sequence
+
+    def __bool__(self):
+        return bool(self._sequence)
+
+    __nonzero__ = __bool__  # XXX: Python 2.
+
+    def __iter__(self):
+        return iter(self._sequence)
+
+    def __len__(self):
+        return len(self._sequence)
+
     def for_preference(self):
         """Provide an candidate iterable for `get_preference()`"""
-        return self
+        return self._sequence
 
     def excluding(self, candidate):
         """Create a new instance excluding `candidate`."""
-        return type(self)(c for c in self if c != candidate)
+        return type(self)([c for c in self._sequence if c != candidate])
 
 
 def build_iter_view(matches):
     """Build an iterable view from the value returned by `find_matches()`."""
     if callable(matches):
         return _FactoryIterableView(matches)
+    if not isinstance(matches, collections_abc.Sequence):
+        matches = list(matches)
     return _SequenceIterableView(matches)
