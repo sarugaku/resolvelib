@@ -99,16 +99,16 @@ class Criterion(object):
             raise RequirementsConflicted(criterion)
         return criterion
 
-    def excluded_of(self, candidate):
-        """Build a new instance from this, but excluding specified candidate.
+    def excluded_of(self, incompatibilities):
+        """Build a new instance from this, but excluding specified candidates.
 
         Returns the new instance, or None if we still have no valid candidates.
         """
-        cands = self.candidates.excluding(candidate)
+        cands = self.candidates.excluding(incompatibilities)
         if not cands:
             return None
         incompats = list(self.incompatibilities)
-        incompats.append(candidate)
+        incompats.extend(incompatibilities)
         return type(self)(cands, list(self.information), incompats)
 
 
@@ -238,9 +238,24 @@ class Resolution(object):
         # end, signal for backtracking.
         return causes
 
+    def _mark_backtrack_on_state(self, incompatibilities):
+        state = self.state
+        for name, candidates in incompatibilities.items():
+            try:
+                criterion = state.criteria[name]
+            except KeyError:
+                continue
+            criterion = criterion.excluded_of(candidates)
+            if criterion is None:
+                return False
+            state.criteria[name] = criterion
+        return True
+
     def _backtrack(self):
         # Drop the current state, it's known not to work.
         del self._states[-1]
+
+        incompatibilities = collections.defaultdict(list)
 
         # We need at least 2 states here:
         # (a) One to backtrack to.
@@ -255,18 +270,15 @@ class Resolution(object):
             except KeyError:
                 continue
             self._r.backtracking(candidate)
+            incompatibilities[name].append(candidate)
+
+            # Mark candidates identified during backtracking as incompatible.
+            if not self._mark_backtrack_on_state(incompatibilities):
+                continue
 
             # Create a new state to work on, with the newly known not-working
             # candidate excluded.
             self._push_new_state()
-
-            # Mark the retracted candidate as incompatible.
-            criterion = self.state.criteria[name].excluded_of(candidate)
-            if criterion is None:
-                # This state still does not work. Try the still previous state.
-                del self._states[-1]
-                continue
-            self.state.criteria[name] = criterion
 
             return True
 
