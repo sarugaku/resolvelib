@@ -236,8 +236,17 @@ class Finder:
                 if ext != "whl":
                     continue
                 requires_python = el.attrib.get("data-requires-python")
-                _, version, tag = _parse_wheel_name(wheel_name)
-                rank = self.matcher.rank(tag, requires_python)
+                name, version, tag = _parse_wheel_name(wheel_name)
+                try:
+                    rank = self.matcher.rank(tag, requires_python)
+                except packaging.specifiers.InvalidSpecifier:
+                    logger.critical(
+                        "Dropping %s==%s; invalid Requires-Python %r",
+                        name,
+                        version,
+                        requires_python,
+                    )
+                    continue
                 if rank is None:
                     continue
                 all_dists[version].append((rank, url))
