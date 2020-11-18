@@ -314,11 +314,11 @@ def main(args: Optional[List[str]]) -> int:
     data = finder.find(options.package_names)
 
     if output_path is None:
-        json.dump(data, sys.stdout, indent=4)
+        json.dump(data, sys.stdout, indent=2)
         print()
     else:
         with output_path.open("w") as f:
-            json.dump(data, f)
+            json.dump(data, f, indent="\t")
         logger.info("Written: %s", os.fspath(output_path))
 
     return 0
