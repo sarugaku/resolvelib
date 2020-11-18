@@ -66,7 +66,9 @@ class PythonInputProvider(AbstractProvider):
         return name
 
     def get_preference(self, resolution, candidates, information):
-        return len(candidates)
+        transitive = all(parent is not None for _, parent in information)
+        key = next(iter(candidates)).name if candidates else ""
+        return (transitive, key)
 
     def _iter_matches(self, name, requirements):
         extras = {e for r in requirements for e in r.extras}
