@@ -1,0 +1,10 @@
+{
+	"#": "See pypa/pip#9011 for more information",
+	"index": "pypi-2020-11-17-cheroot",
+	"requested": [
+		"coverage==5.3",
+		"pytest-mock>=1.11.0",
+		"pytest-sugar>=0.9.3",
+		"pytest-testmon<1.0.0"
+	]
+}
