@@ -11,9 +11,12 @@ import packaging.utils
 import packaging.version
 import pytest
 
-from resolvelib.providers import AbstractProvider
-from resolvelib.reporters import BaseReporter
-from resolvelib.resolvers import Resolver
+from resolvelib import (
+    AbstractProvider,
+    BaseReporter,
+    ResolutionImpossible,
+    Resolver,
+)
 
 
 Candidate = collections.namedtuple("Candidate", "name version extras")
@@ -52,11 +55,20 @@ class PythonInputProvider(AbstractProvider):
             for r in case_data["requested"]
         ]
         self.pinned_versions = {}
-        self.expected_resolution = {
-            k: packaging.version.parse(v["version"])
-            for k, v in _iter_resolved(case_data["resolved"])
-            if _eval_marker(v.get("marker"))
-        }
+
+        if "resolved" in case_data:
+            self.expected_resolution = {
+                k: packaging.version.parse(v["version"])
+                for k, v in _iter_resolved(case_data["resolved"])
+                if _eval_marker(v.get("marker"))
+            }
+        else:
+            self.expected_resolution = None
+
+        if "conflicted" in case_data:
+            self.expected_confliction = set(case_data["conflicted"])
+        else:
+            self.expected_confliction = None
 
     def identify(self, requirement_or_candidate):
         name = packaging.utils.canonicalize_name(requirement_or_candidate.name)
@@ -161,6 +173,13 @@ def reporter():
     return PythonTestReporter()
 
 
+def _format_conflict(exception):
+    return {
+        packaging.utils.canonicalize_name(cause.requirement.name)
+        for cause in exception.causes
+    }
+
+
 def _format_resolution(result):
     return {
         identifier: candidate.version
@@ -172,5 +191,9 @@ def _format_resolution(result):
 def test_resolver(provider, reporter):
     resolver = Resolver(provider, reporter)
 
-    result = resolver.resolve(provider.root_requirements)
-    assert _format_resolution(result) == provider.expected_resolution
+    try:
+        result = resolver.resolve(provider.root_requirements)
+    except ResolutionImpossible as e:
+        assert _format_conflict(e) == provider.expected_confliction
+    else:
+        assert _format_resolution(result) == provider.expected_resolution

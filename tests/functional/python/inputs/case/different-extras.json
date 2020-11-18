@@ -5,6 +5,5 @@
 		"dask[diagnostics]==2.10.1",
 		"dask[delayed]==2.10.1"
 	],
-	"resolved": {
-	}
+	"conflicted": ["markupsafe"]
 }
