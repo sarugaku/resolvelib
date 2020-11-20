@@ -12,12 +12,7 @@ import packaging.utils
 import packaging.version
 import pytest
 
-from resolvelib import (
-    AbstractProvider,
-    BaseReporter,
-    ResolutionImpossible,
-    Resolver,
-)
+from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
 
 
 Candidate = collections.namedtuple("Candidate", "name version extras")
@@ -156,25 +151,6 @@ XFAIL_CASES = {
 )
 def provider(request):
     return PythonInputProvider(request.param)
-
-
-class PythonTestReporter(BaseReporter):
-    def __init__(self):
-        self._indent = 0
-
-    def backtracking(self, candidate):
-        self._indent -= 1
-        assert self._indent >= 0
-        print(" " * self._indent, "Back ", candidate, sep="")
-
-    def pinning(self, candidate):
-        print(" " * self._indent, "Pin  ", candidate, sep="")
-        self._indent += 1
-
-
-@pytest.fixture(scope="module")
-def reporter():
-    return PythonTestReporter()
 
 
 def _format_confliction(exception):

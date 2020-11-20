@@ -180,8 +180,8 @@ def _format_resolution(result):
     }
 
 
-def test_resolver(provider, base_reporter):
-    resolver = Resolver(provider, base_reporter)
+def test_resolver(provider, reporter):
+    resolver = Resolver(provider, reporter)
 
     if provider.expected_conflicts:
         with pytest.raises(ResolutionImpossible) as ctx:
