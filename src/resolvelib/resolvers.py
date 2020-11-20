@@ -239,15 +239,10 @@ class Resolution(object):
         return causes
 
     def _backtrack(self, causing_criteria):
-        # We need at least 2 states here:
-        # (a) One to backtrack to.
-        # (b) One to restore state (a) to its state prior to candidate-pinning,
-        #     so we can pin another one instead.
+        # Current state is known to not work, that's why we're here.
+        del self._states[-1]
 
-        while len(self._states) >= 2:
-            # Drop the current state, it's known not to work.
-            del self._states[-1]
-
+        while self._states:
             # Retract the last candidate pin.
             name, candidate = self.state.mapping.popitem()
             self._r.backtracking(candidate)
@@ -257,6 +252,7 @@ class Resolution(object):
             if criterion is None:
                 # State does not work after adding the new incompatibility
                 # information. Try the still previous state.
+                del self._states[-1]
                 continue
 
             # OK, let's work on this state again.
@@ -284,8 +280,6 @@ class Resolution(object):
         for round_index in range(max_rounds):
             self._r.starting_round(round_index)
 
-            curr = self.state
-
             unsatisfied_criterion_items = [
                 item
                 for item in self.state.criteria.items()
@@ -294,8 +288,7 @@ class Resolution(object):
 
             # All criteria are accounted for. Nothing more to pin, we are done!
             if not unsatisfied_criterion_items:
-                del self._states[-1]
-                self._r.ending(curr)
+                self._r.ending(self.state)
                 return self.state
 
             # Choose the most preferred unpinned criterion to try.
@@ -315,7 +308,7 @@ class Resolution(object):
                 # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
 
-            self._r.ending_round(round_index, curr)
+            self._r.ending_round(round_index, self.state)
 
         raise ResolutionTooDeep(max_rounds)
 
