@@ -91,6 +91,9 @@ class _FactoryIterableView(object):
     def __iter__(self):
         return self._factory()
 
+    def __repr__(self):
+        return "{}({})".format(type(self).__name__, list(self._factory()))
+
     def for_preference(self):
         """Provide an candidate iterable for `get_preference()`"""
         return self._factory()
@@ -124,6 +127,9 @@ class _SequenceIterableView(object):
 
     def __len__(self):
         return len(self._sequence)
+
+    def __repr__(self):
+        return "{}({})".format(type(self).__name__, self._sequence)
 
     def for_preference(self):
         """Provide an candidate iterable for `get_preference()`"""
