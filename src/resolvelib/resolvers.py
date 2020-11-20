@@ -238,39 +238,34 @@ class Resolution(object):
         # end, signal for backtracking.
         return causes
 
-    def _backtrack(self):
-        # Drop the current state, it's known not to work.
-        del self._states[-1]
-
+    def _backtrack(self, causing_criteria):
         # We need at least 2 states here:
         # (a) One to backtrack to.
         # (b) One to restore state (a) to its state prior to candidate-pinning,
         #     so we can pin another one instead.
 
         while len(self._states) >= 2:
-            # Retract the last candidate pin.
-            prev_state = self._states.pop()
-            try:
-                name, candidate = prev_state.mapping.popitem()
-            except KeyError:
-                continue
-            self._r.backtracking(candidate)
+            # Drop the current state, it's known not to work.
+            del self._states[-1]
 
-            # Create a new state to work on, with the newly known not-working
-            # candidate excluded.
-            self._push_new_state()
+            # Retract the last candidate pin.
+            name, candidate = self.state.mapping.popitem()
+            self._r.backtracking(candidate)
 
             # Mark the retracted candidate as incompatible.
             criterion = self.state.criteria[name].excluded_of(candidate)
             if criterion is None:
-                # This state still does not work. Try the still previous state.
-                del self._states[-1]
+                # State does not work after adding the new incompatibility
+                # information. Try the still previous state.
                 continue
+
+            # OK, let's work on this state again.
             self.state.criteria[name] = criterion
+            return
 
-            return True
-
-        return False
+        # Nothing more to backtrack, give up.
+        causes = [i for c in causing_criteria for i in c.information]
+        raise ResolutionImpossible(causes)
 
     def resolve(self, requirements, max_rounds):
         if self._states:
@@ -289,7 +284,6 @@ class Resolution(object):
         for round_index in range(max_rounds):
             self._r.starting_round(round_index)
 
-            self._push_new_state()
             curr = self.state
 
             unsatisfied_criterion_items = [
@@ -311,14 +305,15 @@ class Resolution(object):
             )
             failure_causes = self._attempt_to_pin_criterion(name, criterion)
 
-            # Backtrack if pinning fails.
             if failure_causes:
-                result = self._backtrack()
-                if not result:
-                    causes = [
-                        i for crit in failure_causes for i in crit.information
-                    ]
-                    raise ResolutionImpossible(causes)
+                # Backtrack if pinning fails. The backtrack process would put
+                # us in a previous state. That state would be unpinned (the
+                # previous pin identified as an incompatibility), so we can
+                # work on it in the next round.
+                self._backtrack(failure_causes)
+            else:
+                # Pinning was successful. Push a new state to do another pin.
+                self._push_new_state()
 
             self._r.ending_round(round_index, curr)
 
