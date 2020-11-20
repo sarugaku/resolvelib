@@ -137,7 +137,7 @@ CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 
 
 XFAIL_CASES = {
-    "pyrex-1.9.8.json": "Resolver stalled",
+    "pyrex-1.9.8.json": "Too many rounds (>500)",
     "same-package-extras.json": "State not cleaned up correctly",
 }
 
@@ -164,6 +164,7 @@ class PythonTestReporter(BaseReporter):
 
     def backtracking(self, candidate):
         self._indent -= 1
+        assert self._indent >= 0
         print(" " * self._indent, "Back ", candidate, sep="")
 
     def pinning(self, candidate):
