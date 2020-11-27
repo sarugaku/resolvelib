@@ -7,16 +7,12 @@ import os
 
 import packaging.markers
 import packaging.requirements
+import packaging.specifiers
 import packaging.utils
 import packaging.version
 import pytest
 
-from resolvelib import (
-    AbstractProvider,
-    BaseReporter,
-    ResolutionImpossible,
-    Resolver,
-)
+from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
 
 
 Candidate = collections.namedtuple("Candidate", "name version extras")
@@ -133,7 +129,7 @@ CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 
 
 XFAIL_CASES = {
-    "pyrex-1.9.8.json": "Resolver stalled",
+    "pyrex-1.9.8.json": "Too many rounds (>500)",
     "same-package-extras.json": "State not cleaned up correctly",
 }
 
@@ -154,25 +150,7 @@ def provider(request):
     return PythonInputProvider(request.param)
 
 
-class PythonTestReporter(BaseReporter):
-    def __init__(self):
-        self._indent = 0
-
-    def backtracking(self, candidate):
-        self._indent -= 1
-        print(" " * self._indent, "Back ", candidate, sep="")
-
-    def pinning(self, candidate):
-        print(" " * self._indent, "Pin  ", candidate, sep="")
-        self._indent += 1
-
-
-@pytest.fixture(scope="module")
-def reporter():
-    return PythonTestReporter()
-
-
-def _format_conflict(exception):
+def _format_confliction(exception):
     return {
         packaging.utils.canonicalize_name(cause.requirement.name)
         for cause in exception.causes
@@ -190,9 +168,11 @@ def _format_resolution(result):
 def test_resolver(provider, reporter):
     resolver = Resolver(provider, reporter)
 
-    try:
-        result = resolver.resolve(provider.root_requirements)
-    except ResolutionImpossible as e:
-        assert _format_conflict(e) == provider.expected_confliction
+    if provider.expected_confliction:
+        with pytest.raises(ResolutionImpossible) as ctx:
+            result = resolver.resolve(provider.root_requirements)
+            print(_format_resolution(result))  # Provide some debugging hints.
+        assert _format_confliction(ctx.value) == provider.expected_confliction
     else:
-        assert _format_resolution(result) == provider.expected_resolution
+        resolution = resolver.resolve(provider.root_requirements)
+        assert _format_resolution(resolution) == provider.expected_resolution
