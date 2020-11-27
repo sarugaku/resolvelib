@@ -158,15 +158,11 @@ class Resolution(object):
         This new state will be used to hold resolution results of the next
         coming round.
         """
-        try:
-            base = self._states[-1]
-        except IndexError:
-            state = State(mapping=collections.OrderedDict(), criteria={})
-        else:
-            state = State(
-                mapping=base.mapping.copy(),
-                criteria=base.criteria.copy(),
-            )
+        base = self._states[-1]
+        state = State(
+            mapping=base.mapping.copy(),
+            criteria=base.criteria.copy(),
+        )
         self._states.append(state)
 
     def _merge_into_criterion(self, requirement, parent):
@@ -276,7 +272,7 @@ class Resolution(object):
         if self._states:
             raise RuntimeError("already resolved")
 
-        self._push_new_state()
+        self._states = [State(mapping=collections.OrderedDict(), criteria={})]
         for r in requirements:
             try:
                 name, crit = self._merge_into_criterion(r, parent=None)
