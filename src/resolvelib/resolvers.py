@@ -274,6 +274,11 @@ class Resolution(object):
 
         self._r.starting()
 
+        # The root state is saved as a sentinel so the first ever pin can have
+        # something to backtrack to if it fails. The root state is basically
+        # pinning the virtual "root" package in the graph.
+        self._push_new_state()
+
         for round_index in range(max_rounds):
             self._r.starting_round(round_index)
 
