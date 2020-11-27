@@ -99,16 +99,16 @@ class Criterion(object):
             raise RequirementsConflicted(criterion)
         return criterion
 
-    def excluded_of(self, candidate):
-        """Build a new instance from this, but excluding specified candidate.
+    def excluded_of(self, candidates):
+        """Build a new instance from this, but excluding specified candidates.
 
         Returns the new instance, or None if we still have no valid candidates.
         """
-        cands = self.candidates.excluding(candidate)
+        cands = self.candidates.excluding(candidates)
         if not cands:
             return None
         incompats = list(self.incompatibilities)
-        incompats.append(candidate)
+        incompats.extend(candidates)
         return type(self)(cands, list(self.information), incompats)
 
 

@@ -68,10 +68,21 @@ def test_iter_view_for_preference_based_on_sequence(source):
     assert view.for_preference() == [0, 1]
 
 
-@pytest.mark.parametrize("source", [_generate, [0, 1], iter([0, 1])])
-def test_itera_view_excluding(source):
-    view = build_iter_view(source)
-
-    assert list(view.excluding(0)) == [1]
-    assert list(view.excluding(1)) == [0]
-    assert list(view.excluding(2)) == [0, 1]
+@pytest.mark.parametrize(
+    "source",
+    [lambda: _generate, lambda: [0, 1], _generate],
+    ids=["callable", "sequence", "iterator"],
+)
+@pytest.mark.parametrize(
+    "exclusion, expected",
+    [
+        ([1], [0]),
+        ([0, 1], []),
+        ([1, 2], [0]),
+        ([2, 3], [0, 1]),
+    ],
+    ids=["one", "all", "partial", "none"],
+)
+def test_itera_view_excluding(source, exclusion, expected):
+    view = build_iter_view(source())
+    assert list(view.excluding(exclusion)) == expected
