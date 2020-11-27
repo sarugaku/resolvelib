@@ -235,25 +235,64 @@ class Resolution(object):
         return causes
 
     def _backtrack(self, causing_criteria):
-        # Current state is known to not work, that's why we're here.
-        del self._states[-1]
+        """Perform backtracking.
 
-        while self._states:
-            # Retract the last candidate pin.
-            name, candidate = self.state.mapping.popitem()
+        When we enter here, the stack is like this:
+
+        [ state Z ]
+        [ state Y ]
+        [ state X ]
+        .... States earlier are irrelevent.
+
+        1. No pin worked for Z, so it does not have a pin.
+        2. We want to reset state Y to unpinned, and pin another candidate.
+        3. state X holds what state Y was before the pin, but does not
+           have the incompatibility information gathered in state Y.
+
+        Each iteration of the loop will:
+
+        1.  Discard Z.
+        2.  Discard Y but remember the its pin and incompatibility information.
+        3.  Push a new state Y' based on X, and apply the incompatibility
+            information from Y to Y'.
+        4a. If this causes Y' to conflict, we need to backtrack again.
+            Discard Y', and start from the beginning to try obtaining an X'.
+        4b. If the incompatibilites apply cleanly, end backtracking.
+        """
+        while len(self._states) >= 3:
+            # Remove the state that triggered backtracking.
+            del self._states[-1]
+
+            # Retract the last candidate pin and known incompatibilities.
+            broken_state = self._states.pop()
+            name, candidate = broken_state.mapping.popitem()
+            incompatibilities_from_broken = [
+                (k, v.incompatibilities)
+                for k, v in broken_state.criteria.items()
+            ]
+
             self._r.backtracking(candidate)
 
-            # Mark the retracted candidate as incompatible.
-            criterion = self.state.criteria[name].excluded_of(candidate)
-            if criterion is None:
-                # State does not work after adding the new incompatibility
-                # information. Try the still previous state.
-                del self._states[-1]
-                continue
+            # Create a new state from the last known-to-work one, and apply
+            # the previously gathered incompatibility information.
+            self._push_new_state()
+            for k, incompatibilities in incompatibilities_from_broken:
+                try:
+                    crit = self.state.criteria[k]
+                except KeyError:
+                    continue
+                self.state.criteria[k] = crit.excluded_of(incompatibilities)
 
-            # OK, let's work on this state again.
-            self.state.criteria[name] = criterion
-            return
+            # Mark the newly known incompatibility.
+            criterion = self.state.criteria[name].excluded_of([candidate])
+
+            # It works! Let's work on this new state.
+            if criterion:
+                self.state.criteria[name] = criterion
+                return
+
+            # State does not work after adding the new incompatibility
+            # information. Try the still previous state.
 
         # Nothing more to backtrack, give up.
         causes = [i for c in causing_criteria for i in c.information]
