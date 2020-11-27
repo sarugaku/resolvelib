@@ -1,3 +1,13 @@
+0.5.3 (2020-11-27)
+==================
+
+Bug Fixes
+---------
+
+- Fix a state management bug that causes the resolver to enter an infinite loop
+  in certain backtracking cases.  `#62 <https://github.com/sarugaku/resolvelib/issues/62>`_
+
+
 0.5.2 (2020-11-04)
 ==================
 

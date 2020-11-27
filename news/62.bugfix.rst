@@ -1,2 +1,0 @@
-Fix a state management bug that causes the resolver to enter an infinite loop
-in certain backtracking cases.
