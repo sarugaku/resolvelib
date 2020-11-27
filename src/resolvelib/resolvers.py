@@ -255,8 +255,8 @@ class Resolution(object):
         2.  Discard Y but remember the its pin and incompatibility information.
         3.  Push a new state Y' based on X, and apply the incompatibility
             information from Y to Y'.
-        4a. If this causes Y' to conflict, we need to backtrack again.
-            Discard Y', and start from the beginning to try obtaining an X'.
+        4a. If this causes Y' to conflict, we need to backtrack again. Make Y'
+            the new Z, and start from the beginning.
         4b. If the incompatibilites apply cleanly, end backtracking.
         """
         while len(self._states) >= 3:
