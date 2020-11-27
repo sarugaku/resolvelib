@@ -7,8 +7,5 @@
 		"pytest-sugar>=0.9.3",
 		"pytest-testmon<1.0.0"
 	],
-	"conflicted": {
-		"coverage": [">=4", "<5", "==5.3"],
-		"pytest": [">=2.7", ">=2.8.0", ">=2.9", ">=5.0", "<4", "<5"]
-	}
+	"conflicted": ["coverage", "pytest"]
 }

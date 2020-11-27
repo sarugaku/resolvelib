@@ -62,10 +62,7 @@ class PythonInputProvider(AbstractProvider):
             self.expected_resolution = None
 
         if "conflicted" in case_data:
-            self.expected_confliction = {
-                k: {packaging.specifiers.Specifier(s) for s in v}
-                for k, v in case_data["conflicted"].items()
-            }
+            self.expected_confliction = set(case_data["conflicted"])
         else:
             self.expected_confliction = None
 
@@ -154,11 +151,10 @@ def provider(request):
 
 
 def _format_confliction(exception):
-    conflicts = collections.defaultdict(set)
-    for cause in exception.causes:
-        key = packaging.utils.canonicalize_name(cause.requirement.name)
-        conflicts[key] |= set(cause.requirement.specifier)
-    return dict(conflicts)
+    return {
+        packaging.utils.canonicalize_name(cause.requirement.name)
+        for cause in exception.causes
+    }
 
 
 def _format_resolution(result):
@@ -172,12 +168,11 @@ def _format_resolution(result):
 def test_resolver(provider, reporter):
     resolver = Resolver(provider, reporter)
 
-    try:
-        resolution = resolver.resolve(provider.root_requirements)
-    except ResolutionImpossible as e:
-        result = _format_confliction(e)
-        expectation = provider.expected_confliction
+    if provider.expected_confliction:
+        with pytest.raises(ResolutionImpossible) as ctx:
+            result = resolver.resolve(provider.root_requirements)
+            print(_format_resolution(result))  # Provide some debugging hints.
+        assert _format_confliction(ctx.value) == provider.expected_confliction
     else:
-        result = _format_resolution(resolution)
-        expectation = provider.expected_resolution
-    assert result == expectation
+        resolution = resolver.resolve(provider.root_requirements)
+        assert _format_resolution(resolution) == provider.expected_resolution
