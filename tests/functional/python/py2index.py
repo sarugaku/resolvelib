@@ -63,10 +63,9 @@ def _parse_python_version(s: str) -> PythonVersion:
 def _parse_output_path(s: str) -> Optional[pathlib.Path]:
     if s == "-":
         return None
-    path = pathlib.Path(s)
-    if path.is_absolute():
-        return path
-    return pathlib.Path(__file__).with_name("inputs").joinpath("index", path)
+    if os.sep in s or (os.altsep and os.altsep in s):
+        return pathlib.Path(s)
+    return pathlib.Path(__file__).with_name("inputs").joinpath("index", s)
 
 
 def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
