@@ -242,11 +242,11 @@ class Resolution(object):
         [ state Z ]
         [ state Y ]
         [ state X ]
-        .... States earlier are irrelevent.
+        .... States earlier are irrelevant.
 
-        1. No pin worked for Z, so it does not have a pin.
+        1. No pins worked for Z, so it does not have a pin.
         2. We want to reset state Y to unpinned, and pin another candidate.
-        3. state X holds what state Y was before the pin, but does not
+        3. State X holds what state Y was before the pin, but does not
            have the incompatibility information gathered in state Y.
 
         Each iteration of the loop will:
