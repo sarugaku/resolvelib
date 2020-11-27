@@ -104,7 +104,7 @@ class Criterion(object):
 
         Returns the new instance, or None if we still have no valid candidates.
         """
-        cands = self.candidates.excluding(candidate)
+        cands = self.candidates.excluding([candidate])
         if not cands:
             return None
         incompats = list(self.incompatibilities)
