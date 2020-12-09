@@ -271,28 +271,36 @@ class Resolution(object):
                 for k, v in broken_state.criteria.items()
             ]
 
+            # Also mark the newly known incompatibility.
+            incompatibilities_from_broken.append((name, [candidate]))
+
             self._r.backtracking(candidate)
 
             # Create a new state from the last known-to-work one, and apply
             # the previously gathered incompatibility information.
-            self._push_new_state()
-            for k, incompatibilities in incompatibilities_from_broken:
-                try:
-                    crit = self.state.criteria[k]
-                except KeyError:
-                    continue
-                self.state.criteria[k] = crit.excluded_of(incompatibilities)
-
-            # Mark the newly known incompatibility.
-            criterion = self.state.criteria[name].excluded_of([candidate])
-
-            # It works! Let's work on this new state.
-            if criterion:
-                self.state.criteria[name] = criterion
+            def _patch_criteria():
+                for k, incompatibilities in incompatibilities_from_broken:
+                    if not incompatibilities:
+                        continue
+                    try:
+                        criterion = self.state.criteria[k]
+                    except KeyError:
+                        continue
+                    criterion = criterion.excluded_of(incompatibilities)
+                    if criterion is None:
+                        return False
+                    self.state.criteria[k] = criterion
                 return True
 
-            # State does not work after adding the new incompatibility
-            # information. Try the still previous state.
+            self._push_new_state()
+            success = _patch_criteria()
+
+            # It works! Let's work on this new state.
+            if success:
+                return True
+
+            # State does not work after applying known incompatibilities.
+            # Try the still previous state.
 
         # No way to backtrack anymore.
         return False
