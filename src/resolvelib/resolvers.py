@@ -257,7 +257,7 @@ class Resolution(object):
             information from Y to Y'.
         4a. If this causes Y' to conflict, we need to backtrack again. Make Y'
             the new Z and go back to step 2.
-        4b. If the incompatibilites apply cleanly, end backtracking.
+        4b. If the incompatibilities apply cleanly, end backtracking.
         """
         while len(self._states) >= 3:
             # Remove the state that triggered backtracking.
