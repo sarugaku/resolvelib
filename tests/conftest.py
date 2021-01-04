@@ -27,3 +27,8 @@ def reporter_cls():
 @pytest.fixture()
 def reporter(reporter_cls):
     return reporter_cls()
+
+
+@pytest.fixture()
+def base_reporter():
+    return BaseReporter()
