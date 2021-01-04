@@ -88,6 +88,14 @@ def test_criteria_pruning(reporter_cls, base_reporter):
                 and candidate.version in requirement.versions
             )
 
+        def match_identically(self, reqs1, reqs2):
+            vers1 = collections.defaultdict(set)
+            vers2 = collections.defaultdict(set)
+            for rs, vs in [(reqs1, vers1), (reqs2, vers2)]:
+                for r in rs:
+                    vs[r.name] = vs[r.name].union(r.versions)
+            return vers1 == vers2
+
         def get_dependencies(self, candidate):
             return candidate.dependencies
 

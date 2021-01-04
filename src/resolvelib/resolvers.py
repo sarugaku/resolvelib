@@ -1,4 +1,5 @@
 import collections
+import itertools
 
 from .providers import AbstractResolver
 from .structs import DirectedGraph, build_iter_view
@@ -143,6 +144,7 @@ class Resolution(object):
         self._p = provider
         self._r = reporter
         self._states = []
+        self._known_failures = []
 
     @property
     def state(self):
@@ -199,6 +201,22 @@ class Resolution(object):
             criteria[name] = crit
         return criteria
 
+    def _match_known_failure_causes(self, updating_criteria):
+        criteria = self.state.criteria.copy()
+        criteria.update(updating_criteria)
+        for state in self._known_failures:
+            identical = self._p.match_identically(
+                itertools.chain.from_iterable(
+                    crit.iter_requirement() for crit in criteria.values()
+                ),
+                itertools.chain.from_iterable(
+                    crit.iter_requirement() for crit in state.criteria.values()
+                ),
+            )
+            if identical:
+                return True
+        return False
+
     def _attempt_to_pin_criterion(self, name, criterion):
         causes = []
         for candidate in criterion.candidates:
@@ -206,6 +224,9 @@ class Resolution(object):
                 criteria = self._get_criteria_to_update(candidate)
             except RequirementsConflicted as e:
                 causes.append(e.criterion)
+                continue
+
+            if self._match_known_failure_causes(criteria):
                 continue
 
             # Check the newly-pinned candidate actually works. This should
@@ -226,7 +247,7 @@ class Resolution(object):
             self.state.mapping[name] = candidate
             self.state.criteria.update(criteria)
 
-            return []
+            return None
 
         # All candidates tried, nothing works. This criterion is a dead
         # end, signal for backtracking.
@@ -260,7 +281,7 @@ class Resolution(object):
         """
         while len(self._states) >= 3:
             # Remove the state that triggered backtracking.
-            del self._states[-1]
+            self._known_failures.append(self._states.pop())
 
             # Retrieve the last candidate pin and known incompatibilities.
             broken_state = self._states.pop()
@@ -345,7 +366,7 @@ class Resolution(object):
             )
             failure_causes = self._attempt_to_pin_criterion(name, criterion)
 
-            if failure_causes:
+            if failure_causes is not None:
                 # Backtrack if pinning fails. The backtrack process puts us in
                 # an unpinned state, so we can work on it in the next round.
                 success = self._backtrack()

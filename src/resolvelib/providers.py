@@ -94,6 +94,21 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
+    def match_identically(self, requirements_a, requirements_b):
+        """Whether the two given requirement sets find the same candidates.
+
+        This is used by the resolver to perform tree-pruning. If the two
+        requirement sets provide the same candidates, the resolver can avoid
+        visiting the subtree again when it's encountered, and directly mark it
+        as a dead end instead.
+
+        Both arguments are iterators yielding requirement objects. A boolean
+        should be returned to indicate whether the two sets should be treated
+        as matching.
+        """
+        return False  # TODO: Remove this and implement the method in tests.
+        raise NotImplementedError
+
 
 class AbstractResolver(object):
     """The thing that performs the actual resolution work."""
