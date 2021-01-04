@@ -132,8 +132,8 @@ def provider(request):
     return SwiftInputProvider(request.param)
 
 
-def test_resolver(provider, base_reporter):
-    resolver = Resolver(provider, base_reporter)
+def test_resolver(provider, reporter):
+    resolver = Resolver(provider, reporter)
     result = resolver.resolve(provider.root_requirements)
 
     display = {
