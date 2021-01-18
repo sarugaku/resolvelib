@@ -35,6 +35,11 @@ class Candidate:
             return f"<{self.name}=={self.version}>"
         return f"<{self.name}[{','.join(self.extras)}]=={self.version}>"
 
+    def __eq__(self, other):
+        if not isinstance(other, Candidate):
+            return NotImplemented
+        return self.url == other.url and self.extras == other.extras
+
     @property
     def metadata(self):
         if self._metadata is None:
@@ -124,7 +129,7 @@ class PyPIProvider(ExtrasProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def find_matches(self, requirements):
+    def find_matches(self, requirements, incompatibilities):
         assert requirements, "resolver promises at least one requirement"
         assert not any(
             r.extras for r in requirements[1:]
@@ -138,8 +143,11 @@ class PyPIProvider(ExtrasProvider):
         candidates = []
         for c in get_project_from_pypi(name, set()):
             version = c.version
-            if all(version in r.specifier for r in requirements):
-                candidates.append(c)
+            if not all(version in r.specifier for r in requirements):
+                continue
+            if c in incompatibilities:
+                continue
+            candidates.append(c)
         return sorted(candidates, key=attrgetter("version"), reverse=True)
 
     def is_satisfied_by(self, requirement, candidate):

@@ -76,9 +76,12 @@ class Criterion(object):
     @classmethod
     def from_requirement(cls, provider, requirement, parent):
         """Build an instance from a requirement."""
-        cands = build_iter_view(provider.find_matches([requirement]))
+        incompatibilities = []
+        cands = build_iter_view(
+            provider.find_matches([requirement], incompatibilities),
+        )
         infos = [RequirementInformation(requirement, parent)]
-        criterion = cls(cands, infos, incompatibilities=[])
+        criterion = cls(cands, infos, incompatibilities)
         if not cands:
             raise RequirementsConflicted(criterion)
         return criterion
@@ -93,22 +96,28 @@ class Criterion(object):
         """Build a new instance from this and a new requirement."""
         infos = list(self.information)
         infos.append(RequirementInformation(requirement, parent))
-        cands = build_iter_view(provider.find_matches([r for r, _ in infos]))
-        criterion = type(self)(cands, infos, list(self.incompatibilities))
+        incompatibilities = list(self.incompatibilities)
+        cands = build_iter_view(
+            provider.find_matches([r for r, _ in infos], incompatibilities),
+        )
+        criterion = type(self)(cands, infos, incompatibilities)
         if not cands:
             raise RequirementsConflicted(criterion)
         return criterion
 
-    def excluded_of(self, candidates):
+    def excluded_of(self, provider, candidates):
         """Build a new instance from this, but excluding specified candidates.
 
         Returns the new instance, or None if we still have no valid candidates.
         """
-        cands = self.candidates.excluding(candidates)
+        infos = list(self.information)
+        incompatibilities = self.incompatibilities + candidates
+        cands = build_iter_view(
+            provider.find_matches([r for r, _ in infos], incompatibilities),
+        )
         if not cands:
             return None
-        incompats = self.incompatibilities + candidates
-        return type(self)(cands, list(self.information), incompats)
+        return type(self)(cands, infos, incompatibilities)
 
 
 class ResolutionError(ResolverException):
@@ -285,7 +294,10 @@ class Resolution(object):
                         criterion = self.state.criteria[k]
                     except KeyError:
                         continue
-                    criterion = criterion.excluded_of(incompatibilities)
+                    criterion = criterion.excluded_of(
+                        self._p,
+                        incompatibilities,
+                    )
                     if criterion is None:
                         return False
                     self.state.criteria[k] = criterion

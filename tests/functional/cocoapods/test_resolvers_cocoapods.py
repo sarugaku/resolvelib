@@ -108,7 +108,7 @@ class CocoaPodsInputProvider(AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def _iter_matches(self, name, requirements):
+    def _iter_matches(self, name, requirements, excluding):
         try:
             data = self.index[name]
         except KeyError:
@@ -116,6 +116,8 @@ class CocoaPodsInputProvider(AbstractProvider):
         for entry in data:
             version = packaging.version.parse(entry["version"])
             if any(version not in r.spec for r in requirements):
+                continue
+            if any(version == c.ver for c in excluding):
                 continue
             # Some fixtures incorrectly set dependencies to an empty list.
             dependencies = entry["dependencies"] or {}
@@ -125,10 +127,10 @@ class CocoaPodsInputProvider(AbstractProvider):
             ]
             yield Candidate(entry["name"], version, dependencies)
 
-    def find_matches(self, requirements):
+    def find_matches(self, requirements, incompatibilities):
         name = requirements[0].name
         candidates = sorted(
-            self._iter_matches(name, requirements),
+            self._iter_matches(name, requirements, incompatibilities),
             key=operator.attrgetter("ver"),
             reverse=True,
         )

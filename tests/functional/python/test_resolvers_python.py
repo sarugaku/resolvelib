@@ -78,11 +78,13 @@ class PythonInputProvider(AbstractProvider):
         key = next(iter(candidates)).name if candidates else ""
         return (transitive, key)
 
-    def _iter_matches(self, name, requirements):
+    def _iter_matches(self, name, requirements, excluding):
         extras = {e for r in requirements for e in r.extras}
         for key, value in self.index[name].items():
             version = packaging.version.parse(key)
             if any(version not in r.specifier for r in requirements):
+                continue
+            if any(version == c.version for c in excluding):
                 continue
             yield Candidate(
                 name=name,
@@ -90,10 +92,10 @@ class PythonInputProvider(AbstractProvider):
                 extras=extras,
             )
 
-    def find_matches(self, requirements):
+    def find_matches(self, requirements, incompats):
         name = packaging.utils.canonicalize_name(requirements[0].name)
         candidates = sorted(
-            (c for c in self._iter_matches(name, requirements)),
+            (c for c in self._iter_matches(name, requirements, incompats)),
             key=operator.attrgetter("version"),
             reverse=True,
         )
