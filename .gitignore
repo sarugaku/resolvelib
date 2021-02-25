@@ -6,6 +6,7 @@ __pycache__
 .nox
 .vscode
 .mypy_cache
+venv/
 
 build
 dist
