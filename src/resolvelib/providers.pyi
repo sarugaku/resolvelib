@@ -2,7 +2,6 @@ from typing import Any, Generic, Iterable, List, Protocol, Union
 
 from .reporters import BaseReporter
 from .structs import (
-    IterableView,
     KT,
     RT,
     CT,
@@ -18,7 +17,7 @@ class AbstractProvider(Generic[RT, CT, KT]):
     def get_preference(
         self,
         resolution: CT,
-        candidates: IterableView[CT],
+        candidates: Iterable[CT],
         information: RequirementInformation[RT, CT],
     ) -> Comparable: ...
     def find_matches(self, requirements: List[RT]) -> MatchesType: ...
