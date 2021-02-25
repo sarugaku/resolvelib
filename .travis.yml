@@ -7,10 +7,11 @@ jobs:
   include:
     - stage: lint
       name: syntax
-      install: pip install black flake8
+      install: pip install black flake8 mypy
       script:
         - black --check .
         - flake8 .
+        - mypy src/
     - name: packaging
       install: pip install .[release]
       script: setl publish --no-upload

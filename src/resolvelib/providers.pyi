@@ -14,3 +14,6 @@ class AbstractResolver(Generic[RT, CT, KT]):
     base_exception = Exception
     provider: AbstractProvider[RT, CT, KT]
     reporter: BaseReporter
+    def __init__(
+        self, provider: AbstractProvider[RT, CT, KT], reporter: BaseReporter
+    ): ...
