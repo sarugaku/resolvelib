@@ -19,6 +19,7 @@ def lint(session):
 
     session.run("black", "--check", ".")
     session.run("flake8", ".")
+    session.run("mypy", "src")
 
 
 @nox.session(python=["3.9", "3.8", "3.7", "3.6", "3.5", "2.7"])
