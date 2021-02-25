@@ -10,7 +10,7 @@ charset = utf-8
 [*.md]
 trim_trailing_whitespace = false
 
-[*.{py,rst,yml}]
+[*.{py,rst,yml,pyi}]
 indent_style = space
 
 [*.{ini,json,toml,yml}]
