@@ -1,1 +1,2 @@
 include CHANGELOG.rst LICENSE
+recursive-include src *.pyi py.typed
