@@ -1,4 +1,5 @@
 from typing import (
+    Collection,
     Generic,
     Iterable,
     Iterator,
@@ -14,12 +15,17 @@ from .structs import (
     RT,
     DirectedGraph,
     IterableView,
-    RequirementInformation,
 )
+
+# This should be a NamedTuple, but Python 3.6 has a bug that prevents it.
+# https://stackoverflow.com/a/50531189/1376863
+class RequirementInformation(tuple, Generic[RT, CT]):
+    requirement: RT
+    parent: Optional[CT]
 
 class Criterion(Generic[RT, CT, KT]):
     candidates: IterableView[CT]
-    information: RequirementInformation[RT, CT]
+    information: Collection[RequirementInformation[RT, CT]]
     incompatibilities: List[CT]
     @classmethod
     def from_requirement(
@@ -57,7 +63,7 @@ class ResolutionTooDeep(ResolutionError):
 
 class Result(Generic[RT, CT, KT]):
     mapping: Mapping[KT, CT]
-    graph: DirectedGraph[KT]
+    graph: DirectedGraph[Optional[KT]]
     criteria: Mapping[KT, Criterion[RT, CT, KT]]
 
 class Resolver(AbstractResolver, Generic[RT, CT, KT]):
