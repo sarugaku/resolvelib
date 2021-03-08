@@ -67,6 +67,24 @@ class DirectedGraph(object):
         return iter(self._backwards[key])
 
 
+class ItemView(collections_abc.Mapping):
+    def __init__(self, criteria, attrname):
+        self._criteria = criteria
+        self._attrname = attrname
+
+    def __contains__(self, key):
+        return key in self._criteria
+
+    def __getitem__(self, key):
+        return getattr(self._criteria[key], self._attrname)
+
+    def __iter__(self):
+        return iter(self._criteria)
+
+    def __len__(self):
+        return len(self._criteria)
+
+
 class _FactoryIterableView(object):
     """Wrap an iterator factory returned by `find_matches()`.
 
@@ -91,11 +109,10 @@ class _FactoryIterableView(object):
 
     __nonzero__ = __bool__  # XXX: Python 2.
 
-    def __iter__(self):
-        return self._factory()
+    def __contains__(self, value):
+        return value in self._factory()
 
-    def for_preference(self):
-        """Provide an candidate iterable for `get_preference()`"""
+    def __iter__(self):
         return self._factory()
 
     def excluding(self, candidates):
@@ -125,15 +142,17 @@ class _SequenceIterableView(object):
 
     __nonzero__ = __bool__  # XXX: Python 2.
 
+    def __contains__(self, value):
+        return value in self._sequence
+
+    def __getitem__(self, key):
+        return self._sequence[key]
+
     def __iter__(self):
         return iter(self._sequence)
 
     def __len__(self):
         return len(self._sequence)
-
-    def for_preference(self):
-        """Provide an candidate iterable for `get_preference()`"""
-        return self._sequence
 
     def excluding(self, candidates):
         """Create a new instance excluding specified candidates."""

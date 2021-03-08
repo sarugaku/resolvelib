@@ -1,26 +1,28 @@
-from typing import Any, Generic, Iterable, List, Protocol, Union
+from typing import Any, Collection, Generic, Iterable, Mapping, Protocol, Union
 
 from .reporters import BaseReporter
 from .structs import (
     KT,
     RT,
     CT,
-    MatchesType,
+    IterableView,
+    Matches,
     RequirementInformation,
 )
 
-class Comparable(Protocol):
+class Preference(Protocol):
     def __lt__(self, __other: Any) -> bool: ...
 
 class AbstractProvider(Generic[RT, CT, KT]):
     def identify(self, requirement_or_candidate: Union[RT, CT]) -> KT: ...
     def get_preference(
         self,
-        resolution: CT,
-        candidates: Iterable[CT],
-        information: RequirementInformation[RT, CT],
-    ) -> Comparable: ...
-    def find_matches(self, requirements: List[RT]) -> MatchesType: ...
+        identifier: KT,
+        resolutions: Mapping[KT, CT],
+        candidates: Mapping[KT, IterableView[CT]],
+        information: Mapping[KT, Collection[RequirementInformation[RT, CT]]],
+    ) -> Preference: ...
+    def find_matches(self, requirements: Collection[RT]) -> Matches: ...
     def is_satisfied_by(self, requirement: RT, candidate: CT) -> bool: ...
     def get_dependencies(self, candidate: CT) -> Iterable[RT]: ...
 

@@ -1,7 +1,7 @@
 import collections
 
 from .providers import AbstractResolver
-from .structs import DirectedGraph, build_iter_view
+from .structs import DirectedGraph, ItemView, build_iter_view
 
 
 RequirementInformation = collections.namedtuple(
@@ -176,22 +176,23 @@ class Resolution(object):
             crit = Criterion.from_requirement(self._p, requirement, parent)
         return name, crit
 
-    def _get_criterion_item_preference(self, item):
-        name, criterion = item
+    def _get_criterion_preference(self, name):
+        criteria = self.state.criteria
         return self._p.get_preference(
-            resolution=self.state.mapping.get(name),
-            candidates=criterion.candidates.for_preference(),
-            information=criterion.information,
+            identifier=name,
+            resolutions=self.state.mapping,
+            candidates=ItemView(criteria, "candidates"),
+            information=ItemView(criteria, "information"),
         )
 
-    def _is_current_pin_satisfying(self, name, criterion):
+    def _is_current_pin_satisfying(self, name):
         try:
             current_pin = self.state.mapping[name]
         except KeyError:
             return False
         return all(
             self._p.is_satisfied_by(requirement=r, candidate=current_pin)
-            for r in criterion.iter_requirement()
+            for r in self.state.criteria[name].iter_requirement()
         )
 
     def _get_criteria_to_update(self, candidate):
@@ -201,7 +202,9 @@ class Resolution(object):
             criteria[name] = crit
         return criteria
 
-    def _attempt_to_pin_criterion(self, name, criterion):
+    def _attempt_to_pin_criterion(self, name):
+        criterion = self.state.criteria[name]
+
         causes = []
         for candidate in criterion.candidates:
             try:
@@ -329,23 +332,20 @@ class Resolution(object):
         for round_index in range(max_rounds):
             self._r.starting_round(index=round_index)
 
-            unsatisfied_criterion_items = [
-                item
-                for item in self.state.criteria.items()
-                if not self._is_current_pin_satisfying(*item)
+            unsatisfied_names = [
+                name
+                for name in self.state.criteria
+                if not self._is_current_pin_satisfying(name)
             ]
 
             # All criteria are accounted for. Nothing more to pin, we are done!
-            if not unsatisfied_criterion_items:
+            if not unsatisfied_names:
                 self._r.ending(state=self.state)
                 return self.state
 
             # Choose the most preferred unpinned criterion to try.
-            name, criterion = min(
-                unsatisfied_criterion_items,
-                key=self._get_criterion_item_preference,
-            )
-            failure_causes = self._attempt_to_pin_criterion(name, criterion)
+            name = min(unsatisfied_names, key=self._get_criterion_preference)
+            failure_causes = self._attempt_to_pin_criterion(name)
 
             if failure_causes:
                 # Backtrack if pinning fails. The backtrack process puts us in

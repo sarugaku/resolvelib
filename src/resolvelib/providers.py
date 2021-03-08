@@ -9,23 +9,29 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
-    def get_preference(self, resolution, candidates, information):
+    def get_preference(self, identifier, resolutions, candidates, information):
         """Produce a sort key for given requirement based on preference.
 
         The preference is defined as "I think this requirement should be
         resolved first". The lower the return value is, the more preferred
         this group of arguments is.
 
-        :param resolution: Currently pinned candidate, or `None`.
-        :param candidates: An iterable of possible candidates.
-        :param information: A list of requirement information.
+        :param identifier: Identifier of dependency to return preference for.
+        :param resolutions: Mapping of currently pinned candidates. Each key is
+            an identifier, and each value is a candidate.
+        :param candidates: Mapping of possible candidates for each package.
+            Each value a collection of candidates.
+        :param information: Mapping of requirement information of each package.
+            Each value an iterator of requirement information.
 
-        The `candidates` iterable's exact type depends on the return type of
-        `find_matches()`. A sequence is passed-in as-is if possible. If it
-        returns a callble, the iterator returned by that callable is passed
-        in here.
+        Each key of a mapping argument is a dependency identifier.
 
-        Each element in `information` is a named tuple with two entries:
+        The exact type of each element of the values in `candidates` depends on
+        how the provider implements `find_matches()`. It implements the
+        sequence protocol if a sequence was returned. If a callable was
+        returned, it is an iterable container.
+
+        Each element of the values in `information` has two entries:
 
         * `requirement` specifies a requirement contributing to the current
           candidate list.

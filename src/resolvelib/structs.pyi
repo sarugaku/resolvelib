@@ -1,3 +1,4 @@
+from abc import ABCMeta
 from typing import (
     Callable,
     Container,
@@ -5,7 +6,6 @@ from typing import (
     Iterable,
     Iterator,
     Optional,
-    Protocol,
     Tuple,
     TypeVar,
     Union,
@@ -15,16 +15,13 @@ KT = TypeVar("KT")
 RT = TypeVar("RT")
 CT = TypeVar("CT")
 _T = TypeVar("_T")
-MatchesType = Union[Iterable[CT], Callable[[], Iterator[CT]]]
+Matches = Union[Iterable[CT], Callable[[], Iterator[CT]]]
 
 class RequirementInformation(Generic[RT, CT]):
     requirement: RT
     parent: Optional[CT]
 
-class IterableView(Protocol[CT]):
-    def __iter__(self) -> Iterator[CT]: ...
-    def __len__(self) -> int: ...
-    def for_preference(self) -> Iterable[CT]: ...
+class IterableView(Container[CT], Iterable[CT], metaclass=ABCMeta):
     def excluding(self: _T, candidates: Container[CT]) -> _T: ...
 
 class DirectedGraph(Generic[KT]):
@@ -40,4 +37,4 @@ class DirectedGraph(Generic[KT]):
     def iter_children(self, key: KT) -> Iterable[KT]: ...
     def iter_parents(self, key: KT) -> Iterable[KT]: ...
 
-def build_iter_view(matches: MatchesType) -> IterableView[CT]: ...
+def build_iter_view(matches: Matches) -> IterableView[CT]: ...
