@@ -14,8 +14,11 @@ from .structs import (
     RT,
     DirectedGraph,
     IterableView,
-    RequirementInformation,
 )
+
+class RequirementInformation(Generic[RT, CT]):
+    requirement: RT
+    parent: Optional[CT]
 
 class Criterion(Generic[RT, CT, KT]):
     candidates: IterableView[CT]

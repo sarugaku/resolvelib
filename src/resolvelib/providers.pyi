@@ -1,13 +1,13 @@
 from typing import Any, Collection, Generic, Iterable, Mapping, Protocol, Union
 
 from .reporters import BaseReporter
+from .resolvers import RequirementInformation
 from .structs import (
     KT,
     RT,
     CT,
     IterableView,
     Matches,
-    RequirementInformation,
 )
 
 class Preference(Protocol):

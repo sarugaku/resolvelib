@@ -5,7 +5,6 @@ from typing import (
     Generic,
     Iterable,
     Iterator,
-    Optional,
     Tuple,
     TypeVar,
     Union,
@@ -16,10 +15,6 @@ RT = TypeVar("RT")
 CT = TypeVar("CT")
 _T = TypeVar("_T")
 Matches = Union[Iterable[CT], Callable[[], Iterator[CT]]]
-
-class RequirementInformation(Generic[RT, CT]):
-    requirement: RT
-    parent: Optional[CT]
 
 class IterableView(Container[CT], Iterable[CT], metaclass=ABCMeta):
     def excluding(self: _T, candidates: Container[CT]) -> _T: ...
