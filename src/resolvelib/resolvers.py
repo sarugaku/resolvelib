@@ -168,7 +168,7 @@ class Resolution(object):
 
     def _merge_into_criterion(self, requirement, parent):
         self._r.adding_requirement(requirement=requirement, parent=parent)
-        name = self._p.identify(requirement=requirement)
+        name = self._p.identify(requirement_or_candidate=requirement)
         if name in self.state.criteria:
             crit = self.state.criteria[name]
             crit = crit.merged_with(self._p, requirement, parent)

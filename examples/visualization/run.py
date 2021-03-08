@@ -1,9 +1,9 @@
 import re
 import sys
 
-from reporter_demo import Candidate, Requirement
-from visualization.generate import generate_html
-from visualization.reporter import GraphGeneratingReporter
+from ..reporter_demo import Candidate, Requirement
+from .generate import generate_html
+from .reporter import GraphGeneratingReporter
 
 
 def process_arguments(function, args):

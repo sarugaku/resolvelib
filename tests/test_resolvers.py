@@ -13,26 +13,30 @@ def test_candidate_inconsistent_error():
     candidate = "bar"
 
     class Provider(AbstractProvider):
-        def identify(self, d):
-            assert d is requirement or d is candidate
-            return d
+        def __init__(self, requirement, candidate):
+            self.requirement = requirement
+            self.candidate = candidate
 
-        def get_preference(self, *_):
+        def identify(self, requirement_or_candidate):
+            assert requirement_or_candidate is self.requirement
+            return requirement_or_candidate
+
+        def get_preference(self, **_):
             return 0
 
-        def get_dependencies(self, _):
+        def get_dependencies(self, **_):
             return []
 
-        def find_matches(self, rs):
-            assert len(rs) == 1 and rs[0] is requirement
-            return [candidate]
+        def find_matches(self, requirements):
+            assert list(requirements) == [self.requirement]
+            return [self.candidate]
 
-        def is_satisfied_by(self, r, c):
-            assert r is requirement
-            assert c is candidate
+        def is_satisfied_by(self, requirement, candidate):
+            assert requirement is self.requirement
+            assert candidate is self.candidate
             return False
 
-    resolver = Resolver(Provider(), BaseReporter())
+    resolver = Resolver(Provider(requirement, candidate), BaseReporter())
 
     with pytest.raises(InconsistentCandidate) as ctx:
         resolver.resolve([requirement])

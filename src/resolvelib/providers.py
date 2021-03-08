@@ -1,7 +1,7 @@
 class AbstractProvider(object):
     """Delegate class to provide requirement interface for the resolver."""
 
-    def identify(self, requirement):
+    def identify(self, requirement_or_candidate):
         """Given a requirement, return an identifier for it.
 
         This is used to identify a requirement, e.g. whether two requirements
