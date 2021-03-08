@@ -1,3 +1,12 @@
+0.5.5 (2021-03-09)
+==================
+
+Features
+--------
+
+- Provide type stubs for most classes.  `#72 <https://github.com/sarugaku/resolvelib/issues/72>`_
+
+
 0.5.4 (2020-12-27)
 ==================
 
