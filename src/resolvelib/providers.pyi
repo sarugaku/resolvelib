@@ -1,4 +1,13 @@
-from typing import Any, Collection, Generic, Iterable, Mapping, Protocol, Union
+from typing import (
+    Any,
+    Collection,
+    Generic,
+    Iterable,
+    Mapping,
+    Protocol,
+    Sequence,
+    Union,
+)
 
 from .reporters import BaseReporter
 from .resolvers import RequirementInformation
@@ -22,7 +31,7 @@ class AbstractProvider(Generic[RT, CT, KT]):
         candidates: Mapping[KT, IterableView[CT]],
         information: Mapping[KT, Collection[RequirementInformation[RT, CT]]],
     ) -> Preference: ...
-    def find_matches(self, requirements: Collection[RT]) -> Matches: ...
+    def find_matches(self, requirements: Sequence[RT]) -> Matches: ...
     def is_satisfied_by(self, requirement: RT, candidate: CT) -> bool: ...
     def get_dependencies(self, candidate: CT) -> Iterable[RT]: ...
 

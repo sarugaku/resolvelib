@@ -73,7 +73,7 @@ class AbstractProvider(object):
         * An iterable of candidates. This will be consumed immediately into a
           list of candidates.
 
-        :param requirements: A collection of requirements which all of the
+        :param requirements: A sequence of requirements which all of the
             returned candidates must match. All requirements are guaranteed to
             have the same identifier. The collection is never empty.
         """
