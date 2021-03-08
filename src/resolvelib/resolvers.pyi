@@ -60,7 +60,7 @@ class ResolutionTooDeep(ResolutionError):
 
 class Result(Generic[RT, CT, KT]):
     mapping: Mapping[KT, CT]
-    graph: DirectedGraph[KT]
+    graph: DirectedGraph[Optional[KT]]
     criteria: Mapping[KT, Criterion[RT, CT, KT]]
 
 class Resolver(AbstractResolver, Generic[RT, CT, KT]):
