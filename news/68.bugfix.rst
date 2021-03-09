@@ -1,0 +1,3 @@
+The resolver no longer relies on implicit candidate equality to detect
+incompatibilities. This is done by an additional ``find_matches()`` argument;
+see the *Features* section to learn more.
