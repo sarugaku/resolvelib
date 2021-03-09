@@ -50,7 +50,6 @@ class PythonInputProvider(AbstractProvider):
             packaging.requirements.Requirement(r)
             for r in case_data["requested"]
         ]
-        self.pinned_versions = {}
 
         if "resolved" in case_data:
             self.expected_resolution = {
@@ -78,30 +77,25 @@ class PythonInputProvider(AbstractProvider):
         key = next(iter(candidates)).name if candidates else ""
         return (transitive, key)
 
-    def _iter_matches(self, name, requirements):
-        extras = {e for r in requirements for e in r.extras}
+    def _iter_matches(self, identifier, requirements, incompatibilities):
+        name, _, _ = identifier.partition("[")
+        bad_versions = {c.version for c in incompatibilities[identifier]}
+        extras = {e for r in requirements[identifier] for e in r.extras}
         for key, value in self.index[name].items():
-            version = packaging.version.parse(key)
-            if any(version not in r.specifier for r in requirements):
+            v = packaging.version.parse(key)
+            if any(v not in r.specifier for r in requirements[identifier]):
                 continue
-            yield Candidate(
-                name=name,
-                version=version,
-                extras=extras,
-            )
+            if v in bad_versions:
+                continue
+            yield Candidate(name=name, version=v, extras=extras)
 
-    def find_matches(self, requirements):
-        name = packaging.utils.canonicalize_name(requirements[0].name)
+    def find_matches(self, identifier, requirements, incompatibilities):
         candidates = sorted(
-            (c for c in self._iter_matches(name, requirements)),
+            self._iter_matches(identifier, requirements, incompatibilities),
             key=operator.attrgetter("version"),
             reverse=True,
         )
-        pinned = self.pinned_versions.get(name)
-        for candidate in candidates:
-            if pinned is not None and pinned != candidate.version:
-                continue
-            yield candidate
+        return candidates
 
     def is_satisfied_by(self, requirement, candidate):
         return candidate.version in requirement.specifier

@@ -82,22 +82,25 @@ class SwiftInputProvider(AbstractProvider):
     def get_preference(self, resolution, candidates, information):
         return len(candidates)
 
-    def _iter_matches(self, requirements):
-        container = requirements[0].container
+    def _iter_matches(self, identifier, requirements, incompatibilities):
+        bad_versions = {c.version for c in incompatibilities[identifier]}
+        container = next(requirements[identifier]).container
         for version in container["versions"]:
+            if version in bad_versions:
+                continue
             ver = _parse_version(version)
             satisfied = all(
                 _is_version_allowed(ver, r.constraint["requirement"])
-                for r in requirements
+                for r in requirements[identifier]
             )
             if not satisfied:
                 continue
             preference = _calculate_preference(ver)
             yield (preference, Candidate(container, version))
 
-    def find_matches(self, requirements):
+    def find_matches(self, identifier, requirements, incompatibilities):
         matches = sorted(
-            self._iter_matches(requirements),
+            self._iter_matches(identifier, requirements, incompatibilities),
             key=operator.itemgetter(0),
             reverse=True,
         )

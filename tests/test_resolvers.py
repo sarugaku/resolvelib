@@ -27,8 +27,9 @@ def test_candidate_inconsistent_error():
         def get_dependencies(self, **_):
             return []
 
-        def find_matches(self, requirements):
-            assert list(requirements) == [self.requirement]
+        def find_matches(self, identifier, requirements, incompatibilities):
+            assert list(requirements[identifier]) == [self.requirement]
+            assert next(incompatibilities[identifier], None) is None
             return [self.candidate]
 
         def is_satisfied_by(self, requirement, candidate):
