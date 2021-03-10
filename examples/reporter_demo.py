@@ -72,8 +72,8 @@ class Provider(resolvelib.AbstractProvider):
     def identify(self, requirement_or_candidate):
         return requirement_or_candidate.name
 
-    def get_preference(self, resolution, candidates, information):
-        return len(candidates)
+    def get_preference(self, identifier, resolutions, candidates, information):
+        return sum(1 for _ in candidates[identifier])
 
     def find_matches(self, identifier, requirements, incompatibilities):
         name = identifier

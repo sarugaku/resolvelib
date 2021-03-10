@@ -72,10 +72,9 @@ class PythonInputProvider(AbstractProvider):
             return "{}[{}]".format(name, extras_str)
         return name
 
-    def get_preference(self, resolution, candidates, information):
-        transitive = all(parent is not None for _, parent in information)
-        key = next(iter(candidates)).name if candidates else ""
-        return (transitive, key)
+    def get_preference(self, identifier, resolutions, candidates, information):
+        transitive = all(p is not None for _, p in information[identifier])
+        return (transitive, identifier)
 
     def _iter_matches(self, identifier, requirements, incompatibilities):
         name, _, _ = identifier.partition("[")
