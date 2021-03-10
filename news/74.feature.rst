@@ -1,0 +1,5 @@
+Redesign ``find_matches()`` to include resolution state on dependencies other
+than the currently working one, to handle usages that need to return candidates
+based on non-local states. One such example is PEP 508 direct URLs specified
+on a package, which need to be available to the same package specified with
+extras (which would have a different identifier).
