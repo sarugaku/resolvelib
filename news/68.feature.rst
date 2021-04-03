@@ -1,2 +1,0 @@
-A new argument ``incompatibilities`` is now passed to the ``find_matches()``
-hook, which the provider must use to exclude matches from the return value.

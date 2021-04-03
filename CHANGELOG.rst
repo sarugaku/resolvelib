@@ -1,3 +1,27 @@
+0.6.0 (2021-04-04)
+==================
+
+Features
+--------
+
+- A new argument ``incompatibilities`` is now passed to the ``find_matches()``
+  hook, which the provider must use to exclude matches from the return value.  `#68 <https://github.com/sarugaku/resolvelib/issues/68>`_
+  
+- Redesign ``find_matches()`` to include resolution state on dependencies other
+  than the currently working one, to handle usages that need to return candidates
+  based on non-local states. One such example is PEP 508 direct URLs specified
+  on a package, which need to be available to the same package specified with
+  extras (which would have a different identifier).  `#74 <https://github.com/sarugaku/resolvelib/issues/74>`_
+  
+
+Bug Fixes
+---------
+
+- The resolver no longer relies on implicit candidate equality to detect
+  incompatibilities. This is done by an additional ``find_matches()`` argument;
+  see the *Features* section to learn more.  `#68 <https://github.com/sarugaku/resolvelib/issues/68>`_
+
+
 0.5.5 (2021-03-09)
 ==================
 
