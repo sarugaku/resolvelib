@@ -1,3 +1,16 @@
+0.7.0 (2021-04-13)
+==================
+
+Features
+--------
+
+- Redesign ``get_preferences()`` to include resolution state on dependencies
+  other than the currently working one, to allow the provider to better take
+  account of the global resolver knowledge and determine the best strategy. The
+  provider now can, for example, correctly calculate how far a dependency is
+  from the root node in the graph.  `#74 <https://github.com/sarugaku/resolvelib/issues/74>`_
+
+
 0.6.0 (2021-04-04)
 ==================
 

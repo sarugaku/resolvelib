@@ -1,5 +1,0 @@
-Redesign ``get_preferences()`` to include resolution state on dependencies
-other than the currently working one, to allow the provider to better take
-account of the global resolver knowledge and determine the best strategy. The
-provider now can, for example, correctly calculate how far a dependency is
-from the root node in the graph.
