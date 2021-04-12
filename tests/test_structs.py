@@ -50,39 +50,3 @@ def test_iter_view_multiple_iterable(source):
     next(iterator_a)
     assert next(iterator_b) == 0
     assert next(iterator_a) == 1
-
-
-@pytest.mark.parametrize("source", [_generate])
-def test_iter_view_for_preference_based_on_factory(source):
-    """Factory-based view returns an iterator for preference."""
-    view = build_iter_view(source)
-    iterator = view.for_preference()
-    assert iter(iterator) is iterator, "not an iterator"
-    assert list(iterator) == [0, 1]
-
-
-@pytest.mark.parametrize("source", [[0, 1], iter([0, 1])])
-def test_iter_view_for_preference_based_on_sequence(source):
-    """Sequence-based view returns a sequence for preference."""
-    view = build_iter_view(source)
-    assert view.for_preference() == [0, 1]
-
-
-@pytest.mark.parametrize(
-    "source",
-    [lambda: _generate, lambda: [0, 1], _generate],
-    ids=["callable", "sequence", "iterator"],
-)
-@pytest.mark.parametrize(
-    "exclusion, expected",
-    [
-        ([1], [0]),
-        ([0, 1], []),
-        ([1, 2], [0]),
-        ([2, 3], [0, 1]),
-    ],
-    ids=["one", "all", "partial", "none"],
-)
-def test_itera_view_excluding(source, exclusion, expected):
-    view = build_iter_view(source())
-    assert list(view.excluding(exclusion)) == expected
