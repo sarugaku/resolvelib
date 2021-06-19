@@ -80,7 +80,7 @@ class PythonInputProvider(AbstractProvider):
         name, _, _ = identifier.partition("[")
         bad_versions = {c.version for c in incompatibilities[identifier]}
         extras = {e for r in requirements[identifier] for e in r.extras}
-        for key, value in self.index[name].items():
+        for key in self.index[name]:
             v = packaging.version.parse(key)
             if any(v not in r.specifier for r in requirements[identifier]):
                 continue
