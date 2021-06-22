@@ -1,3 +1,16 @@
+0.7.1 (2021-06-22)
+==================
+
+Bug Fixes
+---------
+
+- When merging a candidate's dependencies, make sure the merge target is
+  up-to-date within the loop, so the merge does not lose information when a
+  candidate returns multiple dependency specifications under one identifier
+  (e.g. specifyiung two dependencies ``a>1`` and ``a<2``, instead of one single
+  ``a>1,<2`` dependency).  `#80 <https://github.com/sarugaku/resolvelib/issues/80>`_
+
+
 0.7.0 (2021-04-13)
 ==================
 
