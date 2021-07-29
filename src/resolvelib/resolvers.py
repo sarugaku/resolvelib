@@ -366,13 +366,14 @@ class Resolution(object):
             failure_causes = self._attempt_to_pin_criterion(name)
 
             if failure_causes:
+                causes = [i for c in failure_causes for i in c.information]
                 # Backtrack if pinning fails. The backtrack process puts us in
                 # an unpinned state, so we can work on it in the next round.
+                self._r.start_backtracking(causes)
                 success = self._backtrack()
 
                 # Dead ends everywhere. Give up.
                 if not success:
-                    causes = [i for c in failure_causes for i in c.information]
                     raise ResolutionImpossible(causes)
             else:
                 # Pinning was successful. Push a new state to do another pin.
