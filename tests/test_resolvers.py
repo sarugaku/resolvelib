@@ -4,7 +4,8 @@ from resolvelib import (
     AbstractProvider,
     BaseReporter,
     InconsistentCandidate,
-    Resolver, ResolutionImpossible,
+    Resolver,
+    ResolutionImpossible,
 )
 
 
@@ -119,8 +120,12 @@ def test_start_backtracking():
 
         def find_matches(self, identifier, requirements, incompatibilities):
             bad_versions = {c[1] for c in incompatibilities[identifier]}
-            candidates = [c for c in all_candidates[identifier]
-                          if all(c[1] in r[1] for r in requirements[identifier]) and c[1] not in bad_versions]
+            candidates = [
+                c
+                for c in all_candidates[identifier]
+                if all(c[1] in r[1] for r in requirements[identifier])
+                and c[1] not in bad_versions
+            ]
             return sorted(candidates, key=lambda c: c[1], reverse=True)
 
         def is_satisfied_by(self, requirement, candidate):
@@ -138,5 +143,3 @@ def test_start_backtracking():
     backtracking_causes = run_resolver([("a", {1, 2}), ("b", {1})])
     exception_causes = run_resolver([("a", {2}), ("b", {1})])
     assert exception_causes == backtracking_causes
-
-
