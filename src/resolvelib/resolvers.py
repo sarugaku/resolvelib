@@ -113,6 +113,7 @@ class Resolution(object):
         self._p = provider
         self._r = reporter
         self._states = []
+        self._failure_casues = []
 
     @property
     def state(self):
@@ -185,6 +186,7 @@ class Resolution(object):
                 self.state.criteria,
                 operator.attrgetter("information"),
             ),
+            failure_causes=self._failure_causes
         )
 
     def _is_current_pin_satisfying(self, name, criterion):
@@ -369,11 +371,12 @@ class Resolution(object):
                 # Backtrack if pinning fails. The backtrack process puts us in
                 # an unpinned state, so we can work on it in the next round.
                 success = self._backtrack()
+                self._failure_causes = [i for c in failure_causes for i in c.information]
 
                 # Dead ends everywhere. Give up.
                 if not success:
                     causes = [i for c in failure_causes for i in c.information]
-                    raise ResolutionImpossible(causes)
+                    raise ResolutionImpossible(self._failure_causes)
             else:
                 # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
