@@ -113,7 +113,7 @@ class Resolution(object):
         self._p = provider
         self._r = reporter
         self._states = []
-        self._failure_casues = []
+        self._failure_causes = []
 
     @property
     def state(self):
