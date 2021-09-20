@@ -375,7 +375,6 @@ class Resolution(object):
 
                 # Dead ends everywhere. Give up.
                 if not success:
-                    causes = [i for c in failure_causes for i in c.information]
                     raise ResolutionImpossible(self._failure_causes)
             else:
                 # Pinning was successful. Push a new state to do another pin.
