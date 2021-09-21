@@ -234,6 +234,7 @@ class Resolution(object):
             # backtracking looks at this mapping to get the last pin.
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
+
             return []
 
         # All candidates tried, nothing works. This criterion is a dead
