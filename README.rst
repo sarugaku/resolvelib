@@ -87,4 +87,4 @@ A Requirement should specify two things: a Package, and a Specifier.
 Contributing
 ============
 
-Please see `developer documentation <https://github.com/sarugaku/resolvelib/blob/master/CONTRIBUTING.rst>`__.
+Please see `developer documentation <./CONTRIBUTING.rst>`__.
