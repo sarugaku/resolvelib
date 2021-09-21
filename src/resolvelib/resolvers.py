@@ -99,7 +99,7 @@ class ResolutionTooDeep(ResolutionError):
 
 
 # Resolution state in a round.
-State = collections.namedtuple("State", "mapping criteria")
+State = collections.namedtuple("State", "mapping criteria backtrack_causes")
 
 
 class Resolution(object):
@@ -113,7 +113,6 @@ class Resolution(object):
         self._p = provider
         self._r = reporter
         self._states = []
-        self._failure_causes = []
 
     @property
     def state(self):
@@ -132,6 +131,7 @@ class Resolution(object):
         state = State(
             mapping=base.mapping.copy(),
             criteria=base.criteria.copy(),
+            backtrack_causes=base.backtrack_causes.copy(),
         )
         self._states.append(state)
 
@@ -186,7 +186,7 @@ class Resolution(object):
                 self.state.criteria,
                 operator.attrgetter("information"),
             ),
-            failure_causes=self._failure_causes
+            backtrack_causes=self.state.backtrack_causes
         )
 
     def _is_current_pin_satisfying(self, name, criterion):
@@ -234,7 +234,7 @@ class Resolution(object):
             # backtracking looks at this mapping to get the last pin.
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
-
+    
             return []
 
         # All candidates tried, nothing works. This criterion is a dead
@@ -337,7 +337,11 @@ class Resolution(object):
         self._r.starting()
 
         # Initialize the root state.
-        self._states = [State(mapping=collections.OrderedDict(), criteria={})]
+        self._states = [
+            State(mapping=collections.OrderedDict(),
+                  criteria={},
+                  backtrack_causes=[])
+            ]
         for r in requirements:
             try:
                 self._add_to_criteria(self.state.criteria, r, parent=None)
@@ -371,11 +375,13 @@ class Resolution(object):
                 # Backtrack if pinning fails. The backtrack process puts us in
                 # an unpinned state, so we can work on it in the next round.
                 success = self._backtrack()
-                self._failure_causes = [i for c in failure_causes for i in c.information]
+                self.state.backtrack_causes[:] = [
+                        i for c in failure_causes for i in c.information
+                    ]
 
                 # Dead ends everywhere. Give up.
                 if not success:
-                    raise ResolutionImpossible(self._failure_causes)
+                    raise ResolutionImpossible(self.state.backtrack_causes)
             else:
                 # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
