@@ -186,7 +186,7 @@ class Resolution(object):
                 self.state.criteria,
                 operator.attrgetter("information"),
             ),
-            backtrack_causes=self.state.backtrack_causes
+            backtrack_causes=self.state.backtrack_causes,
         )
 
     def _is_current_pin_satisfying(self, name, criterion):
@@ -338,10 +338,12 @@ class Resolution(object):
 
         # Initialize the root state.
         self._states = [
-            State(mapping=collections.OrderedDict(),
-                  criteria={},
-                  backtrack_causes=[])
-            ]
+            State(
+                mapping=collections.OrderedDict(),
+                criteria={},
+                backtrack_causes=[],
+            )
+        ]
         for r in requirements:
             try:
                 self._add_to_criteria(self.state.criteria, r, parent=None)
@@ -376,8 +378,8 @@ class Resolution(object):
                 # an unpinned state, so we can work on it in the next round.
                 success = self._backtrack()
                 self.state.backtrack_causes[:] = [
-                        i for c in failure_causes for i in c.information
-                    ]
+                    i for c in failure_causes for i in c.information
+                ]
 
                 # Dead ends everywhere. Give up.
                 if not success:
