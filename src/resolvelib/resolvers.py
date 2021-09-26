@@ -131,7 +131,7 @@ class Resolution(object):
         state = State(
             mapping=base.mapping.copy(),
             criteria=base.criteria.copy(),
-            backtrack_causes=base.backtrack_causes.copy(),
+            backtrack_causes=base.backtrack_causes[:],
         )
         self._states.append(state)
 
