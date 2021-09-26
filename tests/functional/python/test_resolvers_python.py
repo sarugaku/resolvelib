@@ -72,7 +72,14 @@ class PythonInputProvider(AbstractProvider):
             return "{}[{}]".format(name, extras_str)
         return name
 
-    def get_preference(self, identifier, resolutions, candidates, information):
+    def get_preference(
+        self,
+        identifier,
+        resolutions,
+        candidates,
+        information,
+        backtrack_causes,
+    ):
         transitive = all(p is not None for _, p in information[identifier])
         return (transitive, identifier)
 
