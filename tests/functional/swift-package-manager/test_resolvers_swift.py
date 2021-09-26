@@ -79,7 +79,14 @@ class SwiftInputProvider(AbstractProvider):
     def identify(self, requirement_or_candidate):
         return requirement_or_candidate.container["identifier"]
 
-    def get_preference(self, identifier, resolutions, candidates, information):
+    def get_preference(
+        self,
+        identifier,
+        resolutions,
+        candidates,
+        information,
+        backtrack_causes,
+    ):
         return sum(1 for _ in candidates[identifier])
 
     def _iter_matches(self, identifier, requirements, incompatibilities):
