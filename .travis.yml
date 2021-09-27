@@ -25,7 +25,7 @@ jobs:
   allow_failures:
     - python: "nightly"
 
-python: "3.9-dev"
+python: "3.9"
 
 install: pip install .[test]
 
