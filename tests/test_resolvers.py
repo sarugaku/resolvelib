@@ -94,7 +94,7 @@ def test_candidate_depends_on_requirements_of_same_identifier(specifiers):
     assert result.mapping["child"] == ("child", "1", [])
 
 
-def test_start_backtracking():
+def test_resolving_conflicts():
     all_candidates = {
         "a": [("a", 1, [("q", {1})]), ("a", 2, [("q", {2})])],
         "b": [("b", 1, [("q", {1})])],
@@ -105,7 +105,7 @@ def test_start_backtracking():
         def __init__(self):
             self.backtracking_causes = None
 
-        def start_backtracking(self, failure_causes):
+        def resolving_conflicts(self, failure_causes):
             self.backtracking_causes = failure_causes
 
     class Provider(AbstractProvider):

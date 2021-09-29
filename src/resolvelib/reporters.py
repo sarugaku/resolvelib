@@ -30,8 +30,9 @@ class BaseReporter(object):
             requirements passed in from ``Resolver.resolve()``.
         """
 
-    def start_backtracking(self, causes):
-        """Called when backtracking started because of collision in requirements
+    def resolving_conflicts(self, causes):
+        """Called when a collision in requirements was detected and
+        an attempt to resolve them was started
 
         :param causes: The information on the collision that caused the backtracking.
         """
