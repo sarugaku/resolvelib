@@ -31,8 +31,7 @@ class BaseReporter(object):
         """
 
     def resolving_conflicts(self, causes):
-        """Called when a collision in requirements was detected and
-        an attempt to resolve them was started
+        """Called when starting to attempt requirement conflict resolution.
 
         :param causes: The information on the collision that caused the backtracking.
         """
