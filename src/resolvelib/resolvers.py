@@ -379,7 +379,7 @@ class Resolution(object):
                 ]
                 # Backtrack if pinning fails. The backtrack process puts us in
                 # an unpinned state, so we can work on it in the next round.
-                self._r.resolving_conflicts(causes)
+                self._r.resolving_conflicts(causes=causes)
                 success = self._backtrack()
                 self.state.backtrack_causes[:] = causes
 
