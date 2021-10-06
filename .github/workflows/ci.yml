@@ -1,0 +1,46 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: pip install black flake8 mypy
+      - run: black --check .
+      - run: flake8 .
+      - run: mypy src/
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: pip install . build
+      - run: python -m build .
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [lint]
+    strategy:
+      fail-fast: true
+      matrix:
+        python:
+          - '2.7'
+          - '3.10'
+          - '3.9'
+          - '3.8'
+          - '3.7'
+          - '3.6'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install .[test]
+      - run: pytest tests
