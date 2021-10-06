@@ -46,6 +46,15 @@ def _write_package_version(v):
         f.write("".join(lines))
 
 
+SAFE_RMTREE = """
+import os
+import shutil
+
+if os.path.isdir({path!r}):
+    shutil.rmtree({path!r})
+"""
+
+
 @nox.session
 def release(session):
     session.install(".[release]")
@@ -94,12 +103,25 @@ def release(session):
     else:
         session.log("Skipping preprocessing since --version is empty")
 
+    session.log("Cleaning dist/ content...")
+    session.run("python", "-c", SAFE_RMTREE.format(path="dist"))
+
+    session.log("Building distributions...")
+    session.run("python", "-m", "build")
+    session.run("twine", "check", "dist/*")
+
     if options.repo:
         session.log(f"Releasing distributions to {options.repo}...")
-        session.run("setl", "publish", "--repository", options.repo)
     else:
-        session.log("Building distributions locally since --repo is empty")
-        session.run("setl", "publish", "--no-upload")
+        session.log("Storing distributions locally since --repo is empty")
+    if options.repo:
+        session.run(
+            "twine",
+            "upload",
+            "--repository-url",
+            options.repo,
+            "dist/*",
+        )
 
     if options.prebump:
         _write_package_version(options.prebump)

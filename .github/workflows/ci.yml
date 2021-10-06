@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - run: pip install . build
+      - run: pip install .[release]
       - run: python -m build .
   test:
     name: Test
