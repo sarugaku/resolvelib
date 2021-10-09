@@ -11,11 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - run: pip install .[lint]
+      - run: pip install .[lint, test]
       - run: black --check .
       - run: isort .
       - run: flake8 .
-      - run: mypy src/
+      - run: mypy src/ tests/
   package:
     name: Package
     runs-on: ubuntu-latest

@@ -25,6 +25,7 @@ from typing import (
     IO,
     BinaryIO,
     Dict,
+    FrozenSet,
     Iterable,
     Iterator,
     List,
@@ -112,7 +113,7 @@ def get_output_path(path: pathlib.Path, overwrite: bool) -> pathlib.Path:
     return path
 
 
-def _parse_tag(s: str) -> Set[packaging.tags.Tag]:
+def _parse_tag(s: str) -> FrozenSet[packaging.tags.Tag]:
     try:
         return packaging.tags.parse_tag(s)
     except ValueError:
@@ -121,7 +122,7 @@ def _parse_tag(s: str) -> Set[packaging.tags.Tag]:
 
 @dataclasses.dataclass()
 class WheelMatcher:
-    required_python: Optional[packaging.version.Version]
+    required_python: packaging.version.Version
     tags: Dict[packaging.tags.Tag, int]
 
     @classmethod
@@ -131,7 +132,7 @@ class WheelMatcher:
         impl: Optional[str],
         plats: Optional[List[str]],
     ) -> WheelMatcher:
-        required_python = packaging.version.parse(
+        required_python = packaging.version.Version(
             ".".join(str(v) for v in python_version)
         )
         # TODO: Add ABI customization.
@@ -276,7 +277,7 @@ class Finder:
                     dep,
                 )
                 return None
-            more.add(packaging.utils.canonicalize_name(req.name))
+            more.add(str(packaging.utils.canonicalize_name(req.name)))
         return more
 
     def find(self, package_names: Iterable[str]) -> dict:

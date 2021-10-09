@@ -5,7 +5,7 @@ import os
 import re
 import string
 
-import commentjson
+import commentjson  # type: ignore
 import packaging.specifiers
 import packaging.version
 import pytest
