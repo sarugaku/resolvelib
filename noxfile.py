@@ -4,7 +4,6 @@ import pathlib
 
 import nox
 
-
 ROOT = pathlib.Path(__file__).resolve().parent
 
 INIT_PY = ROOT.joinpath("src", "resolvelib", "__init__.py")
@@ -18,6 +17,7 @@ def lint(session):
     session.install(".[lint]")
 
     session.run("black", "--check", ".")
+    session.run("isort", ".")
     session.run("flake8", ".")
     session.run("mypy", "src")
 

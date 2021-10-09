@@ -13,6 +13,7 @@ jobs:
       - uses: actions/setup-python@v2
       - run: pip install .[lint]
       - run: black --check .
+      - run: isort .
       - run: flake8 .
       - run: mypy src/
   package:
@@ -31,12 +32,12 @@ jobs:
       fail-fast: true
       matrix:
         python:
-          - '2.7'
-          - '3.10'
-          - '3.9'
-          - '3.8'
-          - '3.7'
-          - '3.6'
+          - "2.7"
+          - "3.10"
+          - "3.9"
+          - "3.8"
+          - "3.7"
+          - "3.6"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2

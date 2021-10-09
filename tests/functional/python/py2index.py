@@ -18,21 +18,13 @@ import logging
 import os
 import pathlib
 import re
-import urllib.parse
 import sys
+import urllib.parse
 import zipfile
-
-import html5lib
-import packaging.requirements
-import packaging.tags
-import packaging.utils
-import packaging.version
-import requests
-
 from typing import (
+    IO,
     BinaryIO,
     Dict,
-    IO,
     Iterable,
     Iterator,
     List,
@@ -44,6 +36,12 @@ from typing import (
     cast,
 )
 
+import html5lib
+import packaging.requirements
+import packaging.tags
+import packaging.utils
+import packaging.version
+import requests
 
 logger = logging.getLogger()
 

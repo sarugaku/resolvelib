@@ -12,7 +12,6 @@ import pytest
 
 from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
 
-
 Requirement = collections.namedtuple("Requirement", "name spec")
 Candidate = collections.namedtuple("Candidate", "name ver deps")
 

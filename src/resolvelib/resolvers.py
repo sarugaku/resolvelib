@@ -4,7 +4,6 @@ import operator
 from .providers import AbstractResolver
 from .structs import DirectedGraph, IteratorMapping, build_iter_view
 
-
 RequirementInformation = collections.namedtuple(
     "RequirementInformation", ["requirement", "parent"]
 )

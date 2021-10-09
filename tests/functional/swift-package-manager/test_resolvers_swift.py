@@ -8,7 +8,6 @@ import pytest
 from resolvelib.providers import AbstractProvider
 from resolvelib.resolvers import Resolver
 
-
 Requirement = collections.namedtuple("Requirement", "container constraint")
 Candidate = collections.namedtuple("Candidate", "container version")
 
