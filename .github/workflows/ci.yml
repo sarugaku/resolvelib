@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - run: pip install black flake8 mypy
+      - run: pip install .[lint]
       - run: black --check .
       - run: flake8 .
       - run: mypy src/
