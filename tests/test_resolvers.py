@@ -105,8 +105,8 @@ def test_resolving_conflicts():
         def __init__(self):
             self.backtracking_causes = None
 
-        def resolving_conflicts(self, failure_causes):
-            self.backtracking_causes = failure_causes
+        def resolving_conflicts(self, causes):
+            self.backtracking_causes = causes
 
     class Provider(AbstractProvider):
         def identify(self, requirement_or_candidate):
