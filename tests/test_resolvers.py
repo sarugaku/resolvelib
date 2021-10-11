@@ -4,8 +4,8 @@ from resolvelib import (
     AbstractProvider,
     BaseReporter,
     InconsistentCandidate,
-    Resolver,
     ResolutionImpossible,
+    Resolver,
 )
 
 
