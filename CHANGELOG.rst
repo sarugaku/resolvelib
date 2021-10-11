@@ -1,3 +1,16 @@
+0.8.1 (2021-10-12)
+==================
+
+Features
+--------
+
+- A new reporter hook ``resolving_conflicts`` is added. The resolver triggers
+  this hook when it detects conflicts in the dependency tree, and before it
+  attempts to fix them. The hook accepts one single argument ``causes``, which
+  is a list of ``(requirement, parent)`` 2-tuples that represents all the
+  edges that lead to the detected conflicts.  `#81 <https://github.com/sarugaku/resolvelib/issues/81>`_
+
+
 0.8.0 (2021-10-08)
 ==================
 
