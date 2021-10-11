@@ -5,6 +5,7 @@ from resolvelib import (
     BaseReporter,
     InconsistentCandidate,
     Resolver,
+    ResolutionImpossible,
 )
 
 
@@ -91,3 +92,54 @@ def test_candidate_depends_on_requirements_of_same_identifier(specifiers):
 
     assert set(result.mapping) == {"parent", "child"}
     assert result.mapping["child"] == ("child", "1", [])
+
+
+def test_resolving_conflicts():
+    all_candidates = {
+        "a": [("a", 1, [("q", {1})]), ("a", 2, [("q", {2})])],
+        "b": [("b", 1, [("q", {1})])],
+        "q": [("q", 1, []), ("q", 2, [])],
+    }
+
+    class Reporter(BaseReporter):
+        def __init__(self):
+            self.backtracking_causes = None
+
+        def resolving_conflicts(self, causes):
+            self.backtracking_causes = causes
+
+    class Provider(AbstractProvider):
+        def identify(self, requirement_or_candidate):
+            return requirement_or_candidate[0]
+
+        def get_preference(self, **_):
+            return 0
+
+        def get_dependencies(self, candidate):
+            return candidate[2]
+
+        def find_matches(self, identifier, requirements, incompatibilities):
+            bad_versions = {c[1] for c in incompatibilities[identifier]}
+            candidates = [
+                c
+                for c in all_candidates[identifier]
+                if all(c[1] in r[1] for r in requirements[identifier])
+                and c[1] not in bad_versions
+            ]
+            return sorted(candidates, key=lambda c: c[1], reverse=True)
+
+        def is_satisfied_by(self, requirement, candidate):
+            return candidate[1] in requirement[1]
+
+    def run_resolver(*args):
+        reporter = Reporter()
+        resolver = Resolver(Provider(), reporter)
+        try:
+            resolver.resolve(*args)
+            return reporter.backtracking_causes
+        except ResolutionImpossible as e:
+            return e.causes
+
+    backtracking_causes = run_resolver([("a", {1, 2}), ("b", {1})])
+    exception_causes = run_resolver([("a", {2}), ("b", {1})])
+    assert exception_causes == backtracking_causes
