@@ -5,13 +5,12 @@ import os
 import re
 import string
 
-import commentjson
+import commentjson  # type: ignore
 import packaging.specifiers
 import packaging.version
 import pytest
 
 from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
-
 
 Requirement = collections.namedtuple("Requirement", "name spec")
 Candidate = collections.namedtuple("Candidate", "name ver deps")

@@ -5,6 +5,11 @@ requires = ['setuptools>=36.2.2', 'wheel>=0.28.0']
 line-length = 79
 include = '^/(docs|examples|src|tasks|tests)/.+\.py$'
 
+[tool.isort]
+profile = "black"
+line_length = 79
+multi_line_output = 3
+
 [tool.towncrier]
 package = 'resolvelib'
 package_dir = 'src'

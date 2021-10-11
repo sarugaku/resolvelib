@@ -14,7 +14,6 @@ import pytest
 
 from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
 
-
 Candidate = collections.namedtuple("Candidate", "name version extras")
 
 

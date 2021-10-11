@@ -4,7 +4,6 @@ import pathlib
 
 import nox
 
-
 ROOT = pathlib.Path(__file__).resolve().parent
 
 INIT_PY = ROOT.joinpath("src", "resolvelib", "__init__.py")
@@ -15,11 +14,12 @@ nox.options.reuse_existing_virtualenvs = True
 
 @nox.session
 def lint(session):
-    session.install(".[lint]")
+    session.install(".[lint, test]")
 
     session.run("black", "--check", ".")
+    session.run("isort", ".")
     session.run("flake8", ".")
-    session.run("mypy", "src")
+    session.run("mypy", "src", "tests")
 
 
 @nox.session(python=["3.9", "3.8", "3.7", "3.6", "3.5", "2.7"])

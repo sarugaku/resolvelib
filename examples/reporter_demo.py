@@ -1,4 +1,5 @@
 from collections import namedtuple
+
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 

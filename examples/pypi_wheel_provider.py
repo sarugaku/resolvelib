@@ -7,16 +7,16 @@ from platform import python_version
 from urllib.parse import urlparse
 from zipfile import ZipFile
 
-import requests
 import html5lib
-from packaging.specifiers import SpecifierSet
-from packaging.version import Version, InvalidVersion
+import requests
 from packaging.requirements import Requirement
+from packaging.specifiers import SpecifierSet
 from packaging.utils import canonicalize_name
+from packaging.version import InvalidVersion, Version
+
 from resolvelib import BaseReporter, Resolver
 
 from .extras_provider import ExtrasProvider
-
 
 PYTHON_VERSION = Version(python_version())
 
