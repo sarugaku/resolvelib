@@ -199,7 +199,23 @@ class Resolution(object):
         )
 
     def _get_updated_criteria(self, candidate):
-        criteria = self.state.criteria.copy()
+        # copy current state's criteria, filtering out any information with this
+        # candidate's other versions as parent
+        criteria = {
+            name: Criterion(
+                criterion.candidates,
+                [
+                    information
+                    for information in criterion.information
+                    if (
+                        information[1] is None
+                        or self._p.identify(information[1]) != self._p.identify(candidate)
+                    )
+                ],
+                criterion.incompatibilities,
+            )
+            for name, criterion in self.state.criteria.items()
+        }
         for requirement in self._p.get_dependencies(candidate=candidate):
             self._add_to_criteria(criteria, requirement, parent=candidate)
         return criteria
