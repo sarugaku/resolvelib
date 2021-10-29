@@ -130,7 +130,7 @@ class Resolution(object):
         state = State(
             mapping=base.mapping.copy(),
             criteria=base.criteria.copy(),
-            backtrack_causes=base.backtrack_causes[:],
+            backtrack_causes=base.backtrack_causes.copy(),
         )
         self._states.append(state)
 
@@ -340,7 +340,7 @@ class Resolution(object):
             State(
                 mapping=collections.OrderedDict(),
                 criteria={},
-                backtrack_causes=[],
+                backtrack_causes=set(),
             )
         ]
         for r in requirements:
@@ -378,11 +378,15 @@ class Resolution(object):
                 # an unpinned state, so we can work on it in the next round.
                 self._r.resolving_conflicts(causes=causes)
                 success = self._backtrack()
-                self.state.backtrack_causes[:] = causes
 
                 # Dead ends everywhere. Give up.
                 if not success:
-                    raise ResolutionImpossible(self.state.backtrack_causes)
+                    raise ResolutionImpossible(causes)
+
+                # Update backtrack causes
+                backtrack_causes = self._causes_to_names(causes)
+                self.state.backtrack_causes.clear()
+                self.state.backtrack_causes.update(backtrack_causes)
             else:
                 # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
@@ -390,6 +394,12 @@ class Resolution(object):
             self._r.ending_round(index=round_index, state=self.state)
 
         raise ResolutionTooDeep(max_rounds)
+
+    @staticmethod
+    def _causes_to_names(causes):
+        return {c.requirement.name for c in causes} | {
+            c.parent.name for c in causes if c.parent
+        }
 
 
 def _has_route_to_root(criteria, key, all_keys, connected):
