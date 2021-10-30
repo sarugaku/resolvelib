@@ -44,12 +44,17 @@ class InconsistentCandidate(ResolverException):
 
 class Causes(object):
     def __init__(self, causes):
-        self.causes = causes
+        self._causes = causes
         self._names = None
         self._causes_information = None
 
+    @property
+    def causes(self):
+        return self._causes
+
+    @causes.setter
     def update_causes(self, causes):
-        self.causes = causes.causes
+        self._causes = causes
         self._names = None
         self._causes_information = None
 
@@ -424,7 +429,7 @@ class Resolution(object):
                 # an unpinned state, so we can work on it in the next round.
                 self._r.resolving_conflicts(causes=causes)
                 success = self._backtrack()
-                self.state.backtrack_causes.update_causes(causes)
+                self.state.backtrack_causes.causes = causes.causes
 
                 # Dead ends everywhere. Give up.
                 if not success:
