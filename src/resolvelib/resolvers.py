@@ -77,7 +77,7 @@ class Causes(object):
         return self._information
 
     def _causes_to_names(self):
-        for c in self.causes:
+        for c in self.information:
             yield c.requirement.name
             if c.parent:
                 yield c.parent.name
