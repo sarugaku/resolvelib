@@ -46,7 +46,7 @@ class Causes(object):
     def __init__(self, causes):
         self._causes = causes
         self._names = None
-        self._causes_information = None
+        self._information = None
 
     @property
     def causes(self):
@@ -56,7 +56,7 @@ class Causes(object):
     def update_causes(self, causes):
         self._causes = causes
         self._names = None
-        self._causes_information = None
+        self._information = None
 
     @property
     def names(self):
@@ -67,23 +67,20 @@ class Causes(object):
         return self._names
 
     @property
-    def causes_information(self):
-        if self._causes_information is not None:
-            return self._causes_information
+    def information(self):
+        if self._information is not None:
+            return self._information
 
-        self._causes_information = [
+        self._information = [
             i for c in self.causes for i in c.information
         ]
-        return self._causes_information
+        return self._information
 
     def _causes_to_names(self):
         for c in self.causes:
             yield c.requirement.name
             if c.parent:
                 yield c.parent.name
-
-    def __iter__(self):
-        yield from self.causes_information
 
     def copy(self):
         return Causes(causes=copy.copy(self.causes))
@@ -427,13 +424,15 @@ class Resolution(object):
                 causes = Causes(failure_causes)
                 # Backtrack if pinning fails. The backtrack process puts us in
                 # an unpinned state, so we can work on it in the next round.
-                self._r.resolving_conflicts(causes=causes)
+                self._r.resolving_conflicts(causes=causes.information)
                 success = self._backtrack()
-                self.state.backtrack_causes.causes = causes.causes
 
                 # Dead ends everywhere. Give up.
                 if not success:
-                    raise ResolutionImpossible(self.state.backtrack_causes)
+                    raise ResolutionImpossible(causes.information)
+
+                # Attach causes to backtrack causes in state
+                self.state.backtrack_causes.causes = causes.causes
             else:
                 # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
