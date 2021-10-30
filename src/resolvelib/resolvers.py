@@ -1,4 +1,5 @@
 import collections
+import copy
 import operator
 
 from .providers import AbstractResolver
@@ -39,6 +40,51 @@ class InconsistentCandidate(ResolverException):
             self.candidate,
             ", ".join(repr(r) for r in self.criterion.iter_requirement()),
         )
+
+
+class Causes(object):
+    def __init__(self, causes):
+        self.causes = causes
+        self._names = None
+        self._causes_information = None
+
+    def update_causes(self, causes):
+        self.causes = causes.causes
+        self._names = None
+        self._causes_information = None
+
+    @property
+    def names(self):
+        if self._names is not None:
+            return self._names
+
+        self._names = set(self._causes_to_names())
+        return self._names
+
+    @property
+    def causes_information(self):
+        if self._causes_information is not None:
+            return self._causes_information
+
+        self._causes_information = [
+            i for c in self.causes for i in c.information
+        ]
+        return self._causes_information
+
+    def _causes_to_names(self):
+        for c in self.causes:
+            yield c.requirement.name
+            if c.parent:
+                yield c.parent.name
+
+    def __iter__(self):
+        yield from self.causes_information
+
+    def copy(self):
+        return Causes(causes=copy.copy(self.causes))
+
+    def __eq__(self, other):
+        return self.causes == other.causes
 
 
 class Criterion(object):
@@ -130,7 +176,7 @@ class Resolution(object):
         state = State(
             mapping=base.mapping.copy(),
             criteria=base.criteria.copy(),
-            backtrack_causes=base.backtrack_causes[:],
+            backtrack_causes=base.backtrack_causes.copy(),
         )
         self._states.append(state)
 
@@ -340,7 +386,7 @@ class Resolution(object):
             State(
                 mapping=collections.OrderedDict(),
                 criteria={},
-                backtrack_causes=[],
+                backtrack_causes=Causes([]),
             )
         ]
         for r in requirements:
@@ -373,12 +419,12 @@ class Resolution(object):
             failure_causes = self._attempt_to_pin_criterion(name)
 
             if failure_causes:
-                causes = [i for c in failure_causes for i in c.information]
+                causes = Causes(failure_causes)
                 # Backtrack if pinning fails. The backtrack process puts us in
                 # an unpinned state, so we can work on it in the next round.
                 self._r.resolving_conflicts(causes=causes)
                 success = self._backtrack()
-                self.state.backtrack_causes[:] = causes
+                self.state.backtrack_causes.update_causes(causes)
 
                 # Dead ends everywhere. Give up.
                 if not success:
