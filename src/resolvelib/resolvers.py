@@ -52,7 +52,6 @@ class Causes(object):
     def causes(self):
         return self._causes
 
-    @causes.setter
     def update_causes(self, causes):
         self._causes = causes
         self._names = None
@@ -432,7 +431,9 @@ class Resolution(object):
                     raise ResolutionImpossible(failure_causes.information)
 
                 # Attach causes to backtrack causes in state
-                self.state.backtrack_causes.causes = failure_causes.causes
+                self.state.backtrack_causes.update_causes(
+                    failure_causes.causes
+                )
             else:
                 # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
