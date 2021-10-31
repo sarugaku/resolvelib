@@ -88,6 +88,9 @@ class Causes(object):
     def __bool__(self):
         return bool(self.causes)
 
+    def __nonzero__(self):
+        return bool(self.causes)
+
 
 class Criterion(object):
     """Representation of possible resolution results of a package.
