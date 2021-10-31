@@ -280,11 +280,11 @@ class Resolution(object):
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
 
-            return Causes([])
+            return Causes(causes=[])
 
         # All candidates tried, nothing works. This criterion is a dead
         # end, signal for backtracking.
-        return Causes(causes)
+        return Causes(causes=causes)
 
     def _backtrack(self):
         """Perform backtracking.
@@ -386,7 +386,7 @@ class Resolution(object):
             State(
                 mapping=collections.OrderedDict(),
                 criteria={},
-                backtrack_causes=Causes([]),
+                backtrack_causes=Causes(causes=[]),
             )
         ]
         for r in requirements:
