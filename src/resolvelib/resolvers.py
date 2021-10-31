@@ -71,9 +71,7 @@ class Causes(object):
         if self._information is not None:
             return self._information
 
-        self._information = [
-            i for c in self.causes for i in c.information
-        ]
+        self._information = [i for c in self.causes for i in c.information]
         return self._information
 
     def _causes_to_names(self):
