@@ -282,11 +282,11 @@ class Resolution(object):
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
 
-            return []
+            return Causes([])
 
         # All candidates tried, nothing works. This criterion is a dead
         # end, signal for backtracking.
-        return causes
+        return Causes(causes)
 
     def _backtrack(self):
         """Perform backtracking.
@@ -421,18 +421,17 @@ class Resolution(object):
             failure_causes = self._attempt_to_pin_criterion(name)
 
             if failure_causes:
-                causes = Causes(failure_causes)
                 # Backtrack if pinning fails. The backtrack process puts us in
                 # an unpinned state, so we can work on it in the next round.
-                self._r.resolving_conflicts(causes=causes.information)
+                self._r.resolving_conflicts(causes=failure_causes.information)
                 success = self._backtrack()
 
                 # Dead ends everywhere. Give up.
                 if not success:
-                    raise ResolutionImpossible(causes.information)
+                    raise ResolutionImpossible(failure_causes.information)
 
                 # Attach causes to backtrack causes in state
-                self.state.backtrack_causes.causes = causes.causes
+                self.state.backtrack_causes.causes = failure_causes.causes
             else:
                 # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
