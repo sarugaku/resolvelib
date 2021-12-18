@@ -153,6 +153,9 @@ class CocoaPodsInputProvider(AbstractProvider):
     def get_dependencies(self, candidate):
         return candidate.deps
 
+    def causes(self, causes):
+        return [i for c in causes for i in c.information]
+
 
 XFAIL_CASES = {
     # ResolveLib does not complain about cycles, so these will be different.

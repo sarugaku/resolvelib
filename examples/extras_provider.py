@@ -52,3 +52,6 @@ class ExtrasProvider(AbstractProvider):
             req = self.get_base_requirement(candidate)
             deps.append(req)
         return deps
+
+    def causes(self, causes):
+        return [i for c in causes for i in c.information]

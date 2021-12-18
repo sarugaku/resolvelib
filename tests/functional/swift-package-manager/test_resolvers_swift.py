@@ -132,6 +132,9 @@ class SwiftInputProvider(AbstractProvider):
     def get_dependencies(self, candidate):
         return list(self._iter_dependencies(candidate))
 
+    def causes(self, causes):
+        return [i for c in causes for i in c.information]
+
 
 @pytest.fixture(
     params=[os.path.join(INPUTS_DIR, n) for n in INPUT_NAMES],

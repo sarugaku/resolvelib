@@ -119,6 +119,9 @@ class PythonInputProvider(AbstractProvider):
     def get_dependencies(self, candidate):
         return list(self._iter_dependencies(candidate))
 
+    def causes(self, causes):
+        return [i for c in causes for i in c.information]
+
 
 INPUTS_DIR = os.path.abspath(os.path.join(__file__, "..", "inputs"))
 

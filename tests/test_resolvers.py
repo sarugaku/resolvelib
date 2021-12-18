@@ -38,6 +38,9 @@ def test_candidate_inconsistent_error():
             assert candidate is self.candidate
             return False
 
+        def causes(self, causes):
+            return [i for c in causes for i in c.information]
+
     resolver = Resolver(Provider(requirement, candidate), BaseReporter())
 
     with pytest.raises(InconsistentCandidate) as ctx:
@@ -83,6 +86,9 @@ def test_candidate_depends_on_requirements_of_same_identifier(specifiers):
 
         def is_satisfied_by(self, requirement, candidate):
             return candidate[1] in requirement[1]
+
+        def causes(self, causes):
+            return [i for c in causes for i in c.information]
 
     # Now when resolved, both requirements to child specified by parent should
     # be pulled, and the resolver should choose v1, not v2 (happens if the
@@ -130,6 +136,9 @@ def test_resolving_conflicts():
 
         def is_satisfied_by(self, requirement, candidate):
             return candidate[1] in requirement[1]
+
+        def causes(self, causes):
+            return [i for c in causes for i in c.information]
 
     def run_resolver(*args):
         reporter = Reporter()
