@@ -1,4 +1,5 @@
 from typing import (
+    Any,
     Collection,
     Generic,
     Iterable,
@@ -50,7 +51,7 @@ class InconsistentCandidate(ResolverException, Generic[RT, CT, KT]):
     criterion: Criterion[RT, CT, KT]
 
 class ResolutionImpossible(ResolutionError, Generic[RT, CT]):
-    causes: List[RequirementInformation[RT, CT]]
+    causes: Any
 
 class ResolutionTooDeep(ResolutionError):
     round_count: int

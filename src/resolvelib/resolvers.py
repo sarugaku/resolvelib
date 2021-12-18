@@ -1,5 +1,6 @@
 import collections
 import operator
+from copy import copy
 
 from .providers import AbstractResolver
 from .structs import DirectedGraph, IteratorMapping, build_iter_view
@@ -130,7 +131,7 @@ class Resolution(object):
         state = State(
             mapping=base.mapping.copy(),
             criteria=base.criteria.copy(),
-            backtrack_causes=base.backtrack_causes[:],
+            backtrack_causes=copy(base.backtrack_causes),
         )
         self._states.append(state)
 
@@ -234,11 +235,11 @@ class Resolution(object):
             self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
 
-            return []
+            return self._p.causes(causes=[])
 
         # All candidates tried, nothing works. This criterion is a dead
         # end, signal for backtracking.
-        return causes
+        return self._p.causes(causes=causes)
 
     def _backtrack(self):
         """Perform backtracking.
@@ -340,7 +341,7 @@ class Resolution(object):
             State(
                 mapping=collections.OrderedDict(),
                 criteria={},
-                backtrack_causes=[],
+                backtrack_causes=self._p.causes([]),
             )
         ]
         for r in requirements:
@@ -373,16 +374,24 @@ class Resolution(object):
             failure_causes = self._attempt_to_pin_criterion(name)
 
             if failure_causes:
-                causes = [i for c in failure_causes for i in c.information]
                 # Backtrack if pinning fails. The backtrack process puts us in
                 # an unpinned state, so we can work on it in the next round.
-                self._r.resolving_conflicts(causes=causes)
+                self._r.resolving_conflicts(causes=failure_causes)
                 success = self._backtrack()
-                self.state.backtrack_causes[:] = causes
 
                 # Dead ends everywhere. Give up.
                 if not success:
-                    raise ResolutionImpossible(self.state.backtrack_causes)
+                    raise ResolutionImpossible(failure_causes)
+
+                # Recreate state with updated causes
+                current_state = self._states.pop()
+                self._states.append(
+                    State(
+                        mapping=current_state.mapping,
+                        criteria=current_state.criteria,
+                        backtrack_causes=failure_causes,
+                    )
+                )
             else:
                 # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
