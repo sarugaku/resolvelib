@@ -341,7 +341,7 @@ class Resolution(object):
             State(
                 mapping=collections.OrderedDict(),
                 criteria={},
-                backtrack_causes=self._p.causes([]),
+                backtrack_causes=self._p.causes(causes=[]),
             )
         ]
         for r in requirements:
