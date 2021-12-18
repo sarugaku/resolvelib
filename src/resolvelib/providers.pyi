@@ -1,14 +1,4 @@
-from typing import (
-    Any,
-    Collection,
-    Generic,
-    Iterable,
-    Iterator,
-    Mapping,
-    Optional,
-    Protocol,
-    Union,
-)
+from typing import Any, Generic, Iterable, Iterator, Mapping, Protocol, Union
 
 from .reporters import BaseReporter
 from .resolvers import RequirementInformation
@@ -25,6 +15,7 @@ class AbstractProvider(Generic[RT, CT, KT]):
         resolutions: Mapping[KT, CT],
         candidates: Mapping[KT, Iterator[CT]],
         information: Mapping[KT, Iterator[RequirementInformation[RT, CT]]],
+        backtrack_causes: Any
     ) -> Preference: ...
     def find_matches(
         self,
@@ -34,6 +25,7 @@ class AbstractProvider(Generic[RT, CT, KT]):
     ) -> Matches: ...
     def is_satisfied_by(self, requirement: RT, candidate: CT) -> bool: ...
     def get_dependencies(self, candidate: CT) -> Iterable[RT]: ...
+    def causes(self, causes: Any) -> Any: ...
 
 class AbstractResolver(Generic[RT, CT, KT]):
     base_exception = Exception
