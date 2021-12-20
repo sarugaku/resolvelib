@@ -108,11 +108,10 @@ class Resolution(object):
     the resolution process, and holds the results afterwards.
     """
 
-    def __init__(self, provider, reporter, prepare_causes=None):
+    def __init__(self, provider, reporter):
         self._p = provider
         self._r = reporter
         self._states = []
-        self.prepare = prepare_causes
 
     @property
     def state(self):
@@ -369,10 +368,12 @@ class Resolution(object):
                 self._r.ending(state=self.state)
                 return self.state
 
-            if self.prepare is None:
+            try:
+                prepare_fn = self._p.prepare_causes
+            except AttributeError:
                 processed_causes = self.state.backtrack_causes
             else:
-                processed_causes = self.prepare(self.state.backtrack_causes)
+                processed_causes = prepare_fn(self.state.backtrack_causes)
 
             def key_fn(name):
                 return self._get_preference(name, processed_causes)
