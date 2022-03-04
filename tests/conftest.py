@@ -9,7 +9,7 @@ class TestReporter(BaseReporter):
     def __init__(self):
         self._indent = 0
 
-    def backtracking(self, candidate):
+    def backtracking(self, criterion, candidate):
         self._indent -= 1
         assert self._indent >= 0
         print(" " * self._indent, "Back ", candidate, sep="")
