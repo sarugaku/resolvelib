@@ -11,7 +11,6 @@ class TestReporter(BaseReporter):
 
     def backtracking(self, criterion, candidate):
         self._indent -= 1
-        assert self._indent >= 0
         print(" " * self._indent, "Back ", candidate, sep="")
 
     def pinning(self, candidate):
