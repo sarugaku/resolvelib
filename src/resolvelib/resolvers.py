@@ -212,7 +212,7 @@ class Resolution(object):
             try:
                 criteria = self._get_updated_criteria(candidate)
             except RequirementsConflicted as e:
-                self._r.backtracking(e.criterion, candidate)
+                self._r.rejecting_candidate(e.criterion, candidate)
                 causes.append(e.criterion)
                 continue
 
