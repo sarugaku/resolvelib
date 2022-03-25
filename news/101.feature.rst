@@ -1,5 +1,3 @@
-A new reporter hook ``rejecting_candidate`` is added, replacing the former
-``backtracking`` one. The resolver triggers this hook every time it rejects
-a conflicting package before trying out an older version of it.
-The hook accepts two arguments: ``criterion`` (a ``resolvers.Criterion``
-object) and ``candidate``.
+A new reporter hook ``rejecting_candidate`` is added, replacing ``backtracking``.
+The hook is called every time the resolver rejects a conflicting candidate before
+trying out the next one in line.
