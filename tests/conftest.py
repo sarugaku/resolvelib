@@ -9,10 +9,9 @@ class TestReporter(BaseReporter):
     def __init__(self):
         self._indent = 0
 
-    def backtracking(self, candidate):
+    def rejecting_candidate(self, criterion, candidate):
         self._indent -= 1
-        assert self._indent >= 0
-        print(" " * self._indent, "Back ", candidate, sep="")
+        print(" " * self._indent, "Reject ", candidate, sep="")
 
     def pinning(self, candidate):
         print(" " * self._indent, "Pin  ", candidate, sep="")
