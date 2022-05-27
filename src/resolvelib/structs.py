@@ -153,13 +153,12 @@ class _SequenceIterableView(object):
     __nonzero__ = __bool__  # XXX: Python 2.
 
     def __iter__(self):
-        return iter(self._sequence)
+        self._sequence, current = itertools.tee(self._sequence)
+        return current
 
 
 def build_iter_view(matches):
     """Build an iterable view from the value returned by `find_matches()`."""
     if callable(matches):
         return _FactoryIterableView(matches)
-    if not isinstance(matches, collections_abc.Sequence):
-        matches = list(matches)
     return _SequenceIterableView(matches)
