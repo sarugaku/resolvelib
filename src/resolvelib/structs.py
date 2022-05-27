@@ -106,24 +106,22 @@ class IteratorMapping(collections_abc.Mapping):
         return len(self._mapping) + more
 
 
-class _FactoryIterableView(object):
-    """Wrap an iterator factory returned by `find_matches()`.
+class IterableView(object):
+    """Wrap an iterable returned by find_matches().
 
-    Calling `iter()` on this class would invoke the underlying iterator
-    factory, making it a "collection with ordering" that can be iterated
-    through multiple times, but lacks random access methods presented in
-    built-in Python sequence types.
+    This is essentially just a proxy to the underlying iterable
+    which can be iterated through multiple times.
     """
 
-    def __init__(self, factory):
-        self._factory = factory
+    def __init__(self, iterable):
+        self._iterable = iterable
 
     def __repr__(self):
-        return "{}({})".format(type(self).__name__, list(self._factory()))
+        return "{}({})".format(type(self).__name__, self._iterable)
 
     def __bool__(self):
         try:
-            next(self._factory())
+            next(iter(self))
         except StopIteration:
             return False
         return True
@@ -131,34 +129,12 @@ class _FactoryIterableView(object):
     __nonzero__ = __bool__  # XXX: Python 2.
 
     def __iter__(self):
-        return self._factory()
-
-
-class _SequenceIterableView(object):
-    """Wrap an iterable returned by find_matches().
-
-    This is essentially just a proxy to the underlying sequence that provides
-    the same interface as `_FactoryIterableView`.
-    """
-
-    def __init__(self, sequence):
-        self._sequence = sequence
-
-    def __repr__(self):
-        return "{}({})".format(type(self).__name__, self._sequence)
-
-    def __bool__(self):
-        return bool(self._sequence)
-
-    __nonzero__ = __bool__  # XXX: Python 2.
-
-    def __iter__(self):
-        self._sequence, current = itertools.tee(self._sequence)
+        self._iterable, current = itertools.tee(self._iterable)
         return current
 
 
 def build_iter_view(matches):
     """Build an iterable view from the value returned by `find_matches()`."""
     if callable(matches):
-        return _FactoryIterableView(matches)
-    return _SequenceIterableView(matches)
+        matches = matches()
+    return IterableView(matches)
