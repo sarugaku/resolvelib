@@ -106,18 +106,20 @@ class IteratorMapping(collections_abc.Mapping):
         return len(self._mapping) + more
 
 
-class IterableView(object):
-    """Wrap an iterable returned by find_matches().
+class _FactoryIterableView(object):
+    """Wrap an iterator factory returned by `find_matches()`.
 
-    This is essentially just a proxy to the underlying iterable
-    which can be iterated through multiple times.
+    Calling `iter()` on this class would invoke the underlying iterator
+    factory, making it a "collection with ordering" that can be iterated
+    through multiple times, but lacks random access methods presented in
+    built-in Python sequence types.
     """
 
-    def __init__(self, iterable):
-        self._iterable = iterable
+    def __init__(self, factory):
+        self._iterable = factory()
 
     def __repr__(self):
-        return "{}({})".format(type(self).__name__, self._iterable)
+        return "{}({})".format(type(self).__name__, list(self))
 
     def __bool__(self):
         try:
@@ -133,8 +135,32 @@ class IterableView(object):
         return current
 
 
+class _SequenceIterableView(object):
+    """Wrap an iterable returned by find_matches().
+
+    This is essentially just a proxy to the underlying sequence that provides
+    the same interface as `_FactoryIterableView`.
+    """
+
+    def __init__(self, sequence):
+        self._sequence = sequence
+
+    def __repr__(self):
+        return "{}({})".format(type(self).__name__, self._sequence)
+
+    def __bool__(self):
+        return bool(self._sequence)
+
+    __nonzero__ = __bool__  # XXX: Python 2.
+
+    def __iter__(self):
+        return iter(self._sequence)
+
+
 def build_iter_view(matches):
     """Build an iterable view from the value returned by `find_matches()`."""
     if callable(matches):
-        matches = matches()
-    return IterableView(matches)
+        return _FactoryIterableView(matches)
+    if not isinstance(matches, collections_abc.Sequence):
+        matches = list(matches)
+    return _SequenceIterableView(matches)
