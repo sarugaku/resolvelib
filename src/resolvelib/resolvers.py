@@ -173,7 +173,7 @@ class Resolution(object):
             raise RequirementsConflicted(criterion)
         criteria[identifier] = criterion
 
-    def _get_preference(self, name):
+    def _get_preference(self, name, causes):
         return self._p.get_preference(
             identifier=name,
             resolutions=self.state.mapping,
@@ -185,7 +185,7 @@ class Resolution(object):
                 self.state.criteria,
                 operator.attrgetter("information"),
             ),
-            backtrack_causes=self.state.backtrack_causes,
+            backtrack_causes=causes,
         )
 
     def _is_current_pin_satisfying(self, name, criterion):
@@ -367,8 +367,18 @@ class Resolution(object):
                 self._r.ending(state=self.state)
                 return self.state
 
+            try:
+                prepare_fn = self._p.prepare_causes
+            except AttributeError:
+                processed_causes = self.state.backtrack_causes
+            else:
+                processed_causes = prepare_fn(self.state.backtrack_causes)
+
+            def key_fn(name):
+                return self._get_preference(name, processed_causes)
+
             # Choose the most preferred unpinned criterion to try.
-            name = min(unsatisfied_names, key=self._get_preference)
+            name = min(unsatisfied_names, key=key_fn)
             failure_causes = self._attempt_to_pin_criterion(name)
 
             if failure_causes:
