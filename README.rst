@@ -56,8 +56,8 @@ Version
 -------
 
 A string, usually in a number form, describing a snapshot of a Package. This
-number should increase when a Package post a new snapshot, i.e. a higher number
-means a more up-to-date snapshot.
+number should increase when a Package posts a new snapshot,
+i.e a higher number means a more up-to-date snapshot.
 
 Specifier
 ---------
