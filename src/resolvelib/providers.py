@@ -24,7 +24,7 @@ class AbstractProvider(object):
         this group of arguments is.
 
         :param identifier: An identifier as returned by ``identify()``. This
-            identifies the dependency matches of which should be returned.
+            identifies the dependency matches which should be returned.
         :param resolutions: Mapping of candidates currently pinned by the
             resolver. Each key is an identifier, and the value is a candidate.
             The candidate may conflict with requirements from ``information``.
@@ -39,10 +39,10 @@ class AbstractProvider(object):
 
         * ``requirement`` specifies a requirement contributing to the current
           list of candidates.
-        * ``parent`` specifies the candidate that provides (dependend on) the
+        * ``parent`` specifies the candidate that provides (depended on) the
           requirement, or ``None`` to indicate a root requirement.
 
-        The preference could depend on various of issues, including (not
+        The preference could depend on various issues, including (not
         necessarily in this order):
 
         * Is this package pinned in the current resolution result?
