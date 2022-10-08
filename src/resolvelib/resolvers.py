@@ -396,7 +396,7 @@ class Resolution(object):
                 return self.state
 
             # keep track of satisfied names to calculate diff ater pinning
-            satisfied_names = self.state.criteria.keys() - set(
+            satisfied_names = set(self.state.criteria.keys()) - set(
                 unsatisfied_names
             )
 

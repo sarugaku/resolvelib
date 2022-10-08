@@ -1,5 +1,6 @@
 from typing import (
-    Collection,
+    Any,
+    Iterable,
     Iterator,
     List,
     Mapping,
@@ -164,7 +165,8 @@ def test_resolving_conflicts():
     assert exception_causes == backtracking_causes
 
 
-def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
+def test_pin_conflict_with_self(monkeypatch, reporter):
+    # type: (Any, BaseReporter) -> None
     """
     Verify correct behavior of attempting to pin a candidate version that conflicts
     with a previously pinned (now invalidated) version for that same candidate (#91).
@@ -172,7 +174,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
     Candidate = Tuple[
         str, Version, Sequence[str]
     ]  # name, version, requirements
-    all_candidates: Mapping[str, Sequence[Candidate]] = {
+    all_candidates = {
         "parent": [("parent", Version("1"), ["child<2"])],
         "child": [
             ("child", Version("2"), ["grandchild>=2"]),
@@ -183,13 +185,12 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
             ("grandchild", Version("2"), []),
             ("grandchild", Version("1"), []),
         ],
-    }
+    }  # type: Mapping[str, Sequence[Candidate]]
 
-    class Provider(AbstractProvider):  # AbstractProvider[str, Candidate, str]
-        def identify(
-            self, requirement_or_candidate: Union[str, Candidate]
-        ) -> str:
-            result: str = (
+    class Provider(AbstractProvider):  # AbstractProvider[int, Candidate, str]
+        def identify(self, requirement_or_candidate):
+            # type: (Union[str, Candidate]) -> str
+            result = (
                 Requirement.parse(requirement_or_candidate).key
                 if isinstance(requirement_or_candidate, str)
                 else requirement_or_candidate[0]
@@ -197,21 +198,22 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
             assert result in all_candidates, "unknown requirement_or_candidate"
             return result
 
-        def get_preference(
-            self, identifier: str, *args: object, **kwargs: object
-        ) -> str:
+        def get_preference(self, identifier, *args, **kwargs):
+            # type: (str, *object, **object) -> str
             # prefer child over parent (alphabetically)
             return identifier
 
-        def get_dependencies(self, candidate: Candidate) -> Sequence[str]:
+        def get_dependencies(self, candidate):
+            # type: (Candidate) -> Sequence[str]
             return candidate[2]
 
         def find_matches(
             self,
-            identifier: str,
-            requirements: Mapping[str, Iterator[str]],
-            incompatibilities: Mapping[str, Iterator[Candidate]],
-        ) -> Iterator[Candidate]:
+            identifier,  # type: str
+            requirements,  # type: Mapping[str, Iterator[str]]
+            incompatibilities,  # type: Mapping[str, Iterator[Candidate]]
+        ):
+            # type: (...) -> Iterator[Candidate]
             return (
                 candidate
                 for candidate in all_candidates[identifier]
@@ -222,32 +224,32 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
                 if candidate not in incompatibilities[identifier]
             )
 
-        def is_satisfied_by(
-            self, requirement: str, candidate: Candidate
-        ) -> bool:
+        def is_satisfied_by(self, requirement, candidate):
+            # type: (str, Candidate) -> bool
             return str(candidate[1]) in Requirement.parse(requirement)
 
     # patch Resolution._get_updated_criteria to collect rejected states
-    rejected_criteria: List[Criterion] = []
-    get_updated_criterion_orig = Resolution._get_updated_criteria
+    rejected_criteria = []  # type: List[Criterion]
+    get_updated_criteria_orig = Resolution._get_updated_criteria
 
-    def get_updated_criterion_patch(self, candidate) -> None:
+    def get_updated_criteria_patch(self, candidate):
         try:
-            return get_updated_criterion_orig(self, candidate)
+            return get_updated_criteria_orig(self, candidate)
         except RequirementsConflicted as e:
             rejected_criteria.append(e.criterion)
             raise
 
     monkeypatch.setattr(
-        Resolution, "_get_updated_criteria", get_updated_criterion_patch
+        Resolution, "_get_updated_criteria", get_updated_criteria_patch
     )
 
-    resolver: Resolver = Resolver(Provider(), reporter)
+    resolver = Resolver(
+        Provider(), reporter
+    )  # type: Resolver[str, Candidate, str]
     result = resolver.resolve(["child", "parent"])
 
-    def get_child_versions(
-        information: "Collection[RequirementInformation[str, Candidate]]",
-    ) -> Set[str]:
+    def get_child_versions(information):
+        # type: (Iterable[RequirementInformation[str, Candidate]]) -> Set[str]
         return {
             str(inf.parent[1])
             for inf in information
