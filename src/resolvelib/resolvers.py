@@ -184,7 +184,6 @@ class Resolution(object):
         if not parents:
             return
         for key, criterion in criteria.items():
-            # TODO: clean up implementation
             criteria[key] = Criterion(
                 criterion.candidates,
                 # TODO: is empty information allowed?
