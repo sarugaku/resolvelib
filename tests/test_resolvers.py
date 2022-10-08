@@ -20,11 +20,11 @@ from resolvelib import (
     ResolutionImpossible,
     Resolver,
 )
+from resolvelib.resolvers import Resolution  # type: ignore
 from resolvelib.resolvers import (
     Criterion,
     RequirementInformation,
     RequirementsConflicted,
-    Resolution,
 )
 
 
@@ -246,7 +246,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
     result = resolver.resolve(["child", "parent"])
 
     def get_child_versions(
-        information: Collection[RequirementInformation[str, Candidate]]
+        information: "Collection[RequirementInformation[str, Candidate]]",
     ) -> Set[str]:
         return {
             str(inf.parent[1])
