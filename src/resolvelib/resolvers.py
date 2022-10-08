@@ -173,7 +173,27 @@ class Resolution(object):
             raise RequirementsConflicted(criterion)
         criteria[identifier] = criterion
 
+    def _remove_information_from_citeria(self, criteria, parents):
+        """
+        Removes information from a set of parents from a criteria. Concretely, removes from each criterion's `information`
+        field all values that have one of `parents` as provider of the requirement.
+
+        :param criteria: The criteria to update.
+        :param parents: The set of identifiers for which to remove information from all criteria.
+        """
+        for key, criterion in criteria.items():
+            # TODO: is empty information allowed?
+            criterion.information = [
+                information
+                for information in criterion.information
+                if (
+                    information[1] is None
+                    or self._p.identify(information[1]) not in parents
+                )
+            ]
+
     def _get_preference(self, name):
+        # TODO: empty informations bug: verify + test case
         return self._p.get_preference(
             identifier=name,
             resolutions=self.state.mapping,
@@ -199,23 +219,7 @@ class Resolution(object):
         )
 
     def _get_updated_criteria(self, candidate):
-        # copy current state's criteria, filtering out any information with this
-        # candidate's other versions as parent
-        criteria = {
-            name: Criterion(
-                criterion.candidates,
-                [
-                    information
-                    for information in criterion.information
-                    if (
-                        information[1] is None
-                        or self._p.identify(information[1]) != self._p.identify(candidate)
-                    )
-                ],
-                criterion.incompatibilities,
-            )
-            for name, criterion in self.state.criteria.items()
-        }
+        criteria = self.state.criteria.copy()
         for requirement in self._p.get_dependencies(candidate=candidate):
             self._add_to_criteria(criteria, requirement, parent=candidate)
         return criteria
@@ -372,11 +376,11 @@ class Resolution(object):
         for round_index in range(max_rounds):
             self._r.starting_round(index=round_index)
 
-            unsatisfied_names = [
+            unsatisfied_names = {
                 key
                 for key, criterion in self.state.criteria.items()
                 if not self._is_current_pin_satisfying(key, criterion)
-            ]
+            }
 
             # All criteria are accounted for. Nothing more to pin, we are done!
             if not unsatisfied_names:
@@ -400,6 +404,13 @@ class Resolution(object):
                     raise ResolutionImpossible(self.state.backtrack_causes)
             else:
                 # Pinning was successful. Push a new state to do another pin.
+                new_unsatisfied_names = {
+                    key
+                    for key, criterion in self.state.criteria.items()
+                    if key not in set(unsatisfied_names)
+                    if not self._is_current_pin_satisfying(key, criterion)
+                }
+                self._remove_information_from_citeria(self.state.criteria, new_unsatisfied_names)
                 self._push_new_state()
 
             self._r.ending_round(index=round_index, state=self.state)

@@ -14,7 +14,7 @@ from resolvelib.resolvers import (
 )
 
 
-def test_poc(monkeypatch):
+def test_poc(monkeypatch, reporter):
     all_candidates = {
         "parent": [("parent", "1", ["child<2"])],
         "child": [
@@ -74,7 +74,7 @@ def test_poc(monkeypatch):
         Resolution, "_get_updated_criteria", get_updated_criterion_patch
     )
 
-    resolver = Resolver(Provider(), BaseReporter())
+    resolver = Resolver(Provider(), reporter)
     result = resolver.resolve(["child", "parent"])
 
     def get_child_versions(information: Sequence[RequirementInformation]) -> Set[str]:
@@ -95,3 +95,7 @@ def test_poc(monkeypatch):
     assert result.mapping["parent"][1] == "1"
     assert result.mapping["child"][1] == "1"
     assert result.mapping["grandchild"][1] == "1"
+
+    # TODO: review test case
+    # TODO: remove
+    assert False
