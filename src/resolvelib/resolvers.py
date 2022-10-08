@@ -181,6 +181,8 @@ class Resolution(object):
         :param criteria: The criteria to update.
         :param parents: The set of identifiers for which to remove information from all criteria.
         """
+        # TODO: remove
+        print("trimming", parents)
         for key, criterion in criteria.items():
             # TODO: is empty information allowed?
             criterion.information = [
@@ -387,6 +389,9 @@ class Resolution(object):
                 self._r.ending(state=self.state)
                 return self.state
 
+            # keep track of satisfied names to calculate diff ater pinning
+            satisfied_names = self.state.criteria.keys() - set(unsatisfied_names)
+
             # Choose the most preferred unpinned criterion to try.
             name = min(unsatisfied_names, key=self._get_preference)
             failure_causes = self._attempt_to_pin_criterion(name)
@@ -403,16 +408,16 @@ class Resolution(object):
                 if not success:
                     raise ResolutionImpossible(self.state.backtrack_causes)
             else:
-                # Pinning was successful. Push a new state to do another pin.
-                old_unsatisfied_names = set(unsatisfied_names)
-                new_unsatisfied_names = {
+                # discard as information sources any unsatisfied names that were satisfied before because they are invalid now
+                newly_unsatisfied_names = {
                     key
                     for key, criterion in self.state.criteria.items()
-                    if key not in old_unsatisfied_names
+                    if key in satisfied_names
                     if not self._is_current_pin_satisfying(key, criterion)
                 }
-                if new_unsatisfied_names:
-                    self._remove_information_from_citeria(self.state.criteria, new_unsatisfied_names)
+                if newly_unsatisfied_names:
+                    self._remove_information_from_citeria(self.state.criteria, newly_unsatisfied_names)
+                # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
 
             self._r.ending_round(index=round_index, state=self.state)
