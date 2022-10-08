@@ -376,11 +376,11 @@ class Resolution(object):
         for round_index in range(max_rounds):
             self._r.starting_round(index=round_index)
 
-            unsatisfied_names = {
+            unsatisfied_names = [
                 key
                 for key, criterion in self.state.criteria.items()
                 if not self._is_current_pin_satisfying(key, criterion)
-            }
+            ]
 
             # All criteria are accounted for. Nothing more to pin, we are done!
             if not unsatisfied_names:
@@ -404,13 +404,15 @@ class Resolution(object):
                     raise ResolutionImpossible(self.state.backtrack_causes)
             else:
                 # Pinning was successful. Push a new state to do another pin.
+                old_unsatisfied_names = set(unsatisfied_names)
                 new_unsatisfied_names = {
                     key
                     for key, criterion in self.state.criteria.items()
-                    if key not in set(unsatisfied_names)
+                    if key not in old_unsatisfied_names
                     if not self._is_current_pin_satisfying(key, criterion)
                 }
-                self._remove_information_from_citeria(self.state.criteria, new_unsatisfied_names)
+                if new_unsatisfied_names:
+                    self._remove_information_from_citeria(self.state.criteria, new_unsatisfied_names)
                 self._push_new_state()
 
             self._r.ending_round(index=round_index, state=self.state)
