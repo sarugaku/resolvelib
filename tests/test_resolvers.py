@@ -1,7 +1,16 @@
 import pytest
 from packaging.version import Version
 from pkg_resources import Requirement
-from typing import Collection, Iterator, List, Mapping, Sequence, Set, Tuple, Union
+from typing import (
+    Collection,
+    Iterator,
+    List,
+    Mapping,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+)
 
 from resolvelib import (
     AbstractProvider,
@@ -159,7 +168,9 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
     Verify correct behavior of attempting to pin a candidate version that conflicts with a previously pinned (now invalidated)
     version for that same candidate (#91).
     """
-    Candidate = Tuple[str, Version, Sequence[str]]  # name, version, requirements
+    Candidate = Tuple[
+        str, Version, Sequence[str]
+    ]  # name, version, requirements
     all_candidates: Mapping[str, Sequence[Candidate]] = {
         "parent": [("parent", Version("1"), ["child<2"])],
         "child": [
@@ -174,7 +185,9 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
     }
 
     class Provider(AbstractProvider):  # AbstractProvider[str, Candidate, str]
-        def identify(self, requirement_or_candidate: Union[str, Candidate]) -> str:
+        def identify(
+            self, requirement_or_candidate: Union[str, Candidate]
+        ) -> str:
             result: str = (
                 Requirement.parse(requirement_or_candidate).key
                 if isinstance(requirement_or_candidate, str)
@@ -183,7 +196,9 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
             assert result in all_candidates, "unknown requirement_or_candidate"
             return result
 
-        def get_preference(self, identifier: str, *args: object, **kwargs: object) -> str:
+        def get_preference(
+            self, identifier: str, *args: object, **kwargs: object
+        ) -> str:
             # prefer child over parent (alphabetically)
             return identifier
 
@@ -194,7 +209,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
             self,
             identifier: str,
             requirements: Mapping[str, Iterator[str]],
-            incompatibilities: Mapping[str, Iterator[Candidate]]
+            incompatibilities: Mapping[str, Iterator[Candidate]],
         ) -> Iterator[Candidate]:
             return (
                 candidate
@@ -206,7 +221,9 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
                 if candidate not in incompatibilities[identifier]
             )
 
-        def is_satisfied_by(self, requirement: str, candidate: Candidate) -> bool:
+        def is_satisfied_by(
+            self, requirement: str, candidate: Candidate
+        ) -> bool:
             return str(candidate[1]) in Requirement.parse(requirement)
 
     # patch Resolution._get_updated_criteria to collect rejected states
@@ -227,7 +244,9 @@ def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
     resolver: Resolver = Resolver(Provider(), reporter)
     result = resolver.resolve(["child", "parent"])
 
-    def get_child_versions(information: Collection[RequirementInformation[str, Candidate]]) -> Set[str]:
+    def get_child_versions(
+        information: Collection[RequirementInformation[str, Candidate]]
+    ) -> Set[str]:
         return {
             str(inf.parent[1])
             for inf in information
