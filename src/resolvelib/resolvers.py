@@ -175,11 +175,13 @@ class Resolution(object):
 
     def _remove_information_from_criteria(self, criteria, parents):
         """
-        Removes information from a set of parents from a criteria. Concretely, removes from each criterion's `information`
-        field all values that have one of `parents` as provider of the requirement.
+        Removes information from a set of parents from a criteria. Concretely, removes
+        from each criterion's `information` field all values that have one of `parents`
+        as provider of the requirement.
 
         :param criteria: The criteria to update.
-        :param parents: The set of identifiers for which to remove information from all criteria.
+        :param parents: The set of identifiers for which to remove information from all
+            criteria.
         """
         if not parents:
             return
@@ -414,7 +416,8 @@ class Resolution(object):
                 if not success:
                     raise ResolutionImpossible(self.state.backtrack_causes)
             else:
-                # discard as information sources any invalidated names (unsatisfied names that were previously satisfied)
+                # discard as information sources any invalidated names
+                # (unsatisfied names that were previously satisfied)
                 newly_unsatisfied_names = {
                     key
                     for key, criterion in self.state.criteria.items()

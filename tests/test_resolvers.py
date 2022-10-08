@@ -1,6 +1,3 @@
-import pytest
-from packaging.version import Version
-from pkg_resources import Requirement
 from typing import (
     Collection,
     Iterator,
@@ -12,6 +9,10 @@ from typing import (
     Union,
 )
 
+import pytest
+from packaging.version import Version
+from pkg_resources import Requirement
+
 from resolvelib import (
     AbstractProvider,
     BaseReporter,
@@ -21,9 +22,9 @@ from resolvelib import (
 )
 from resolvelib.resolvers import (
     Criterion,
-    Resolution,
     RequirementInformation,
     RequirementsConflicted,
+    Resolution,
 )
 
 
@@ -165,8 +166,8 @@ def test_resolving_conflicts():
 
 def test_pin_conflict_with_self(monkeypatch, reporter) -> None:
     """
-    Verify correct behavior of attempting to pin a candidate version that conflicts with a previously pinned (now invalidated)
-    version for that same candidate (#91).
+    Verify correct behavior of attempting to pin a candidate version that conflicts
+    with a previously pinned (now invalidated) version for that same candidate (#91).
     """
     Candidate = Tuple[
         str, Version, Sequence[str]
