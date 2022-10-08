@@ -173,7 +173,7 @@ class Resolution(object):
             raise RequirementsConflicted(criterion)
         criteria[identifier] = criterion
 
-    def _remove_information_from_citeria(self, criteria, parents):
+    def _remove_information_from_criteria(self, criteria, parents):
         """
         Removes information from a set of parents from a criteria. Concretely, removes from each criterion's `information`
         field all values that have one of `parents` as provider of the requirement.
@@ -181,18 +181,23 @@ class Resolution(object):
         :param criteria: The criteria to update.
         :param parents: The set of identifiers for which to remove information from all criteria.
         """
-        # TODO: remove
-        print("trimming", parents)
+        if not parents:
+            return
         for key, criterion in criteria.items():
-            # TODO: is empty information allowed?
-            criterion.information = [
-                information
-                for information in criterion.information
-                if (
-                    information[1] is None
-                    or self._p.identify(information[1]) not in parents
-                )
-            ]
+            # TODO: clean up implementation
+            criteria[key] = Criterion(
+                criterion.candidates,
+                # TODO: is empty information allowed?
+                [
+                    information
+                    for information in criterion.information
+                    if (
+                        information[1] is None
+                        or self._p.identify(information[1]) not in parents
+                    )
+                ],
+                criterion.incompatibilities,
+            )
 
     def _get_preference(self, name):
         # TODO: empty informations bug: verify + test case
@@ -408,15 +413,14 @@ class Resolution(object):
                 if not success:
                     raise ResolutionImpossible(self.state.backtrack_causes)
             else:
-                # discard as information sources any unsatisfied names that were satisfied before because they are invalid now
+                # discard as information sources any invalidated names (unsatisfied names that were previously satisfied)
                 newly_unsatisfied_names = {
                     key
                     for key, criterion in self.state.criteria.items()
                     if key in satisfied_names
                     if not self._is_current_pin_satisfying(key, criterion)
                 }
-                if newly_unsatisfied_names:
-                    self._remove_information_from_citeria(self.state.criteria, newly_unsatisfied_names)
+                self._remove_information_from_criteria(self.state.criteria, newly_unsatisfied_names)
                 # Pinning was successful. Push a new state to do another pin.
                 self._push_new_state()
 
