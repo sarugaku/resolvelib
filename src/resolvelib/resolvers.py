@@ -228,6 +228,7 @@ class Resolution(object):
             try:
                 criteria = self._get_updated_criteria(candidate)
             except RequirementsConflicted as e:
+                self._r.rejecting_candidate(e.criterion, candidate)
                 causes.append(e.criterion)
                 continue
 
@@ -296,8 +297,6 @@ class Resolution(object):
 
             # Also mark the newly known incompatibility.
             incompatibilities_from_broken.append((name, [candidate]))
-
-            self._r.backtracking(candidate=candidate)
 
             # Create a new state from the last known-to-work one, and apply
             # the previously gathered incompatibility information.

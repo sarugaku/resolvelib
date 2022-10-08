@@ -1,0 +1,3 @@
+A new reporter hook ``rejecting_candidate`` is added, replacing ``backtracking``.
+The hook is called every time the resolver rejects a conflicting candidate before
+trying out the next one in line.
