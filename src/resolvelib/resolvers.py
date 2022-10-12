@@ -201,7 +201,6 @@ class Resolution(object):
             )
 
     def _get_preference(self, name):
-        # TODO: empty informations bug: verify + test case
         return self._p.get_preference(
             identifier=name,
             resolutions=self.state.mapping,
@@ -395,7 +394,7 @@ class Resolution(object):
                 self._r.ending(state=self.state)
                 return self.state
 
-            # keep track of satisfied names to calculate diff ater pinning
+            # keep track of satisfied names to calculate diff after pinning
             satisfied_names = set(self.state.criteria.keys()) - set(
                 unsatisfied_names
             )
