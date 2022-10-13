@@ -175,7 +175,7 @@ class Resolution(object):
 
     def _remove_information_from_criteria(self, criteria, parents):
         """Remove information from parents of criteria.
-        
+
         Concretely, removes all values from each criterion's ``information``
         field that have one of ``parents`` as provider of the requirement.
 
