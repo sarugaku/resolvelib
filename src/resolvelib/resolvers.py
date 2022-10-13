@@ -420,7 +420,7 @@ class Resolution(object):
                     key
                     for key, criterion in self.state.criteria.items()
                     if key in satisfied_names
-                    if not self._is_current_pin_satisfying(key, criterion)
+                    and not self._is_current_pin_satisfying(key, criterion)
                 }
                 self._remove_information_from_criteria(
                     self.state.criteria, newly_unsatisfied_names
