@@ -174,14 +174,13 @@ class Resolution(object):
         criteria[identifier] = criterion
 
     def _remove_information_from_criteria(self, criteria, parents):
-        """
-        Removes information from a set of parents from a criteria. Concretely, removes
-        from each criterion's `information` field all values that have one of `parents`
-        as provider of the requirement.
+        """Remove information from parents of criteria.
+        
+        Concretely, removes all values from each criterion's ``information``
+        field that have one of ``parents`` as provider of the requirement.
 
         :param criteria: The criteria to update.
-        :param parents: The set of identifiers for which to remove information from all
-            criteria.
+        :param parents: Identifiers for which to remove information from all criteria.
         """
         if not parents:
             return
