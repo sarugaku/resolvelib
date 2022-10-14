@@ -187,7 +187,6 @@ class Resolution(object):
         for key, criterion in criteria.items():
             criteria[key] = Criterion(
                 criterion.candidates,
-                # TODO: is empty information allowed?
                 [
                     information
                     for information in criterion.information
