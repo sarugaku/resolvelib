@@ -2,37 +2,37 @@
 	"package-a": {
 		"0.1.0": {
 			"dependencies": [
-				"package-x=='0.1.0'; extra == 'x'",
-				"package-y=='0.1.0'; extra == 'y'",
-				"package-z=='0.1.0'; extra == 'z'"
+				"package-x==0.1.0; extra == 'x'",
+				"package-y==0.1.0; extra == 'y'",
+				"package-z==0.1.0; extra == 'z'"
 			]
 		},
 		"1.0.0": {
 			"dependencies": [
-				"package-x=='1.0.0'; extra == 'x'",
-				"package-y=='1.0.0'; extra == 'y'",
-				"package-z=='1.0.0'; extra == 'z'"
+				"package-x==1.0.0; extra == 'x'",
+				"package-y==1.0.0; extra == 'y'",
+				"package-z==1.0.0; extra == 'z'"
 			]
 		},
 		"1.1.0": {
 			"dependencies": [
-				"package-x=='1.1.0'; extra == 'x'",
-				"package-y=='1.1.0'; extra == 'y'",
-				"package-z=='1.1.0'; extra == 'z'"
+				"package-x==1.1.0; extra == 'x'",
+				"package-y==1.1.0; extra == 'y'",
+				"package-z==1.1.0; extra == 'z'"
 			]
 		},
 		"1.2.0": {
 			"dependencies": [
-				"package-x=='1.2.0'; extra == 'x'",
-				"package-y=='1.2.0'; extra == 'y'",
-				"package-z=='1.2.0'; extra == 'z'"
+				"package-x==1.2.0; extra == 'x'",
+				"package-y==1.2.0; extra == 'y'",
+				"package-z==1.2.0; extra == 'z'"
 			]
 		},
 		"1.3.0": {
 			"dependencies": [
-				"package-x=='1.3.0'; extra == 'x'",
-				"package-y=='1.3.0'; extra == 'y'",
-				"package-z=='1.3.0'; extra == 'z'"
+				"package-x==1.3.0; extra == 'x'",
+				"package-y==1.3.0; extra == 'y'",
+				"package-z==1.3.0; extra == 'z'"
 			]
 		}
 	},
