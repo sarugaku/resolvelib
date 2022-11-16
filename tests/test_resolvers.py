@@ -12,7 +12,7 @@ from typing import (
 
 import pytest
 from packaging.version import Version
-from pkg_resources import Requirement
+from packaging.requirements import Requirement
 
 from resolvelib import (
     AbstractProvider,
@@ -191,7 +191,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
         def identify(self, requirement_or_candidate):
             # type: (Union[str, Candidate]) -> str
             result = (
-                Requirement.parse(requirement_or_candidate).key
+                Requirement(requirement_or_candidate).name
                 if isinstance(requirement_or_candidate, str)
                 else requirement_or_candidate[0]
             )
@@ -226,7 +226,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
 
         def is_satisfied_by(self, requirement, candidate):
             # type: (str, Candidate) -> bool
-            return str(candidate[1]) in Requirement.parse(requirement)
+            return candidate[1] in Requirement(requirement).specifier
 
     # patch Resolution._get_updated_criteria to collect rejected states
     rejected_criteria = []  # type: List[Criterion]
