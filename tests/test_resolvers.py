@@ -21,11 +21,11 @@ from resolvelib import (
     ResolutionImpossible,
     Resolver,
 )
-from resolvelib.resolvers import Resolution  # type: ignore
 from resolvelib.resolvers import (
     Criterion,
     RequirementInformation,
     RequirementsConflicted,
+    Resolution,
 )
 
 
@@ -187,7 +187,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
         ],
     }  # type: Mapping[str, Sequence[Candidate]]
 
-    class Provider(AbstractProvider):  # AbstractProvider[int, Candidate, str]
+    class Provider(AbstractProvider):  # AbstractProvider[str, Candidate, str]
         def identify(self, requirement_or_candidate):
             # type: (Union[str, Candidate]) -> str
             result = (
@@ -230,7 +230,9 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
 
     # patch Resolution._get_updated_criteria to collect rejected states
     rejected_criteria = []  # type: List[Criterion]
-    get_updated_criteria_orig = Resolution._get_updated_criteria
+    get_updated_criteria_orig = (
+        Resolution._get_updated_criteria  # type: ignore[attr-defined]
+    )
 
     def get_updated_criteria_patch(self, candidate):
         try:
