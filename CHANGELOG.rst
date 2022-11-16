@@ -1,3 +1,25 @@
+0.9.0 (2022-11-17)
+==================
+
+Features
+--------
+
+- A new reporter hook ``rejecting_candidate`` is added, replacing ``backtracking``.
+  The hook is called every time the resolver rejects a conflicting candidate before
+  trying out the next one in line.  `#101 <https://github.com/sarugaku/resolvelib/issues/101>`_
+  
+
+Bug Fixes
+---------
+
+- Some valid states that were previously rejected are now accepted. This affects
+  states where multiple candidates for the same dependency conflict with each
+  other. The ``information`` argument passed to
+  ``AbstractProvider.get_preference`` may now contain empty iterators. This has
+  always been allowed by the method definition but it was previously not possible
+  in practice.  `#91 <https://github.com/sarugaku/resolvelib/issues/91>`_
+
+
 0.8.1 (2021-10-12)
 ==================
 

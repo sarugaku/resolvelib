@@ -1,6 +1,0 @@
-Some valid states that were previously rejected are now accepted. This affects
-states where multiple candidates for the same dependency conflict with each
-other. The ``information`` argument passed to
-``AbstractProvider.get_preference`` may now contain empty iterators. This has
-always been allowed by the method definition but it was previously not possible
-in practice.
