@@ -11,8 +11,8 @@ from typing import (
 )
 
 import pytest
-from packaging.version import Version
 from packaging.requirements import Requirement
+from packaging.version import Version
 
 from resolvelib import (
     AbstractProvider,
