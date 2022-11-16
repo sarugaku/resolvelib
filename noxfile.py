@@ -82,7 +82,7 @@ def release(session):
 
     if options.version:
         _write_package_version(options.version)
-        session.run("towncrier", "--version", options.version)
+        session.run("towncrier", "build", "--version", options.version)
         session.run(
             "git",
             "commit",
