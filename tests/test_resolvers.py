@@ -1,14 +1,17 @@
-from typing import (
-    Any,
-    Iterable,
-    Iterator,
-    List,
-    Mapping,
-    Sequence,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import (
+        Any,
+        Iterable,
+        Iterator,
+        List,
+        Mapping,
+        Sequence,
+        Set,
+        Tuple,
+        Union,
+    )
 
 import pytest
 from packaging.requirements import Requirement
@@ -21,12 +24,17 @@ from resolvelib import (
     ResolutionImpossible,
     Resolver,
 )
-from resolvelib.resolvers import (
-    Criterion,
-    RequirementInformation,
-    RequirementsConflicted,
-    Resolution,
-)
+
+if TYPE_CHECKING:
+    from resolvelib.resolvers import (
+        Criterion,
+        RequirementInformation,
+        RequirementsConflicted,
+    )
+
+from collections import namedtuple
+
+from resolvelib.resolvers import Resolution
 
 
 def test_candidate_inconsistent_error():
@@ -115,10 +123,21 @@ def test_candidate_depends_on_requirements_of_same_identifier(specifiers):
 
 
 def test_resolving_conflicts():
+    Candidate = namedtuple(
+        "Candidate", ["name", "version", "requirements"]
+    )  # name, version, requirements
+    _Requirement = namedtuple(
+        "Requirement", ["name", "versions"]
+    )  # name, versions
+    a1 = Candidate("a", 1, [_Requirement("q", {1})])
+    a2 = Candidate("a", 2, [_Requirement("q", {2})])
+    b = Candidate("b", 1, [_Requirement("q", {1})])
+    q1 = Candidate("q", 1, [])
+    q2 = Candidate("q", 2, [])
     all_candidates = {
-        "a": [("a", 1, [("q", {1})]), ("a", 2, [("q", {2})])],
-        "b": [("b", 1, [("q", {1})])],
-        "q": [("q", 1, []), ("q", 2, [])],
+        "a": [a1, a2],
+        "b": [b],
+        "q": [q1, q2],
     }
 
     class Reporter(BaseReporter):
@@ -136,20 +155,22 @@ def test_resolving_conflicts():
             return 0
 
         def get_dependencies(self, candidate):
-            return candidate[2]
+            return candidate.requirements
 
         def find_matches(self, identifier, requirements, incompatibilities):
-            bad_versions = {c[1] for c in incompatibilities[identifier]}
+            bad_versions = {c.version for c in incompatibilities[identifier]}
             candidates = [
                 c
                 for c in all_candidates[identifier]
-                if all(c[1] in r[1] for r in requirements[identifier])
-                and c[1] not in bad_versions
+                if all(
+                    c.version in r.versions for r in requirements[identifier]
+                )
+                and c.version not in bad_versions
             ]
-            return sorted(candidates, key=lambda c: c[1], reverse=True)
+            return sorted(candidates, key=lambda c: c.version, reverse=True)
 
         def is_satisfied_by(self, requirement, candidate):
-            return candidate[1] in requirement[1]
+            return candidate.version in requirement.versions
 
     def run_resolver(*args):
         reporter = Reporter()
@@ -160,8 +181,12 @@ def test_resolving_conflicts():
         except ResolutionImpossible as e:
             return e.causes
 
-    backtracking_causes = run_resolver([("a", {1, 2}), ("b", {1})])
-    exception_causes = run_resolver([("a", {2}), ("b", {1})])
+    backtracking_causes = run_resolver(
+        [_Requirement("a", {1, 2}), _Requirement("b", {1})]
+    )
+    exception_causes = run_resolver(
+        [_Requirement("a", {2}), _Requirement("b", {1})]
+    )
     assert exception_causes == backtracking_causes
 
 
@@ -171,9 +196,10 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
     Verify correct behavior of attempting to pin a candidate version that conflicts
     with a previously pinned (now invalidated) version for that same candidate (#91).
     """
-    Candidate = Tuple[  # noqa: F841
-        str, Version, Sequence[str]
-    ]  # name, version, requirements
+    if TYPE_CHECKING:
+        Candidate = Tuple[  # noqa: F841
+            str, Version, Sequence[str]
+        ]  # name, version, requirements
     all_candidates = {
         "parent": [("parent", Version("1"), ["child<2"])],
         "child": [
