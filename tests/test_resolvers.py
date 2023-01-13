@@ -171,7 +171,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
     Verify correct behavior of attempting to pin a candidate version that conflicts
     with a previously pinned (now invalidated) version for that same candidate (#91).
     """
-    Candidate = Tuple[
+    Candidate = Tuple[  # noqa: F841
         str, Version, Sequence[str]
     ]  # name, version, requirements
     all_candidates = {
