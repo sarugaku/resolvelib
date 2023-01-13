@@ -29,7 +29,6 @@ jobs:
       fail-fast: true
       matrix:
         python:
-          - "2.7"
           - "3.10"
           - "3.9"
           - "3.8"
