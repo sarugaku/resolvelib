@@ -23,7 +23,7 @@ jobs:
       - run: nox -s release -- --version '' --repo '' --prebump ''
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [lint]
     strategy:
       fail-fast: true
