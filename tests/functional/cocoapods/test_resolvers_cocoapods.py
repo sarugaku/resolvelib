@@ -6,8 +6,6 @@ import re
 import string
 
 import commentjson  # type: ignore
-import packaging.specifiers
-import packaging.version
 import pytest
 
 from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
@@ -17,40 +15,112 @@ Candidate = collections.namedtuple("Candidate", "name ver deps")
 
 
 INPUTS_DIR = os.path.abspath(os.path.join(__file__, "..", "inputs"))
-
 CASE_DIR = os.path.join(INPUTS_DIR, "case")
-
 CASE_NAMES = [name for name in os.listdir(CASE_DIR) if name.endswith(".json")]
 
 
-def _convert_specifier(s):
-    if not s:
-        return s
-    m = re.match(r"^([<>=~!]*)\s*(.+)$", s)
+def _parse_version(v):
+    parts = []
+    for part in re.split(r"[.-]", v):
+        if part[:1] in "0123456789":
+            parts.append(part.zfill(8))
+        else:
+            parts.append("*" + part)
+    parts.append("*z")  # end mark
+    return tuple(parts)
+
+
+class Version:
+    def __init__(self, v):
+        self.v = v
+        self._comp_key = _parse_version(v)
+
+    def __repr__(self):
+        return self.v
+
+    @property
+    def is_prerelease(self):
+        return any(part[0] == "*" for part in self._comp_key[:-1])
+
+    def __len__(self):
+        return len(self._comp_key)
+
+    def __eq__(self, o):
+        if not isinstance(o, Version):
+            return NotImplemented
+        left = self
+        if len(left) < len(o):
+            left = left.pad(len(o) - len(left))
+        elif len(left) > len(o):
+            o = o.pad(len(left) - len(o))
+        return left._comp_key == o._comp_key
+
+    def __lt__(self, o):
+        return self._comp_key < o._comp_key
+
+    def __le__(self, o):
+        return self._comp_key <= o._comp_key
+
+    def __gt__(self, o):
+        return self._comp_key > o._comp_key
+
+    def __ge__(self, o):
+        return self._comp_key >= o._comp_key
+
+    def __hash__(self):
+        return hash(self._comp_key)
+
+    def pad(self, n):
+        return Version(self.v + ".0" * n)
+
+
+def _compatible_gt(a, b):
+    """a ~> b"""
+    if a < b:
+        return False
+    a_digits = [part for part in a._comp_key if part[0] != "*"]
+    b_digits = [part for part in b._comp_key if part[0] != "*"]
+    target_len = len(b_digits)
+    return a_digits[: target_len - 1] == b_digits[: target_len - 1]
+
+
+_compare_ops = {
+    "=": operator.eq,
+    ">": operator.gt,
+    ">=": operator.ge,
+    "<": operator.lt,
+    "<=": operator.le,
+    "~>": _compatible_gt,
+    "!=": operator.ne,
+}
+
+
+def _version_in_spec(version, spec):
+    if not spec:
+        return not version.is_prerelease
+    m = re.match(r"([><=~!]*)\s*(.*)", spec)
     op, ver = m.groups()
-    if not op or op == "=":
-        return "== {}".format(ver)
-    elif op == "~>":
-        if len(ver) == 1:
-            # PEP 440 can't handle "~= X" (no minor part). This translates to
-            # a simple ">= X" because it means we accept major version changes.
-            return ">= {}".format(ver)
-        return "~= {0}, >= {0}".format(ver)
-    return s
+    if not op:
+        op = "="
+    spec_ver = Version(ver)
+    allow_prereleases = spec_ver.is_prerelease
+    if not allow_prereleases and version.is_prerelease:
+        return False
+    if len(spec_ver) > len(version):
+        version = version.pad(len(spec_ver) - len(version))
+    return _compare_ops[op](version, spec_ver)
 
 
 def _iter_convert_specifiers(inp):
     for raw in inp.split(","):
-        cov = _convert_specifier(raw.strip())
-        if not cov:
-            continue
-        yield cov
+        yield raw.strip()
 
 
-def _parse_specifier_set(inp):
-    return packaging.specifiers.SpecifierSet(
-        ", ".join(_iter_convert_specifiers(inp)),
-    )
+def _version_in_specset(version, specset):
+    for spec in _iter_convert_specifiers(specset):
+        if not _version_in_spec(version, spec):
+            return False
+    return True
 
 
 def _safe_json_load(filename):
@@ -74,7 +144,7 @@ def _clean_identifier(s):
 
 def _iter_resolved(dependencies):
     for entry in dependencies:
-        yield (entry["name"], packaging.version.parse(entry["version"]))
+        yield (entry["name"], Version(entry["version"]))
         for sub in _iter_resolved(entry["dependencies"]):
             yield sub
 
@@ -91,11 +161,11 @@ class CocoaPodsInputProvider(AbstractProvider):
         self.index = _safe_json_load(index_name)
 
         self.root_requirements = [
-            Requirement(_clean_identifier(key), _parse_specifier_set(spec))
+            Requirement(_clean_identifier(key), spec)
             for key, spec in case_data["requested"].items()
         ]
         self.pinned_versions = {
-            entry["name"]: packaging.version.parse(entry["version"])
+            entry["name"]: Version(entry["version"])
             for entry in case_data["base"]
         }
         self.expected_resolution = dict(_iter_resolved(case_data["resolved"]))
@@ -121,17 +191,17 @@ class CocoaPodsInputProvider(AbstractProvider):
             return
         bad_versions = {c.ver for c in incompatibilities[name]}
         for entry in data:
-            version = packaging.version.parse(entry["version"])
-            if any(version not in r.spec for r in requirements[name]):
+            version = Version(entry["version"])
+            if any(
+                not _version_in_specset(version, r.spec)
+                for r in requirements[name]
+            ):
                 continue
             if version in bad_versions:
                 continue
             # Some fixtures incorrectly set dependencies to an empty list.
             dependencies = entry["dependencies"] or {}
-            dependencies = [
-                Requirement(k, _parse_specifier_set(v))
-                for k, v in dependencies.items()
-            ]
+            dependencies = [Requirement(k, v) for k, v in dependencies.items()]
             yield Candidate(entry["name"], version, dependencies)
 
     def find_matches(self, identifier, requirements, incompatibilities):
@@ -148,7 +218,7 @@ class CocoaPodsInputProvider(AbstractProvider):
             yield c
 
     def is_satisfied_by(self, requirement, candidate):
-        return candidate.ver in requirement.spec
+        return _version_in_specset(candidate.ver, requirement.spec)
 
     def get_dependencies(self, candidate):
         return candidate.deps
