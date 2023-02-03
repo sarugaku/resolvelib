@@ -205,7 +205,6 @@ class CocoaPodsInputProvider(AbstractProvider):
             yield Candidate(entry["name"], version, dependencies)
 
     def find_matches(self, identifier, requirements, incompatibilities):
-
         candidates = sorted(
             self._iter_matches(identifier, requirements, incompatibilities),
             key=operator.attrgetter("ver"),
