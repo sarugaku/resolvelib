@@ -1,0 +1,1 @@
+Implement backjumping to significantly speed up the resolution process by skipping over irrelevant parts of the resolution search space.
