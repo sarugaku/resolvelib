@@ -191,8 +191,8 @@ class Resolution(object):
                     information
                     for information in criterion.information
                     if (
-                        information[1] is None
-                        or self._p.identify(information[1]) not in parents
+                        information.parent is None
+                        or self._p.identify(information.parent) not in parents
                     )
                 ],
                 criterion.incompatibilities,
