@@ -1,3 +1,12 @@
+1.0.0 (2023-03-08)
+==================
+
+Features
+--------
+
+- Implement backjumping to significantly speed up the resolution process by skipping over irrelevant parts of the resolution search space.  `#113 <https://github.com/sarugaku/resolvelib/issues/113>`_
+
+
 0.9.0 (2022-11-17)
 ==================
 

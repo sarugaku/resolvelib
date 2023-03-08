@@ -32,10 +32,14 @@ Release Process for Maintainers
 
 Replace ``X.Y.Z`` with the release you would like to make.
 
+(The following assumes the remote you forked is called ``origin``, and the canonical sarugaku/resolvelib is under ``upstream``.)
+
 * Make sure the news fragments are in place.
+* ``git checkout -b release/X.Y.Z``
 * ``nox -s release -- --repo https://upload.pypi.org/legacy/ --prebump X.Y.Z+1.dev0 --version X.Y.Z``
-* ``git push origin master --tags``
-* ``git push upstream master --tags``
+* ``git push upstream --tags``
+* ``git push origin release/X.Y.Z``
+* Open a pull request on GitHub and merge the ``release/X.Y.Z`` branch into main.
 
 Breakdown of the ``release`` nox task:
 
