@@ -1,4 +1,5 @@
 import collections
+import itertools
 import operator
 
 from .providers import AbstractResolver
@@ -283,10 +284,11 @@ class Resolution(object):
 
         Each iteration of the loop will:
 
-        1.  Identify Z. The incompatibility is not always caused by the latest state.
-            For example, given three requirements A, B and C, with dependencies
-            A1, B1 and C1, where A1 and B1 are incompatible: the last state
-            might be related to C, so we want to discard the previous state.
+        1.  Identify Z. The incompatibility is not always caused by the latest
+            state. For example, given three requirements A, B and C, with
+            dependencies A1, B1 and C1, where A1 and B1 are incompatible: the
+            last state might be related to C, so we want to discard the
+            previous state.
         2.  Discard Z.
         3.  Discard Y but remember its incompatibility information gathered
             previously, and the failure we're dealing with right now.
@@ -296,9 +298,11 @@ class Resolution(object):
             the new Z and go back to step 2.
         5b. If the incompatibilities apply cleanly, end backtracking.
         """
-        incompatible_deps = {
-            self._p.identify(c.parent) for c in causes if c.parent is not None
-        } | {self._p.identify(c.requirement) for c in causes}
+        incompatible_reqs = itertools.chain(
+            (c.parent for c in causes if c.parent is not None),
+            (c.requirement for c in causes),
+        )
+        incompatible_deps = {self._p.identify(r) for r in incompatible_reqs}
         while len(self._states) >= 3:
             # Remove the state that triggered backtracking.
             del self._states[-1]
