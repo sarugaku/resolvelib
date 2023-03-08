@@ -296,10 +296,9 @@ class Resolution(object):
             the new Z and go back to step 2.
         5b. If the incompatibilities apply cleanly, end backtracking.
         """
-        incompatible_deps = set(
-            [c.parent.name for c in causes if c.parent is not None]
-            + [c.requirement.name for c in causes]
-        )
+        incompatible_deps = {
+            self._p.identify(c.parent) for c in causes if c.parent is not None
+        } | {self._p.identify(c.requirement) for c in causes}
         while len(self._states) >= 3:
             # Remove the state that triggered backtracking.
             del self._states[-1]
