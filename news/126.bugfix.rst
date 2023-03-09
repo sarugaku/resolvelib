@@ -1,0 +1,1 @@
+Fix calls to opaque objects and use provider interface calls instead.
