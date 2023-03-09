@@ -1,3 +1,12 @@
+1.0.1 (2023-03-09)
+==================
+
+Bug Fixes
+---------
+
+- Fix calls to opaque objects and use provider interface calls instead.  `#126 <https://github.com/sarugaku/resolvelib/issues/126>`_
+
+
 1.0.0 (2023-03-08)
 ==================
 
