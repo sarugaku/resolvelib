@@ -41,3 +41,12 @@ class BaseReporter(object):
 
     def pinning(self, candidate):
         """Called when adding a candidate to the potential solution."""
+
+    def backtracking_on(self, names, unsatisfied_names):
+        """Called when resolver identifies specific projects causing backtracking.
+
+        :param causes: The names of projects causing the backtracking.
+        :param causes: The names of projects and their parents that are
+            currently unsatisfied by the resolver.
+
+        """

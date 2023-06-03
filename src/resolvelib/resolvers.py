@@ -211,7 +211,6 @@ class Resolution(object):
                 self.state.criteria,
                 operator.attrgetter("information"),
             ),
-            backtrack_causes=self.state.backtrack_causes,
         )
 
     def _is_current_pin_satisfying(self, name, criterion):
@@ -418,9 +417,28 @@ class Resolution(object):
                 return self.state
 
             # keep track of satisfied names to calculate diff after pinning
-            satisfied_names = set(self.state.criteria.keys()) - set(
-                unsatisfied_names
+            unsatisfied_names_set = set(unsatisfied_names)
+            satisfied_names = (
+                set(self.state.criteria.keys()) - unsatisfied_names_set
             )
+
+            # If backtrack causes prefer them and their parents first
+            if self.state.backtrack_causes:
+                backtrack_cause_names = set()
+                for backtrack_cause in self.state.backtrack_causes:
+                    backtrack_cause_names.add(backtrack_cause.requirement.name)
+                    if backtrack_cause.parent:
+                        backtrack_cause_names.add(backtrack_cause.parent.name)
+
+                unsatisfied_causes_names = unsatisfied_names_set & (
+                    backtrack_cause_names
+                )
+                if unsatisfied_causes_names:
+                    unsatisfied_names = list(unsatisfied_causes_names)
+
+                self._r.backtracking_on(
+                    backtrack_cause_names, unsatisfied_causes_names
+                )
 
             # Choose the most preferred unpinned criterion to try.
             name = min(unsatisfied_names, key=self._get_preference)

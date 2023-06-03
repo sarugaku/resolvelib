@@ -24,7 +24,6 @@ class AbstractProvider(Generic[RT, CT, KT]):
         resolutions: Mapping[KT, CT],
         candidates: Mapping[KT, Iterator[CT]],
         information: Mapping[KT, Iterator[RequirementInformation[RT, CT]]],
-        backtrack_causes: Sequence[RequirementInformation[RT, CT]],
     ) -> Preference: ...
     def find_matches(
         self,
