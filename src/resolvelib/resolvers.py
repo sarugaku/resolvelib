@@ -315,7 +315,7 @@ class Resolution(object):
                     broken_state = self._states.pop()
                     name, candidate = broken_state.mapping.popitem()
                 except (IndexError, KeyError):
-                    raise ResolutionImpossible(causes)
+                    raise ResolutionImpossible(causes) from None
                 current_dependencies = {
                     self._p.identify(d)
                     for d in self._p.get_dependencies(candidate)
