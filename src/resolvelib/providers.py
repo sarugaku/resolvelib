@@ -2,10 +2,11 @@ class AbstractProvider(object):
     """Delegate class to provide the required interface for the resolver."""
 
     def identify(self, requirement_or_candidate):
-        """Given a requirement, return an identifier for it.
+        """Given a requirement or candidate, return an identifier for it.
 
-        This is used to identify a requirement, e.g. whether two requirements
-        should have their specifier parts merged.
+        This is used to identify, e.g. whether two requirements
+        should have their specifier parts merged or a candidate matches a
+        requirement via ``find_matches()``.
         """
         raise NotImplementedError
 
@@ -17,14 +18,14 @@ class AbstractProvider(object):
         information,
         backtrack_causes,
     ):
-        """Produce a sort key for given requirement based on preference.
+        """Produce a sort key for the given requirement based on preference.
 
         The preference is defined as "I think this requirement should be
         resolved first". The lower the return value is, the more preferred
         this group of arguments is.
 
         :param identifier: An identifier as returned by ``identify()``. This
-            identifies the dependency matches which should be returned.
+            identifies the requirement being considered.
         :param resolutions: Mapping of candidates currently pinned by the
             resolver. Each key is an identifier, and the value is a candidate.
             The candidate may conflict with requirements from ``information``.
@@ -32,8 +33,9 @@ class AbstractProvider(object):
             Each value is an iterator of candidates.
         :param information: Mapping of requirement information of each package.
             Each value is an iterator of *requirement information*.
-        :param backtrack_causes: Sequence of requirement information that were
-            the requirements that caused the resolver to most recently backtrack.
+        :param backtrack_causes: Sequence of *requirement information* that are
+            the requirements that caused the resolver to most recently
+            backtrack.
 
         A *requirement information* instance is a named tuple with two members:
 
@@ -63,12 +65,13 @@ class AbstractProvider(object):
     def find_matches(self, identifier, requirements, incompatibilities):
         """Find all possible candidates that satisfy the given constraints.
 
-        :param identifier: An identifier as returned by ``identify()``. This
-            identifies the dependency matches of which should be returned.
+        :param identifier: An identifier as returned by ``identify()``. All
+            candidates returned by this method should produce the same
+            identifier.
         :param requirements: A mapping of requirements that all returned
             candidates must satisfy. Each key is an identifier, and the value
             an iterator of requirements for that dependency.
-        :param incompatibilities: A mapping of known incompatibilities of
+        :param incompatibilities: A mapping of known incompatibile candidates of
             each dependency. Each key is an identifier, and the value an
             iterator of incompatibilities known to the resolver. All
             incompatibilities *must* be excluded from the return value.
@@ -122,7 +125,7 @@ class AbstractResolver(object):
         """Take a collection of constraints, spit out the resolution result.
 
         This returns a representation of the final resolution state, with one
-        guarenteed attribute ``mapping`` that contains resolved candidates as
+        guaranteed attribute ``mapping`` that contains resolved candidates as
         values. The keys are their respective identifiers.
 
         :param requirements: A collection of constraints.
