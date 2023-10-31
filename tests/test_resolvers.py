@@ -1,17 +1,9 @@
-from typing import TYPE_CHECKING
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Iterator, Sequence, Tuple
 
 if TYPE_CHECKING:
-    from typing import (
-        Any,
-        Iterable,
-        Iterator,
-        List,
-        Mapping,
-        Sequence,
-        Set,
-        Tuple,
-        Union,
-    )
+    from typing import Iterable, Mapping
 
 import pytest
 from packaging.requirements import Requirement
@@ -196,11 +188,9 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
     Verify correct behavior of attempting to pin a candidate version that conflicts
     with a previously pinned (now invalidated) version for that same candidate (#91).
     """
-    if TYPE_CHECKING:
-        Candidate = Tuple[  # noqa: F841
-            str, Version, Sequence[str]
-        ]  # name, version, requirements
-    all_candidates = {
+    Candidate = Tuple[str, Version, Sequence[str]]
+
+    all_candidates: Mapping[str, Sequence[Candidate]] = {
         "parent": [("parent", Version("1"), ["child<2"])],
         "child": [
             ("child", Version("2"), ["grandchild>=2"]),
@@ -211,11 +201,10 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
             ("grandchild", Version("2"), []),
             ("grandchild", Version("1"), []),
         ],
-    }  # type: Mapping[str, Sequence[Candidate]]
+    }
 
-    class Provider(AbstractProvider):  # AbstractProvider[str, Candidate, str]
-        def identify(self, requirement_or_candidate):
-            # type: (Union[str, Candidate]) -> str
+    class Provider(AbstractProvider[str, Candidate, str]):
+        def identify(self, requirement_or_candidate: str | Candidate) -> str:
             result = (
                 Requirement(requirement_or_candidate).name
                 if isinstance(requirement_or_candidate, str)
@@ -224,22 +213,21 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
             assert result in all_candidates, "unknown requirement_or_candidate"
             return result
 
-        def get_preference(self, identifier, *args, **kwargs):
-            # type: (str, *object, **object) -> str
+        def get_preference(
+            self, identifier: str, *args: Any, **kwargs: Any
+        ) -> str:
             # prefer child over parent (alphabetically)
             return identifier
 
-        def get_dependencies(self, candidate):
-            # type: (Candidate) -> Sequence[str]
+        def get_dependencies(self, candidate: Candidate) -> Sequence[str]:
             return candidate[2]
 
         def find_matches(
             self,
-            identifier,  # type: str
-            requirements,  # type: Mapping[str, Iterator[str]]
-            incompatibilities,  # type: Mapping[str, Iterator[Candidate]]
-        ):
-            # type: (...) -> Iterator[Candidate]
+            identifier: str,
+            requirements: Mapping[str, Iterator[str]],
+            incompatibilities: Mapping[str, Iterator[Candidate]],
+        ) -> Iterator[Candidate]:
             return (
                 candidate
                 for candidate in all_candidates[identifier]
@@ -250,12 +238,13 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
                 if candidate not in incompatibilities[identifier]
             )
 
-        def is_satisfied_by(self, requirement, candidate):
-            # type: (str, Candidate) -> bool
+        def is_satisfied_by(
+            self, requirement: str, candidate: Candidate
+        ) -> bool:
             return candidate[1] in Requirement(requirement).specifier
 
     # patch Resolution._get_updated_criteria to collect rejected states
-    rejected_criteria = []  # type: List[Criterion]
+    rejected_criteria: list[Criterion] = []
     get_updated_criteria_orig = (
         Resolution._get_updated_criteria  # type: ignore[attr-defined]
     )
@@ -271,13 +260,12 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
         Resolution, "_get_updated_criteria", get_updated_criteria_patch
     )
 
-    resolver = Resolver(
-        Provider(), reporter
-    )  # type: Resolver[str, Candidate, str]
+    resolver: Resolver[str, Candidate, str] = Resolver(Provider(), reporter)
     result = resolver.resolve(["child", "parent"])
 
-    def get_child_versions(information):
-        # type: (Iterable[RequirementInformation[str, Candidate]]) -> Set[str]
+    def get_child_versions(
+        information: Iterable[RequirementInformation[str, Candidate]]
+    ) -> set[str]:
         return {
             str(inf.parent[1])
             for inf in information
