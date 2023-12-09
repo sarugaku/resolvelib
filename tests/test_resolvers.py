@@ -1,9 +1,7 @@
 from __future__ import annotations
 
+from collections import namedtuple
 from typing import TYPE_CHECKING, Any, Iterator, Sequence, Tuple
-
-if TYPE_CHECKING:
-    from typing import Iterable, Mapping
 
 import pytest
 from packaging.requirements import Requirement
@@ -16,17 +14,16 @@ from resolvelib import (
     ResolutionImpossible,
     Resolver,
 )
+from resolvelib.resolvers import Resolution
 
 if TYPE_CHECKING:
+    from typing import Iterable, Mapping
+
     from resolvelib.resolvers import (
         Criterion,
         RequirementInformation,
         RequirementsConflicted,
     )
-
-from collections import namedtuple
-
-from resolvelib.resolvers import Resolution
 
 
 def test_candidate_inconsistent_error():
