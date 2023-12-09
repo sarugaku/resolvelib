@@ -14,12 +14,12 @@ from resolvelib import (
     ResolutionImpossible,
     Resolver,
 )
-from resolvelib.resolvers import Resolution
+from resolvelib.resolvers.criterion import Resolution
 
 if TYPE_CHECKING:
     from typing import Iterable, Mapping
 
-    from resolvelib.resolvers import (
+    from resolvelib.resolvers.criterion import (
         Criterion,
         RequirementInformation,
         RequirementsConflicted,
@@ -261,7 +261,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
     result = resolver.resolve(["child", "parent"])
 
     def get_child_versions(
-        information: Iterable[RequirementInformation[str, Candidate]]
+        information: Iterable[RequirementInformation[str, Candidate]],
     ) -> set[str]:
         return {
             str(inf.parent[1])
