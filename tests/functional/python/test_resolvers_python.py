@@ -119,6 +119,16 @@ class PythonInputProvider(AbstractProvider):
     def get_dependencies(self, candidate):
         return list(self._iter_dependencies(candidate))
 
+    def narrow_requirement_selection(
+        self,
+        identifiers,
+        resolutions,
+        candidates,
+        information,
+        backtrack_causes,
+    ):
+        return identifiers
+
 
 INPUTS_DIR = os.path.abspath(os.path.join(__file__, "..", "inputs"))
 

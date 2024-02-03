@@ -132,6 +132,16 @@ class SwiftInputProvider(AbstractProvider):
     def get_dependencies(self, candidate):
         return list(self._iter_dependencies(candidate))
 
+    def narrow_requirement_selection(
+        self,
+        identifiers,
+        resolutions,
+        candidates,
+        information,
+        backtrack_causes,
+    ):
+        return identifiers
+
 
 @pytest.fixture(
     params=[os.path.join(INPUTS_DIR, n) for n in INPUT_NAMES],
