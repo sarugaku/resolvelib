@@ -222,6 +222,16 @@ class CocoaPodsInputProvider(AbstractProvider):
     def get_dependencies(self, candidate):
         return candidate.deps
 
+    def narrow_requirement_selection(
+        self,
+        identifiers,
+        resolutions,
+        candidates,
+        information,
+        backtrack_causes,
+    ):
+        return identifiers
+
 
 XFAIL_CASES = {
     # ResolveLib does not complain about cycles, so these will be different.

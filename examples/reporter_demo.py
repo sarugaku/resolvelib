@@ -101,6 +101,16 @@ class Provider(resolvelib.AbstractProvider):
     def get_dependencies(self, candidate):
         return self.candidates[candidate]
 
+    def narrow_requirement_selection(
+        self,
+        identifiers,
+        resolutions,
+        candidates,
+        information,
+        backtrack_causes,
+    ):
+        return identifiers
+
 
 class Reporter(resolvelib.BaseReporter):
     def starting(self):

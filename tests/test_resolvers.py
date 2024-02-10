@@ -58,6 +58,9 @@ def test_candidate_inconsistent_error():
             assert candidate is self.candidate
             return False
 
+        def narrow_requirement_selection(self, identifiers, **_):
+            return identifiers
+
     resolver = Resolver(Provider(requirement, candidate), BaseReporter())
 
     with pytest.raises(InconsistentCandidate) as ctx:
@@ -103,6 +106,9 @@ def test_candidate_depends_on_requirements_of_same_identifier(specifiers):
 
         def is_satisfied_by(self, requirement, candidate):
             return candidate[1] in requirement[1]
+
+        def narrow_requirement_selection(self, identifiers, **_):
+            return identifiers
 
     # Now when resolved, both requirements to child specified by parent should
     # be pulled, and the resolver should choose v1, not v2 (happens if the
@@ -163,6 +169,9 @@ def test_resolving_conflicts():
 
         def is_satisfied_by(self, requirement, candidate):
             return candidate.version in requirement.versions
+
+        def narrow_requirement_selection(self, identifiers, **_):
+            return identifiers
 
     def run_resolver(*args):
         reporter = Reporter()
@@ -242,6 +251,9 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
             self, requirement: str, candidate: Candidate
         ) -> bool:
             return candidate[1] in Requirement(requirement).specifier
+
+        def narrow_requirement_selection(self, identifiers, **_):
+            return identifiers
 
     # patch Resolution._get_updated_criteria to collect rejected states
     rejected_criteria: list[Criterion] = []

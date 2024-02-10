@@ -52,3 +52,13 @@ class ExtrasProvider(AbstractProvider):
             req = self.get_base_requirement(candidate)
             deps.append(req)
         return deps
+
+    def narrow_requirement_selection(
+        self,
+        identifiers,
+        resolutions,
+        candidates,
+        information,
+        backtrack_causes,
+    ):
+        return identifiers
