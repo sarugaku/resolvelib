@@ -60,3 +60,6 @@ class BaseReporter(Generic[RT, CT, KT]):
 
     def pinning(self, candidate: CT) -> None:
         """Called when adding a candidate to the potential solution."""
+
+    def fallback_activated(self) -> None:
+        """Called when falling back from backjumping to backtracking."""
