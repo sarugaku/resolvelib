@@ -135,3 +135,60 @@ class AbstractProvider(Generic[RT, CT, KT]):
         specifies as its dependencies.
         """
         raise NotImplementedError
+
+    def narrow_requirement_selection(
+        self,
+        identifiers: Iterable[KT],
+        resolutions: Mapping[KT, CT],
+        candidates: Mapping[KT, Iterator[CT]],
+        information: Mapping[KT, Iterator[RequirementInformation[RT, CT]]],
+        backtrack_causes: Sequence[RequirementInformation[RT, CT]],
+    ) -> Iterable[KT]:
+        """
+        An optional method to narrow the selection of requirements being
+        considered during resolution.
+
+        The requirement selection is defined as "The possible requirements
+        that will be resolved next." If a requirement is not part of the returned
+        iterable, it will not be considered during the next step of resolution.
+
+        :param identifiers: An iterable of `identifiers` as returned by
+            ``identify()``. These identify all requirements currently being
+            considered.
+        :param resolutions: A mapping of candidates currently pinned by the
+            resolver. Each key is an identifier, and the value is a candidate
+            that may conflict with requirements from ``information``.
+        :param candidates: A mapping of each dependency's possible candidates.
+            Each value is an iterator of candidates.
+        :param information: A mapping of requirement information for each package.
+            Each value is an iterator of *requirement information*.
+        :param backtrack_causes: A sequence of *requirement information* that are
+            the requirements causing the resolver to most recently
+            backtrack.
+
+        A *requirement information* instance is a named tuple with two members:
+
+        * ``requirement`` specifies a requirement contributing to the current
+          list of candidates.
+        * ``parent`` specifies the candidate that provides (is depended on for)
+          the requirement, or ``None`` to indicate a root requirement.
+
+        Must return a non-empty subset of `identifiers`, with the default
+        implementation being to return `identifiers` unchanged.
+
+        Can be used by the provider to optimize the dependency resolution
+        process. `get_preference` will only be called for the identifiers
+        returned. If there is only one identifier returned, then `get_preference`
+        won't be called at all.
+
+        Serving a similar purpose as `get_preference`, this method allows the
+        provider to guide resolvelib through the resolution process. It should
+        be used instead of `get_preference` for logic when the provider needs
+        to consider multiple identifiers simultaneously, or when the provider
+        wants to skip checking all identifiers, e.g., because the checks are
+        prohibitively expensive.
+
+        Returns:
+            Iterable[KT]: A non-empty subset of `identifiers`.
+        """
+        return identifiers
