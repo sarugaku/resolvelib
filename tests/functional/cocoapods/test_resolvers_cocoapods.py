@@ -5,7 +5,6 @@ import os
 import re
 import string
 
-import commentjson  # type: ignore
 import pytest
 
 from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
@@ -124,14 +123,16 @@ def _version_in_specset(version, specset):
 
 
 def _safe_json_load(filename):
-    # Some fixtures has comments so the stdlib implementation doesn't work.
-    # We only use commentjson if we absolutely need to because it's SLOW.
-    try:
-        with open(filename) as f:
+    # Some fixtures have comments, so strip them if first parse fails.
+    # We only do this in case of failure to avoid loading all JSON files to
+    # strings before parsing.
+    with open(filename) as f:
+        try:
             data = json.load(f)
-    except ValueError:
-        with open(filename) as f:
-            data = commentjson.load(f)
+        except ValueError:
+            f.seek(0)
+            strippedjson = re.sub(r"//.*$", "", f.read(), flags=re.MULTILINE)
+            data = json.loads(strippedjson)
     return data
 
 
