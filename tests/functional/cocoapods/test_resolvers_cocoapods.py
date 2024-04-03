@@ -124,7 +124,8 @@ def _version_in_specset(version, specset):
 
 def _safe_json_load(filename):
     # Some fixtures have comments, so strip them if first parse fails.
-    # We only do this in case of failure to avoid loading all JSON files to strings before parsing.
+    # We only do this in case of failure to avoid loading all JSON files to
+    # strings before parsing.
     with open(filename) as f:
         try:
             data = json.load(f)
