@@ -123,11 +123,8 @@ def _version_in_specset(version, specset):
 
 
 def _safe_json_load(filename):
-    # Some fixtures have comments so they are not valid json.
-    # We could use commentjson/json5 to load them,
-    # but it's easier to strip the comments.
-    # We only do it when json.load() fails to avoid unnecessary loading
-    # all the json files to strings.
+    # Some fixtures have comments, so strip them if first parse fails.
+    # We only do this in case of failure to avoid loading all JSON files to strings before parsing.
     with open(filename) as f:
         try:
             data = json.load(f)
