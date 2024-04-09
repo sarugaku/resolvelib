@@ -37,11 +37,27 @@ if TYPE_CHECKING:
         criteria: dict[KT, Criterion[RT, CT]]
         backtrack_causes: list[RequirementInformation[RT, CT]]
 
+        def __copy__(self) -> State:
+            ...
+
 else:
     RequirementInformation = namedtuple(
         "RequirementInformation", ["requirement", "parent"]
     )
-    State = namedtuple("State", ["mapping", "criteria", "backtrack_causes"])
+
+    class State(NamedTuple):
+        """Resolution state in a round."""
+
+        mapping: dict
+        criteria: dict
+        backtrack_causes: list
+
+        def __copy__(self) -> "State":
+            return State(
+                mapping=self.mapping.copy(),
+                criteria=self.criteria.copy(),
+                backtrack_causes=self.backtrack_causes[:],
+            )
 
 
 class DirectedGraph(Generic[KT]):

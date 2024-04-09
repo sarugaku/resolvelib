@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import itertools
 import operator
+from copy import copy
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -122,11 +123,7 @@ class Resolution(Generic[RT, CT, KT]):
         coming round.
         """
         base = self._states[-1]
-        state = State(
-            mapping=base.mapping.copy(),
-            criteria=base.criteria.copy(),
-            backtrack_causes=base.backtrack_causes[:],
-        )
+        state = copy(base)
         self._states.append(state)
 
     def _add_to_criteria(
@@ -274,14 +271,7 @@ class Resolution(Generic[RT, CT, KT]):
 
     def _copy_all_states(self) -> list[State]:
         """Create a copy of the all the current states"""
-        return [
-            State(
-                s.mapping.copy(),
-                s.criteria.copy(),
-                s.backtrack_causes[:],
-            )
-            for s in self._states
-        ]
+        return [copy(s) for s in self._states]
 
     def _backtrack_iteration(self) -> tuple[KT, CT, list[tuple[KT, list[CT]]]]:
         """
