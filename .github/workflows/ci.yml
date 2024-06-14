@@ -9,35 +9,38 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
       - run: pip install nox
       - run: nox -s lint
   package:
     name: Package
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
       - run: pip install nox
       - run: nox -s release -- --version '' --repo '' --prebump ''
   test:
     name: Test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [lint]
     strategy:
       fail-fast: true
       matrix:
         python:
+          - "3.13"
+          - "3.12"
           - "3.11"
           - "3.10"
           - "3.9"
           - "3.8"
           - "3.7"
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
+          allow-prereleases: true
       - run: pip install nox
       - run: nox -s tests-${{ matrix.python }}
