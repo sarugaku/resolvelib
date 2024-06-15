@@ -16,8 +16,8 @@ __version__ = "1.0.2.dev0"
 
 from .providers import AbstractProvider
 from .reporters import BaseReporter
-from .resolvers import (
-    AbstractResolver,
+from .resolvers.abstract import AbstractResolver
+from .resolvers.criterion import (
     InconsistentCandidate,
     RequirementsConflicted,
     ResolutionError,
