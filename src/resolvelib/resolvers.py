@@ -328,7 +328,9 @@ class Resolution(Generic[RT, CT, KT]):
                 if not current_dependencies.isdisjoint(incompatible_deps):
                     break
 
-                # Stop backtracking if there is no further state to backtrack on
+                # Fallback: We should not backtrack to the point where
+                # broken_state.mapping is empty, so stop backtracking for
+                # a chance for the resolution to recover
                 if not broken_state.mapping:
                     break
 
