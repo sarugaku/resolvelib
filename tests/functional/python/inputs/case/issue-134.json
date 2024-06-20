@@ -1,0 +1,17 @@
+{
+	"index": "issue-134",
+	"requested": [
+		"pandas<=1.4.0,>=1.3.5",
+		"pystac<=1.8.3,>=1.8.2",
+		"pystac-client<=0.3.3,>=0.3.2",
+		"sat-stac<=0.1.1"
+	],
+	"resolved": {
+		"pandas": "1.3.5",
+		"pystac": "1.8.3",
+		"pystac-client": "0.3.3",
+		"sat-stac": "0.1.1",
+		"python-dateutil": "2.7.5",
+		"requests": "2.31.0"
+	}
+}

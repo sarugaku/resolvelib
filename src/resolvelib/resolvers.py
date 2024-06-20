@@ -309,23 +309,30 @@ class Resolution(Generic[RT, CT, KT]):
             # Remove the state that triggered backtracking.
             del self._states[-1]
 
-            # Ensure to backtrack to a state that caused the incompatibility
-            incompatible_state = False
+            # Optimistically backtrack to a state that caused the incompatibility
             broken_state = self.state
-            while not incompatible_state:
+            while True:
                 # Retrieve the last candidate pin and known incompatibilities.
                 try:
                     broken_state = self._states.pop()
                     name, candidate = broken_state.mapping.popitem()
                 except (IndexError, KeyError):
                     raise ResolutionImpossible(causes) from None
+
+                # If the current dependencies and the incompatible dependencies
+                # are overlapping then we have found a cause of the incompatibility
                 current_dependencies = {
                     self._p.identify(d)
                     for d in self._p.get_dependencies(candidate)
                 }
-                incompatible_state = not current_dependencies.isdisjoint(
-                    incompatible_deps
-                )
+                if not current_dependencies.isdisjoint(incompatible_deps):
+                    break
+
+                # Fallback: We should not backtrack to the point where
+                # broken_state.mapping is empty, so stop backtracking for
+                # a chance for the resolution to recover
+                if not broken_state.mapping:
+                    break
 
             incompatibilities_from_broken = [
                 (k, list(v.incompatibilities))
