@@ -1,0 +1,17 @@
+{
+	"index": "backjump-test-2",
+	"requested": [
+		"a"
+	],
+	"resolved": {
+		"a": "0.0.1",
+		"b": "0.0.2",
+		"c": "0.0.1",
+		"pandas": "1.3.5",
+		"pystac": "1.8.3",
+		"pystac-client": "0.3.3",
+		"sat-stac": "0.1.1",
+		"python-dateutil": "2.7.5",
+		"requests": "2.31.0"
+	}
+}
