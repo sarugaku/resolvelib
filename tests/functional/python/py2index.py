@@ -1,3 +1,12 @@
+# /// script
+# requires-python = ">=3.7"
+# dependencies = [
+#   "requests",
+#   "packaging",
+#   "html5lib"
+# ]
+# ///
+
 """Freeze metadata from Python index server to test locally.
 
 Inspired by index_from_rubygems.rb from CocoaPods/Resolver-Integration-Specs.
@@ -20,10 +29,7 @@ import pathlib
 import re
 import sys
 import urllib.parse
-import zipfile
 from typing import (
-    IO,
-    BinaryIO,
     Dict,
     FrozenSet,
     Iterable,
@@ -34,7 +40,6 @@ from typing import (
     Set,
     Tuple,
     Union,
-    cast,
 )
 
 import html5lib
@@ -198,15 +203,6 @@ def _parse_wheel_name(rest: str) -> Tuple[str, str, str]:
     return name, version, f"{x}-{y}-{z}"
 
 
-def _open_metadata(zf: zipfile.ZipFile, prefix: str) -> IO[bytes]:
-    for fn in zf.namelist():
-        if not fn.endswith(".dist-info/METADATA"):
-            continue
-        if packaging.utils.canonicalize_name(fn).startswith(prefix):
-            return zf.open(fn)
-    raise ValueError("Can't find metadata")
-
-
 class PackageEntry(NamedTuple):
     version: str
     dependencies: List[str]
@@ -221,10 +217,12 @@ class Finder:
     matcher: WheelMatcher
     session: requests.Session
 
-    def collect_best_dist_urls(self, name: str) -> Dict[str, str]:
+    def collect_best_metadta_urls(self, name: str) -> Dict[str, str]:
         all_dists: DistListMapping = collections.defaultdict(list)
         for index_url in self.index_urls:
             res = requests.get(f"{index_url}/{name}")
+            if res.status_code == 404:
+                logger.critical("Project %s does not exist", name)
             res.raise_for_status()
             doc = html5lib.parse(res.content, namespaceHTMLElements=False)
             for el in doc.findall(".//a"):
@@ -247,18 +245,20 @@ class Finder:
                     continue
                 if rank is None:
                     continue
+
+                url = urllib.parse.urljoin(
+                    url, urllib.parse.urlparse(url).path + ".metadata"
+                )
                 all_dists[version].append((rank, url))
         urls = {version: min(dists)[1] for version, dists in all_dists.items()}
         logger.info("%d URLs found for %s", len(urls), name)
         return urls
 
     def iter_package_entries(self, name: str) -> Iterator[PackageEntry]:
-        for version, url in self.collect_best_dist_urls(name).items():
-            http_file = cast(IO[bytes], HttpFile(url, self.session))
-            with zipfile.ZipFile(http_file) as zf:
-                with _open_metadata(zf, name) as f:
-                    parser = email.parser.BytesParser()
-                    data = parser.parse(cast(BinaryIO, f), headersonly=True)
+        for version, url in self.collect_best_metadta_urls(name).items():
+            http_file = HttpFile(url, self.session)
+            parser = email.parser.BytesParser()
+            data = parser.parsebytes(http_file.read(), headersonly=True)
             dependencies: List[str] = data.get_all("Requires-Dist", [])
             yield PackageEntry(version, dependencies)
 
