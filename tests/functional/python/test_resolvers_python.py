@@ -195,4 +195,4 @@ def test_resolver(provider, reporter):
             )
             assert (
                 not unexpected_versions
-            ), f"Unexpcted versions visited for {name}: {', '.join(unexpected_versions)}"
+            ), f"Unexpcted versions visited {name}: {', '.join(unexpected_versions)}"
