@@ -28,6 +28,7 @@ Homepage = "https://github.com/sarugaku/resolvelib"
 lint = [
     "black==23.12.1",
     "flake8",
+    "Flake8-pyproject",
     "isort",
     "mypy",
     "types-requests",
