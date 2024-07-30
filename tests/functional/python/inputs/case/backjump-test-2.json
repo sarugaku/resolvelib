@@ -13,5 +13,8 @@
 		"sat-stac": "0.1.1",
 		"python-dateutil": "2.7.5",
 		"requests": "2.31.0"
+	},
+	"unvisited": {
+		"pystac": ["1.8.2"]
 	}
 }

@@ -1,9 +1,8 @@
-from __future__ import print_function
-
 import collections
 import json
 import operator
 import os
+from collections import defaultdict
 
 import packaging.markers
 import packaging.requirements
@@ -63,6 +62,11 @@ class PythonInputProvider(AbstractProvider):
             self.expected_confliction = set(case_data["conflicted"])
         else:
             self.expected_confliction = None
+
+        if "unvisited" in case_data:
+            self.expected_unvisited = case_data["unvisited"]
+        else:
+            self.expected_unvisited = None
 
     def identify(self, requirement_or_candidate):
         name = packaging.utils.canonicalize_name(requirement_or_candidate.name)
@@ -174,3 +178,21 @@ def test_resolver(provider, reporter):
     else:
         resolution = resolver.resolve(provider.root_requirements)
         assert _format_resolution(resolution) == provider.expected_resolution
+
+    if provider.expected_unvisited:
+        visited_versions = defaultdict(set)
+        for visited_candidate in reporter.visited:
+            visited_versions[visited_candidate.name].add(
+                str(visited_candidate.version)
+            )
+
+        for name, versions in provider.expected_unvisited.items():
+            if name not in visited_versions:
+                continue
+
+            unexpected_versions = set(versions).intersection(
+                visited_versions[name]
+            )
+            assert (
+                not unexpected_versions
+            ), f"Unexpcted versions visited for {name}: {', '.join(unexpected_versions)}"
