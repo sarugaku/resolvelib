@@ -106,3 +106,13 @@ exclude = [
 	"dist",
 	"*.pyi"
 ]
+
+[tool.mypy]
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "html5lib",
+    "packaging.*"
+]
+ignore_missing_imports = true
