@@ -1,5 +1,63 @@
+[project]
+name = "resolvelib"
+dynamic = ["version"]
+description = "Resolve abstract dependencies into concrete ones"
+authors = [
+    {name = "Tzu-ping Chung", email = "uranusjr@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.7"
+readme = "README.rst"
+license = {text = "ISC License"}
+keywords = ["dependency", "resolution"]
+classifiers = [
+	"Development Status :: 3 - Alpha",
+	"Intended Audience :: Developers",
+	"License :: OSI Approved :: ISC License (ISCL)",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python :: 2",
+	"Programming Language :: Python :: 3",
+	"Topic :: Software Development :: Libraries :: Python Modules",
+
+]
+
+[project.urls]
+Homepage = "https://github.com/sarugaku/resolvelib"
+
+[project.optional-dependencies]
+lint = [
+    "black==23.12.1",
+    "flake8",
+    "isort",
+    "mypy",
+    "types-requests",
+]
+test = [
+    "packaging",
+    "pytest",
+]
+release = [
+    "build",
+    "towncrier",
+    "twine",
+]
+
 [build-system]
 requires = ['setuptools>=62', 'wheel']
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages]
+find = {where = ["src"], namespaces = false}
+
+[tool.setuptools.dynamic]
+version = {attr = "resolvelib.__version__"}
+
+[tool.distutils.bdist_wheel]
+universal = true
+
 
 [tool.black]
 line-length = 79
@@ -33,3 +91,18 @@ showcontent = true
 directory = 'trivial'
 name = 'Trivial Changes'
 showcontent = false
+
+[tool.flake8]
+max-line-length = 88
+select = ["C","E","F","W","B"]
+ignore = ["E203", "W503", "F401"]
+exclude = [
+	".git",
+	".venv",
+	".venvs",
+	".nox",
+	"__pycache__",
+	"build",
+	"dist",
+	"*.pyi"
+]
