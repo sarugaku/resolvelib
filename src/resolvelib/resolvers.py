@@ -319,6 +319,11 @@ class Resolution(Generic[RT, CT, KT]):
                 except (IndexError, KeyError):
                     raise ResolutionImpossible(causes) from None
 
+                # Only backjump if the current broken state is
+                # an incompatible dependency
+                if name not in incompatible_deps:
+                    break
+
                 # If the current dependencies and the incompatible dependencies
                 # are overlapping then we have found a cause of the incompatibility
                 current_dependencies = {
