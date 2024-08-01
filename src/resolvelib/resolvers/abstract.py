@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Any, Generic, Iterable, Mapping, NamedTuple
 from ..structs import CT, KT, RT, DirectedGraph
 
 if TYPE_CHECKING:
-
     from ..providers import AbstractProvider
     from ..reporters import BaseReporter
     from .criterion import Criterion
+
     class Result(NamedTuple, Generic[RT, CT, KT]):
         mapping: Mapping[KT, CT]
         graph: DirectedGraph[KT | None]
