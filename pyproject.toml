@@ -84,7 +84,7 @@ src = ["src"]
 line-length = 88
 
 [tool.ruff.lint]
-select = ["C","E","F","W","B","RUF","PLE","PLW","I"]
+select = ["C","E","F","W","B","RUF","PLE","PLW","I","TCH","FA"]
 ignore = ["PLW2901"]
 exclude = [
 	".git",
