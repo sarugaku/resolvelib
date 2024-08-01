@@ -39,7 +39,7 @@ class ExtrasProvider(AbstractProvider):
         raise NotImplementedError
 
     def identify(self, requirement_or_candidate):
-        base = super(ExtrasProvider, self).identify(requirement_or_candidate)
+        base = super().identify(requirement_or_candidate)
         extras = self.get_extras_for(requirement_or_candidate)
         if extras:
             return (base, extras)
@@ -47,7 +47,7 @@ class ExtrasProvider(AbstractProvider):
             return base
 
     def get_dependencies(self, candidate):
-        deps = super(ExtrasProvider, self).get_dependencies(candidate)
+        deps = super().get_dependencies(candidate)
         if candidate.extras:
             req = self.get_base_requirement(candidate)
             deps.append(req)

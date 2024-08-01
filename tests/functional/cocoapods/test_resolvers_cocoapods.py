@@ -146,8 +146,7 @@ def _clean_identifier(s):
 def _iter_resolved(dependencies):
     for entry in dependencies:
         yield (entry["name"], Version(entry["version"]))
-        for sub in _iter_resolved(entry["dependencies"]):
-            yield sub
+        yield from _iter_resolved(entry["dependencies"])
 
 
 class CocoaPodsInputProvider(AbstractProvider):

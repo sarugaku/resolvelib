@@ -28,16 +28,12 @@ third 3.0.0
 
 class Requirement(namedtuple("Requirement", "name specifier")):
     def __repr__(self):
-        return "<Requirement({name}{specifier})>".format(
-            name=self.name, specifier=self.specifier
-        )
+        return f"<Requirement({self.name}{self.specifier})>"
 
 
 class Candidate(namedtuple("Candidate", "name version")):
     def __repr__(self):
-        return "<{name}=={version}>".format(
-            name=self.name, version=self.version
-        )
+        return f"<{self.name}=={self.version}>"
 
 
 def splitstrip(s, parts):
