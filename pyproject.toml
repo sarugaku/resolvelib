@@ -25,6 +25,7 @@ Homepage = "https://github.com/sarugaku/resolvelib"
 
 [project.optional-dependencies]
 lint = [
+    "black~=24.0",
     "ruff",
     "mypy",
     "types-requests",

@@ -135,12 +135,14 @@ XFAIL_CASES = {
 
 @pytest.fixture(
     params=[
-        pytest.param(
-            os.path.join(CASE_DIR, n),
-            marks=pytest.mark.xfail(strict=True, reason=XFAIL_CASES[n]),
+        (
+            pytest.param(
+                os.path.join(CASE_DIR, n),
+                marks=pytest.mark.xfail(strict=True, reason=XFAIL_CASES[n]),
+            )
+            if n in XFAIL_CASES
+            else os.path.join(CASE_DIR, n)
         )
-        if n in XFAIL_CASES
-        else os.path.join(CASE_DIR, n)
         for n in CASE_NAMES
     ],
     ids=[n[:-5] for n in CASE_NAMES],
