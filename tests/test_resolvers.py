@@ -18,8 +18,11 @@ from resolvelib.resolvers import Resolution, Resolver
 if TYPE_CHECKING:
     from typing import Iterable, Mapping
 
-    from resolvelib.resolvers import RequirementInformation, RequirementsConflicted
-    from resolvelib.resolvers.criterion import Criterion
+    from resolvelib.resolvers import (
+        Criterion,
+        RequirementInformation,
+        RequirementsConflicted,
+    )
 
 
 def test_candidate_inconsistent_error():
