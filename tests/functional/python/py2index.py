@@ -29,15 +29,7 @@ import pathlib
 import re
 import sys
 import urllib.parse
-from typing import (
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    NamedTuple,
-    Tuple,
-    Union,
-)
+from typing import Dict, Iterable, Iterator, List, NamedTuple, Tuple, Union
 
 import html5lib
 import packaging.requirements

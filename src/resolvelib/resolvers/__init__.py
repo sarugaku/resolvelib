@@ -6,13 +6,12 @@ from .criterion import (
     ResolutionError,
     ResolutionImpossible,
     ResolutionTooDeep,
+    Resolver,
     ResolverException,
 )
 
 __all__ = [
-    "AbstractProvider",
     "AbstractResolver",
-    "BaseReporter",
     "InconsistentCandidate",
     "Resolver",
     "RequirementsConflicted",
