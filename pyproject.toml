@@ -95,7 +95,7 @@ showcontent = false
 line-length = 88
 
 [tool.ruff.lint]
-select = ["C","E","F","W","B"]
+select = ["C","E","F","W","B","RUF"]
 ignore = ["E203", "F401"]
 exclude = [
 	".git",
