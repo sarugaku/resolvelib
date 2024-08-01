@@ -13,16 +13,13 @@ from resolvelib import (
     InconsistentCandidate,
     ResolutionImpossible,
 )
-from resolvelib.resolvers.criterion import Criterion
-from resolvelib.resolvers.resolution import Resolution, Resolver
+from resolvelib.resolvers import Resolution, Resolver
 
 if TYPE_CHECKING:
     from typing import Iterable, Mapping
 
-    from resolvelib.resolvers.exceptions import (
-        RequirementInformation,
-        RequirementsConflicted,
-    )
+    from resolvelib.resolvers import RequirementInformation, RequirementsConflicted
+    from resolvelib.resolvers.criterion import Criterion
 
 
 def test_candidate_inconsistent_error():

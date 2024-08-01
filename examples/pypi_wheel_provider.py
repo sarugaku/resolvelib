@@ -14,8 +14,7 @@ from packaging.specifiers import SpecifierSet
 from packaging.utils import canonicalize_name
 from packaging.version import InvalidVersion, Version
 
-from resolvelib import BaseReporter
-from resolvelib.resolvers.resolution import Resolver
+from resolvelib import BaseReporter, Resolver
 
 from .extras_provider import ExtrasProvider
 

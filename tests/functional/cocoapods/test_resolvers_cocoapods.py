@@ -7,8 +7,7 @@ import string
 
 import pytest
 
-from resolvelib import AbstractProvider, ResolutionImpossible
-from resolvelib.resolvers.resolution import Resolver
+from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
 
 Requirement = collections.namedtuple("Requirement", "name spec")
 Candidate = collections.namedtuple("Candidate", "name ver deps")

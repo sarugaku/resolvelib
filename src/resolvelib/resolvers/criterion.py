@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Collection, Generic, Iterable, Iterator
 
 from ..structs import CT, RT, RequirementInformation

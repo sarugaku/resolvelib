@@ -3,18 +3,10 @@ from __future__ import annotations
 import collections
 import itertools
 import operator
-from typing import Collection, Generic, Iterable, Mapping
+from typing import TYPE_CHECKING, Collection, Generic, Iterable, Mapping
 
-from ..providers import AbstractProvider, Preference
+from ..providers import AbstractProvider
 from ..reporters import BaseReporter
-from ..resolvers.abstract import AbstractResolver, Result
-from ..resolvers.exceptions import (
-    InconsistentCandidate,
-    RequirementsConflicted,
-    ResolutionImpossible,
-    ResolutionTooDeep,
-    ResolverException,
-)
 from ..structs import (
     CT,
     KT,
@@ -26,7 +18,18 @@ from ..structs import (
     State,
     build_iter_view,
 )
+from .abstract import AbstractResolver, Result
 from .criterion import Criterion
+from .exceptions import (
+    InconsistentCandidate,
+    RequirementsConflicted,
+    ResolutionImpossible,
+    ResolutionTooDeep,
+    ResolverException,
+)
+
+if TYPE_CHECKING:
+    from ..providers import Preference
 
 
 def _build_result(state: State[RT, CT, KT]) -> Result[RT, CT, KT]:

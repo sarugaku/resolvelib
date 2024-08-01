@@ -11,8 +11,7 @@ import packaging.utils
 import packaging.version
 import pytest
 
-from resolvelib import AbstractProvider, ResolutionImpossible
-from resolvelib.resolvers.resolution import Resolver
+from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
 
 Candidate = collections.namedtuple("Candidate", "name version extras")
 
