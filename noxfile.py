@@ -15,9 +15,7 @@ nox.options.reuse_existing_virtualenvs = True
 @nox.session
 def lint(session):
     session.install(".[lint, test]")
-
-    session.run("black", "--check", ".")
-    session.run("isort", ".")
+    session.run("ruff", "format", "--check", ".")
     session.run("ruff", "check", ".")
     session.run("mypy", "src", "tests")
 

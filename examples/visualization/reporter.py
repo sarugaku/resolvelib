@@ -62,9 +62,7 @@ class GraphGeneratingReporter(BaseReporter):
         if subgraph is None:
             if must_exist_already:
                 existing = [s.name for s in self.graph.subgraphs_iter()]
-                raise RuntimeError(
-                    f"Graph for {name} not found. Existing: {existing}"
-                )
+                raise RuntimeError(f"Graph for {name} not found. Existing: {existing}")
             else:
                 subgraph = self.graph.add_subgraph(name=c_name, label=name)
 
@@ -151,9 +149,7 @@ class GraphGeneratingReporter(BaseReporter):
         # We're seeing the parent candidate (which is being "evaluated"), so
         # color all "active" requirements pointing to the it.
         # TODO: How does this interact with revisited candidates?
-        for parent_req in self._active_requirements[
-            canonicalize_name(parent.name)
-        ]:
+        for parent_req in self._active_requirements[canonicalize_name(parent.name)]:
             self._ensure_edge(parent_req, to=parent, color="#80CC80")
 
     def backtracking(self, candidate, internal=False):
@@ -175,9 +171,7 @@ class GraphGeneratingReporter(BaseReporter):
 
         # Trim "active" requirements to remove anything not relevant now.
         for requirement in self._dependencies[candidate]:
-            active = self._active_requirements[
-                canonicalize_name(requirement.name)
-            ]
+            active = self._active_requirements[canonicalize_name(requirement.name)]
             active[requirement] -= 1
             if not active[requirement]:
                 del active[requirement]
@@ -194,12 +188,8 @@ class GraphGeneratingReporter(BaseReporter):
         node.attr.update(color="#80CC80")
 
         # Requirement -> Candidate edges, from this candidate.
-        for req in self._active_requirements[
-            canonicalize_name(candidate.name)
-        ]:
-            self._ensure_edge(
-                req, to=candidate, arrowhead="vee", color="#80CC80"
-            )
+        for req in self._active_requirements[canonicalize_name(candidate.name)]:
+            self._ensure_edge(req, to=candidate, arrowhead="vee", color="#80CC80")
 
         # Candidate -> Requirement edges, from this candidate.
         for edge in self.graph.out_edges_iter([node_name]):

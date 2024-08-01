@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import itertools
-from abc import ABCMeta
 from collections import namedtuple
 from typing import (
     TYPE_CHECKING,
     Callable,
     Collection,
-    Container,
     Generic,
     Iterable,
     Iterator,
@@ -150,7 +148,7 @@ class IteratorMapping(Mapping[KT, Iterator[CT]], Generic[RT, CT, KT]):
         return len(self._mapping) + more
 
 
-class _FactoryIterableView(Generic[RT]):
+class _FactoryIterableView(Iterable[RT]):
     """Wrap an iterator factory returned by `find_matches()`.
 
     Calling `iter()` on this class would invoke the underlying iterator
@@ -174,14 +172,12 @@ class _FactoryIterableView(Generic[RT]):
         return True
 
     def __iter__(self) -> Iterator[RT]:
-        iterable = (
-            self._factory() if self._iterable is None else self._iterable
-        )
+        iterable = self._factory() if self._iterable is None else self._iterable
         self._iterable, current = itertools.tee(iterable)
         return current
 
 
-class _SequenceIterableView(Generic[RT]):
+class _SequenceIterableView(Iterable[RT]):
     """Wrap an iterable returned by find_matches().
 
     This is essentially just a proxy to the underlying sequence that provides
@@ -201,19 +197,16 @@ class _SequenceIterableView(Generic[RT]):
         return iter(self._sequence)
 
 
-class IterableView(Container[CT], Iterator[CT], metaclass=ABCMeta):
-    pass
-
-
-def build_iter_view(
-    matches: Iterable[CT] | Callable[[], Iterable[CT]]
-) -> IterableView[CT]:
+def build_iter_view(matches: Matches[CT]) -> Iterable[CT]:
     """Build an iterable view from the value returned by `find_matches()`."""
     if callable(matches):
-        return _FactoryIterableView(matches)  # type: ignore[return-value]
+        return _FactoryIterableView(matches)
     if not isinstance(matches, Sequence):
         matches = list(matches)
-    return _SequenceIterableView(matches)  # type: ignore[return-value]
+    return _SequenceIterableView(matches)
+
+
+IterableView = Iterable
 
 
 class Criterion(Generic[RT, CT]):
@@ -238,7 +231,7 @@ class Criterion(Generic[RT, CT]):
 
     def __init__(
         self,
-        candidates: IterableView[CT],
+        candidates: Iterable[CT],
         information: Collection[RequirementInformation[RT, CT]],
         incompatibilities: Collection[CT],
     ) -> None:

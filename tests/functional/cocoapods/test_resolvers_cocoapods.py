@@ -165,8 +165,7 @@ class CocoaPodsInputProvider(AbstractProvider):
             for key, spec in case_data["requested"].items()
         ]
         self.pinned_versions = {
-            entry["name"]: Version(entry["version"])
-            for entry in case_data["base"]
+            entry["name"]: Version(entry["version"]) for entry in case_data["base"]
         }
         self.expected_resolution = dict(_iter_resolved(case_data["resolved"]))
         self.expected_conflicts = set(case_data["conflicts"])
@@ -193,8 +192,7 @@ class CocoaPodsInputProvider(AbstractProvider):
         for entry in data:
             version = Version(entry["version"])
             if any(
-                not _version_in_specset(version, r.spec)
-                for r in requirements[name]
+                not _version_in_specset(version, r.spec) for r in requirements[name]
             ):
                 continue
             if version in bad_versions:
@@ -253,8 +251,7 @@ def _format_conflicts(exc):
 
 def _format_resolution(result):
     return {
-        identifier: candidate.ver
-        for identifier, candidate in result.mapping.items()
+        identifier: candidate.ver for identifier, candidate in result.mapping.items()
     }
 
 

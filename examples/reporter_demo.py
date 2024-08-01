@@ -1,9 +1,8 @@
 from collections import namedtuple
 
+import resolvelib
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
-
-import resolvelib
 
 index = """
 first 1.0.0
@@ -53,9 +52,7 @@ def read_spec(lines):
             candidates[latest] = set()
         else:
             if latest is None:
-                raise RuntimeError(
-                    "Spec has dependencies before first candidate"
-                )
+                raise RuntimeError("Spec has dependencies before first candidate")
             name, specifier = splitstrip(line, 2)
             specifier = SpecifierSet(specifier)
             candidates[latest].add(Requirement(name, specifier))

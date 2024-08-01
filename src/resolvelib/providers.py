@@ -15,8 +15,7 @@ if TYPE_CHECKING:
     from typing import Any, Protocol
 
     class Preference(Protocol):
-        def __lt__(self, __other: Any) -> bool:
-            ...
+        def __lt__(self, __other: Any) -> bool: ...
 
 
 class AbstractProvider(Generic[RT, CT, KT]):
@@ -88,7 +87,7 @@ class AbstractProvider(Generic[RT, CT, KT]):
         identifier: KT,
         requirements: Mapping[KT, Iterator[RT]],
         incompatibilities: Mapping[KT, Iterator[CT]],
-    ) -> Matches:
+    ) -> Matches[CT]:
         """Find all possible candidates that satisfy the given constraints.
 
         :param identifier: An identifier as returned by ``identify()``. All

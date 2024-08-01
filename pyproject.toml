@@ -25,9 +25,7 @@ Homepage = "https://github.com/sarugaku/resolvelib"
 
 [project.optional-dependencies]
 lint = [
-    "black==23.12.1",
     "ruff",
-    "isort",
     "mypy",
     "types-requests",
 ]
@@ -56,16 +54,6 @@ version = {attr = "resolvelib.__version__"}
 
 [tool.distutils.bdist_wheel]
 universal = true
-
-
-[tool.black]
-line-length = 79
-include = '^/(docs|examples|src|tasks|tests)/.+\.py$'
-
-[tool.isort]
-profile = "black"
-line_length = 79
-multi_line_output = 3
 
 [tool.towncrier]
 package = 'resolvelib'
@@ -107,6 +95,9 @@ exclude = [
 	"dist",
 	"*.pyi"
 ]
+
+[tool.ruff.lint.isort]
+known-first-party = ["resolvelib"]
 
 [tool.mypy]
 warn_unused_configs = true

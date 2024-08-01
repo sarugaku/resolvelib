@@ -5,8 +5,8 @@ import os
 
 import pytest
 
+from resolvelib import Resolver
 from resolvelib.providers import AbstractProvider
-from resolvelib.resolvers import Resolver
 
 Requirement = collections.namedtuple("Requirement", "container constraint")
 Candidate = collections.namedtuple("Candidate", "container version")
@@ -66,8 +66,7 @@ class SwiftInputProvider(AbstractProvider):
             input_data = json.load(f)
 
         self.containers = {
-            container["identifier"]: container
-            for container in input_data["containers"]
+            container["identifier"]: container for container in input_data["containers"]
         }
         self.root_requirements = [
             Requirement(self.containers[constraint["identifier"]], constraint)
