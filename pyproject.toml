@@ -26,8 +26,7 @@ Homepage = "https://github.com/sarugaku/resolvelib"
 [project.optional-dependencies]
 lint = [
     "black==23.12.1",
-    "flake8",
-    "Flake8-pyproject",
+    "ruff",
     "isort",
     "mypy",
     "types-requests",
@@ -92,10 +91,12 @@ directory = 'trivial'
 name = 'Trivial Changes'
 showcontent = false
 
-[tool.flake8]
-max-line-length = 88
-select = ["C","E","F","W","B"]
-ignore = ["E203", "W503", "F401"]
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["C","E","F","W","B","RUF","PLE","PLW"]
+ignore = ["PLW2901"]
 exclude = [
 	".git",
 	".venv",

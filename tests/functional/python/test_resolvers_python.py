@@ -72,7 +72,7 @@ class PythonInputProvider(AbstractProvider):
         name = packaging.utils.canonicalize_name(requirement_or_candidate.name)
         if requirement_or_candidate.extras:
             extras_str = ",".join(sorted(requirement_or_candidate.extras))
-            return "{}[{}]".format(name, extras_str)
+            return f"{name}[{extras_str}]"
         return name
 
     def get_preference(
@@ -112,7 +112,7 @@ class PythonInputProvider(AbstractProvider):
     def _iter_dependencies(self, candidate):
         name = packaging.utils.canonicalize_name(candidate.name)
         if candidate.extras:
-            r = "{}=={}".format(name, candidate.version)
+            r = f"{name}=={candidate.version}"
             yield packaging.requirements.Requirement(r)
         for r in self.index[name][str(candidate.version)]["dependencies"]:
             requirement = packaging.requirements.Requirement(r)
