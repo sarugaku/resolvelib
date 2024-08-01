@@ -80,10 +80,11 @@ name = 'Trivial Changes'
 showcontent = false
 
 [tool.ruff]
+src = ["src"]
 line-length = 88
 
 [tool.ruff.lint]
-select = ["C","E","F","W","B","RUF","PLE","PLW"]
+select = ["C","E","F","W","B","RUF","PLE","PLW","I"]
 ignore = ["PLW2901"]
 exclude = [
 	".git",
@@ -95,9 +96,6 @@ exclude = [
 	"dist",
 	"*.pyi"
 ]
-
-[tool.ruff.lint.isort]
-known-first-party = ["resolvelib"]
 
 [tool.mypy]
 warn_unused_configs = true
