@@ -96,7 +96,7 @@ line-length = 88
 
 [tool.ruff.lint]
 select = ["C","E","F","W","B","RUF","PLE","PLW"]
-ignore = ["E203", "F401", "PLW2901"]
+ignore = ["E203", "PLW2901"]
 exclude = [
 	".git",
 	".venv",

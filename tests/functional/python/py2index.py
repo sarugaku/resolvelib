@@ -31,13 +31,10 @@ import sys
 import urllib.parse
 from typing import (
     Dict,
-    FrozenSet,
     Iterable,
     Iterator,
     List,
     NamedTuple,
-    Optional,
-    Set,
     Tuple,
     Union,
 )
