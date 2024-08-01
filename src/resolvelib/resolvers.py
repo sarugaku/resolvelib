@@ -269,6 +269,41 @@ class Resolution(Generic[RT, CT, KT]):
         # end, signal for backtracking.
         return causes
 
+    def _patch_criteria(
+        self, incompatibilities_from_broken: list[tuple[KT, list[CT]]]
+    ) -> bool:
+        # Create a new state from the last known-to-work one, and apply
+        # the previously gathered incompatibility information.
+        for k, incompatibilities in incompatibilities_from_broken:
+            if not incompatibilities:
+                continue
+            try:
+                criterion = self.state.criteria[k]
+            except KeyError:
+                continue
+            matches = self._p.find_matches(
+                identifier=k,
+                requirements=IteratorMapping(
+                    self.state.criteria,
+                    operator.methodcaller("iter_requirement"),
+                ),
+                incompatibilities=IteratorMapping(
+                    self.state.criteria,
+                    operator.attrgetter("incompatibilities"),
+                    {k: incompatibilities},
+                ),
+            )
+            candidates: IterableView[CT] = build_iter_view(matches)
+            if not candidates:
+                return False
+            incompatibilities.extend(criterion.incompatibilities)
+            self.state.criteria[k] = Criterion(
+                candidates=candidates,
+                information=list(criterion.information),
+                incompatibilities=incompatibilities,
+            )
+        return True
+
     def _backjump(self, causes: list[RequirementInformation[RT, CT]]) -> bool:
         """Perform backjumping.
 
@@ -347,41 +382,8 @@ class Resolution(Generic[RT, CT, KT]):
             # Also mark the newly known incompatibility.
             incompatibilities_from_broken.append((name, [candidate]))
 
-            # Create a new state from the last known-to-work one, and apply
-            # the previously gathered incompatibility information.
-            def _patch_criteria() -> bool:
-                for k, incompatibilities in incompatibilities_from_broken:
-                    if not incompatibilities:
-                        continue
-                    try:
-                        criterion = self.state.criteria[k]
-                    except KeyError:
-                        continue
-                    matches = self._p.find_matches(
-                        identifier=k,
-                        requirements=IteratorMapping(
-                            self.state.criteria,
-                            operator.methodcaller("iter_requirement"),
-                        ),
-                        incompatibilities=IteratorMapping(
-                            self.state.criteria,
-                            operator.attrgetter("incompatibilities"),
-                            {k: incompatibilities},
-                        ),
-                    )
-                    candidates: IterableView[CT] = build_iter_view(matches)
-                    if not candidates:
-                        return False
-                    incompatibilities.extend(criterion.incompatibilities)
-                    self.state.criteria[k] = Criterion(
-                        candidates=candidates,
-                        information=list(criterion.information),
-                        incompatibilities=incompatibilities,
-                    )
-                return True
-
             self._push_new_state()
-            success = _patch_criteria()
+            success = self._patch_criteria(incompatibilities_from_broken)
 
             # It works! Let's work on this new state.
             if success:
