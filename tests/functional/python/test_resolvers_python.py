@@ -37,16 +37,13 @@ class PythonInputProvider(AbstractProvider):
             case_data = json.load(f)
 
         index_name = os.path.normpath(
-            os.path.join(
-                filename, "..", "..", "index", case_data["index"] + ".json"
-            ),
+            os.path.join(filename, "..", "..", "index", case_data["index"] + ".json"),
         )
         with open(index_name) as f:
             self.index = json.load(f)
 
         self.root_requirements = [
-            packaging.requirements.Requirement(r)
-            for r in case_data["requested"]
+            packaging.requirements.Requirement(r) for r in case_data["requested"]
         ]
 
         if "resolved" in case_data:
@@ -182,17 +179,13 @@ def test_resolver(provider, reporter):
     if provider.expected_unvisited:
         visited_versions = defaultdict(set)
         for visited_candidate in reporter.visited:
-            visited_versions[visited_candidate.name].add(
-                str(visited_candidate.version)
-            )
+            visited_versions[visited_candidate.name].add(str(visited_candidate.version))
 
         for name, versions in provider.expected_unvisited.items():
             if name not in visited_versions:
                 continue
 
-            unexpected_versions = set(versions).intersection(
-                visited_versions[name]
-            )
+            unexpected_versions = set(versions).intersection(visited_versions[name])
             assert (
                 not unexpected_versions
             ), f"Unexpcted versions visited {name}: {', '.join(unexpected_versions)}"

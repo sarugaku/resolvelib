@@ -251,9 +251,7 @@ class Finder:
             dependencies: list[str] = data.get_all("Requires-Dist", [])
             yield PackageEntry(version, dependencies)
 
-    def process_package_entry(
-        self, name: str, entry: PackageEntry
-    ) -> set[str] | None:
+    def process_package_entry(self, name: str, entry: PackageEntry) -> set[str] | None:
         more = set()
         for dep in entry.dependencies:
             try:

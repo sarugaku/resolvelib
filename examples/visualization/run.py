@@ -25,9 +25,7 @@ def process_arguments(function, args):
             to_convert, _, args = args.partition(", ")
             value = int(to_convert)
         elif arg_type == "requirement":
-            match = re.match(
-                r"^<Requirement\('?([\w\-\._~]+)(.*?)'?\)>(.*)", args
-            )
+            match = re.match(r"^<Requirement\('?([\w\-\._~]+)(.*?)'?\)>(.*)", args)
             assert match, repr(args)
             name, spec, args = match.groups()
             value = Requirement(name, spec)

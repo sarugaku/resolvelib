@@ -32,9 +32,7 @@ class AbstractResolver(Generic[RT, CT, KT]):
         self.provider = provider
         self.reporter = reporter
 
-    def resolve(
-        self, requirements: Iterable[RT], **kwargs: Any
-    ) -> Result[RT, CT, KT]:
+    def resolve(self, requirements: Iterable[RT], **kwargs: Any) -> Result[RT, CT, KT]:
         """Take a collection of constraints, spit out the resolution result.
 
         This returns a representation of the final resolution state, with one

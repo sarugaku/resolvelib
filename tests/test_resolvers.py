@@ -115,9 +115,7 @@ def test_resolving_conflicts():
     Candidate = namedtuple(
         "Candidate", ["name", "version", "requirements"]
     )  # name, version, requirements
-    _Requirement = namedtuple(
-        "Requirement", ["name", "versions"]
-    )  # name, versions
+    _Requirement = namedtuple("Requirement", ["name", "versions"])  # name, versions
     a1 = Candidate("a", 1, [_Requirement("q", {1})])
     a2 = Candidate("a", 2, [_Requirement("q", {2})])
     b = Candidate("b", 1, [_Requirement("q", {1})])
@@ -151,9 +149,7 @@ def test_resolving_conflicts():
             candidates = [
                 c
                 for c in all_candidates[identifier]
-                if all(
-                    c.version in r.versions for r in requirements[identifier]
-                )
+                if all(c.version in r.versions for r in requirements[identifier])
                 and c.version not in bad_versions
             ]
             return sorted(candidates, key=lambda c: c.version, reverse=True)
@@ -173,9 +169,7 @@ def test_resolving_conflicts():
     backtracking_causes = run_resolver(
         [_Requirement("a", {1, 2}), _Requirement("b", {1})]
     )
-    exception_causes = run_resolver(
-        [_Requirement("a", {2}), _Requirement("b", {1})]
-    )
+    exception_causes = run_resolver([_Requirement("a", {2}), _Requirement("b", {1})])
     assert exception_causes == backtracking_causes
 
 
@@ -210,9 +204,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
             assert result in all_candidates, "unknown requirement_or_candidate"
             return result
 
-        def get_preference(
-            self, identifier: str, *args: Any, **kwargs: Any
-        ) -> str:
+        def get_preference(self, identifier: str, *args: Any, **kwargs: Any) -> str:
             # prefer child over parent (alphabetically)
             return identifier
 
@@ -235,16 +227,12 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
                 if candidate not in incompatibilities[identifier]
             )
 
-        def is_satisfied_by(
-            self, requirement: str, candidate: Candidate
-        ) -> bool:
+        def is_satisfied_by(self, requirement: str, candidate: Candidate) -> bool:
             return candidate[1] in Requirement(requirement).specifier
 
     # patch Resolution._get_updated_criteria to collect rejected states
     rejected_criteria: list[Criterion] = []
-    get_updated_criteria_orig = (
-        Resolution._get_updated_criteria  # type: ignore[attr-defined]
-    )
+    get_updated_criteria_orig = Resolution._get_updated_criteria
 
     def get_updated_criteria_patch(self, candidate):
         try:
@@ -253,9 +241,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
             rejected_criteria.append(e.criterion)
             raise
 
-    monkeypatch.setattr(
-        Resolution, "_get_updated_criteria", get_updated_criteria_patch
-    )
+    monkeypatch.setattr(Resolution, "_get_updated_criteria", get_updated_criteria_patch)
 
     resolver: Resolver[str, Candidate, str] = Resolver(Provider(), reporter)
     result = resolver.resolve(["child", "parent"])

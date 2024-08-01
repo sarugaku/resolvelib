@@ -209,9 +209,7 @@ class Resolution(Generic[RT, CT, KT]):
             for r in criterion.iter_requirement()
         )
 
-    def _get_updated_criteria(
-        self, candidate: CT
-    ) -> dict[KT, Criterion[RT, CT]]:
+    def _get_updated_criteria(self, candidate: CT) -> dict[KT, Criterion[RT, CT]]:
         criteria = self.state.criteria.copy()
         for requirement in self._p.get_dependencies(candidate=candidate):
             self._add_to_criteria(criteria, requirement, parent=candidate)
@@ -245,7 +243,7 @@ class Resolution(Generic[RT, CT, KT]):
 
             # Put newly-pinned candidate at the end. This is essential because
             # backtracking looks at this mapping to get the last pin.
-            self.state.mapping.pop(name, None)  # type: ignore[arg-type]
+            self.state.mapping.pop(name, None)
             self.state.mapping[name] = candidate
 
             return []
@@ -347,8 +345,7 @@ class Resolution(Generic[RT, CT, KT]):
                 # If the current dependencies and the incompatible dependencies
                 # are overlapping then we have found a cause of the incompatibility
                 current_dependencies = {
-                    self._p.identify(d)
-                    for d in self._p.get_dependencies(candidate)
+                    self._p.identify(d) for d in self._p.get_dependencies(candidate)
                 }
                 if not current_dependencies.isdisjoint(incompatible_deps):
                     break
@@ -360,8 +357,7 @@ class Resolution(Generic[RT, CT, KT]):
                     break
 
             incompatibilities_from_broken = [
-                (k, list(v.incompatibilities))
-                for k, v in broken_state.criteria.items()
+                (k, list(v.incompatibilities)) for k, v in broken_state.criteria.items()
             ]
 
             # Also mark the newly known incompatibility.
@@ -384,13 +380,9 @@ class Resolution(Generic[RT, CT, KT]):
         self, criteron: list[Criterion[RT, CT]]
     ) -> list[RequirementInformation[RT, CT]]:
         """Extract causes from list of criterion and deduplicate"""
-        return list(
-            {id(i): i for c in criteron for i in c.information}.values()
-        )
+        return list({id(i): i for c in criteron for i in c.information}.values())
 
-    def resolve(
-        self, requirements: Iterable[RT], max_rounds: int
-    ) -> State[RT, CT, KT]:
+    def resolve(self, requirements: Iterable[RT], max_rounds: int) -> State[RT, CT, KT]:
         if self._states:
             raise RuntimeError("already resolved")
 
@@ -430,9 +422,7 @@ class Resolution(Generic[RT, CT, KT]):
                 return self.state
 
             # keep track of satisfied names to calculate diff after pinning
-            satisfied_names = set(self.state.criteria.keys()) - set(
-                unsatisfied_names
-            )
+            satisfied_names = set(self.state.criteria.keys()) - set(unsatisfied_names)
 
             # Choose the most preferred unpinned criterion to try.
             name = min(unsatisfied_names, key=self._get_preference)
