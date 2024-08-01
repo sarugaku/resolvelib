@@ -121,8 +121,8 @@ def get_output_path(path: pathlib.Path, overwrite: bool) -> pathlib.Path:
 def _parse_tag(s: str) -> FrozenSet[packaging.tags.Tag]:
     try:
         return packaging.tags.parse_tag(s)
-    except ValueError:
-        raise ValueError(f"invalid tag {s!r}")
+    except ValueError as e:
+        raise ValueError(f"invalid tag {s!r}") from e
 
 
 @dataclasses.dataclass()

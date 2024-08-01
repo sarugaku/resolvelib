@@ -109,8 +109,8 @@ class Resolution(Generic[RT, CT, KT]):
     def state(self) -> State[RT, CT, KT]:
         try:
             return self._states[-1]
-        except IndexError:
-            raise AttributeError("state")
+        except IndexError as e:
+            raise AttributeError("state") from e
 
     def _push_new_state(self) -> None:
         """Push a new state into history.
@@ -421,7 +421,7 @@ class Resolution(Generic[RT, CT, KT]):
             try:
                 self._add_to_criteria(self.state.criteria, r, parent=None)
             except RequirementsConflicted as e:
-                raise ResolutionImpossible(e.criterion.information)
+                raise ResolutionImpossible(e.criterion.information) from e
 
         # The root state is saved as a sentinel so the first ever pin can have
         # something to backtrack to if it fails. The root state is basically
