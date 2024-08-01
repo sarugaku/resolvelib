@@ -12,15 +12,14 @@ from resolvelib import (
     BaseReporter,
     InconsistentCandidate,
     ResolutionImpossible,
-    Resolver,
 )
-from resolvelib.resolvers.criterion import Resolution
+from resolvelib.resolvers.criterion import Criterion
+from resolvelib.resolvers.resolution import Resolution, Resolver
 
 if TYPE_CHECKING:
     from typing import Iterable, Mapping
 
-    from resolvelib.resolvers.criterion import (
-        Criterion,
+    from resolvelib.resolvers.exceptions import (
         RequirementInformation,
         RequirementsConflicted,
     )

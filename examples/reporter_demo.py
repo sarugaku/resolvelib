@@ -1,8 +1,10 @@
 from collections import namedtuple
 
-import resolvelib
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
+
+import resolvelib
+import resolvelib.resolvers.resolution
 
 index = """
 first 1.0.0
@@ -123,7 +125,7 @@ if __name__ == "__main__":
 
     provider = Provider(index.splitlines())
     reporter = Reporter()
-    resolver = resolvelib.Resolver(provider, reporter)
+    resolver = resolvelib.resolvers.resolution.Resolver(provider, reporter)
 
     root_reqs = [Requirement("first", SpecifierSet())]
     result = resolver.resolve(root_reqs)

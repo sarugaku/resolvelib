@@ -2,7 +2,7 @@ from pypi_wheel_provider import PyPIProvider, Requirement
 from visualization.generate import generate_html
 from visualization.reporter import GraphGeneratingReporter
 
-from resolvelib import Resolver
+from resolvelib.resolvers.resolution import Resolver
 
 if __name__ == "__main__":
     provider = PyPIProvider()

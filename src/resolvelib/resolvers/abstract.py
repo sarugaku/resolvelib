@@ -3,10 +3,10 @@ from __future__ import annotations
 import collections
 from typing import TYPE_CHECKING, Any, Generic, Iterable, Mapping, NamedTuple
 
-from resolvelib.providers import AbstractProvider
-from resolvelib.reporters import BaseReporter
-
-from ..structs import CT, KT, RT, Criterion, DirectedGraph
+from ..providers import AbstractProvider
+from ..reporters import BaseReporter
+from ..structs import CT, KT, RT, DirectedGraph
+from .criterion import Criterion
 
 if TYPE_CHECKING:
 

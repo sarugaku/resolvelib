@@ -23,5 +23,5 @@ from .resolvers import (
     ResolutionError,
     ResolutionImpossible,
     ResolutionTooDeep,
-    Resolver,
 )
+from .resolvers.resolution import Resolver
