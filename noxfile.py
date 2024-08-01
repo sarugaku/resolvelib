@@ -18,7 +18,7 @@ def lint(session):
 
     session.run("black", "--check", ".")
     session.run("isort", ".")
-    session.run("flake8", ".")
+    session.run("ruff", "check", ".")
     session.run("mypy", "src", "tests")
 
 
