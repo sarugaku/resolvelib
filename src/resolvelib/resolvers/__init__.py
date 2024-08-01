@@ -1,19 +1,20 @@
 from ..structs import RequirementInformation
 from .abstract import AbstractResolver, Result
-from .criterion import (
+from .exceptions import (
     InconsistentCandidate,
     RequirementsConflicted,
     ResolutionError,
     ResolutionImpossible,
     ResolutionTooDeep,
-    Resolver,
     ResolverException,
 )
+from .resolution import Resolution, Resolver
 
 __all__ = [
     "AbstractResolver",
     "InconsistentCandidate",
     "Resolver",
+    "Resolution",
     "RequirementsConflicted",
     "ResolutionError",
     "ResolutionImpossible",

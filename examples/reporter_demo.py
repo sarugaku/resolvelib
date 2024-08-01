@@ -1,8 +1,9 @@
 from collections import namedtuple
 
-import resolvelib
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
+
+import resolvelib
 
 index = """
 first 1.0.0
