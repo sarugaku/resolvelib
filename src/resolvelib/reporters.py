@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Collection, Generic
 from .structs import CT, KT, RT, RequirementInformation, State
 
 if TYPE_CHECKING:
-    from .resolvers.criterion import Criterion
+    from .resolvers import Criterion
 
 
 class BaseReporter(Generic[RT, CT, KT]):

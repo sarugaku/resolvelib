@@ -1,5 +1,6 @@
 from ..structs import RequirementInformation
 from .abstract import AbstractResolver, Result
+from .criterion import Criterion
 from .exceptions import (
     InconsistentCandidate,
     RequirementsConflicted,
@@ -22,4 +23,5 @@ __all__ = [
     "RequirementInformation",
     "ResolverException",
     "Result",
+    "Criterion",
 ]
