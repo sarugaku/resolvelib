@@ -3,13 +3,13 @@ from __future__ import annotations
 import collections
 from typing import TYPE_CHECKING, Any, Generic, Iterable, Mapping, NamedTuple
 
-from ..providers import AbstractProvider
-from ..reporters import BaseReporter
 from ..structs import CT, KT, RT, DirectedGraph
-from .criterion import Criterion
 
 if TYPE_CHECKING:
 
+    from ..providers import AbstractProvider
+    from ..reporters import BaseReporter
+    from .criterion import Criterion
     class Result(NamedTuple, Generic[RT, CT, KT]):
         mapping: Mapping[KT, CT]
         graph: DirectedGraph[KT | None]

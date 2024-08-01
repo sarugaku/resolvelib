@@ -5,8 +5,6 @@ import itertools
 import operator
 from typing import TYPE_CHECKING, Collection, Generic, Iterable, Mapping
 
-from ..providers import AbstractProvider
-from ..reporters import BaseReporter
 from ..structs import (
     CT,
     KT,
@@ -29,7 +27,8 @@ from .exceptions import (
 )
 
 if TYPE_CHECKING:
-    from ..providers import Preference
+    from ..providers import AbstractProvider, Preference
+    from ..reporters import BaseReporter
 
 
 def _build_result(state: State[RT, CT, KT]) -> Result[RT, CT, KT]:
