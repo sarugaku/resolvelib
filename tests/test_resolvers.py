@@ -13,7 +13,11 @@ from resolvelib import (
     InconsistentCandidate,
     ResolutionImpossible,
 )
-from resolvelib.resolvers import Resolution, Resolver
+from resolvelib.resolvers import (
+    RequirementsConflicted,
+    Resolution,
+    Resolver,
+)
 
 if TYPE_CHECKING:
     from typing import Iterable, Mapping
@@ -21,7 +25,6 @@ if TYPE_CHECKING:
     from resolvelib.resolvers import (
         Criterion,
         RequirementInformation,
-        RequirementsConflicted,
     )
 
 

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import Collection, Generic
+from typing import TYPE_CHECKING, Collection, Generic
 
 from ..structs import CT, RT, RequirementInformation
-from .criterion import Criterion
+
+if TYPE_CHECKING:
+    from .criterion import Criterion
 
 
 class ResolverException(Exception):
