@@ -1,0 +1,2 @@
+During backtracking check if the current broken state is an incompatible dependency,
+if not stop backtracking and continue resolution.
