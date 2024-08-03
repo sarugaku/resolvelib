@@ -40,6 +40,14 @@ class AbstractProvider(Generic[RT, CT, KT]):
     ) -> Preference:
         """Produce a sort key for given requirement based on preference.
 
+        As this is a sort key it will be called O(n) times per backtrack step,
+        where n is the number of `identifier`s. If you have a check which is
+        expensive in some sense, e.g. it needs to make O(n) checks per
+        identifier, or takes significant wall clock time but could be short
+        circuited once finding an identifier that matches the check, consider
+        using `narrow_requirement_selection` to filter the `identifier`s
+        before this sort key is called.
+
         The preference is defined as "I think this requirement should be
         resolved first". The lower the return value is, the more preferred
         this group of arguments is.
@@ -146,11 +154,8 @@ class AbstractProvider(Generic[RT, CT, KT]):
     ) -> Iterable[KT]:
         """
         An optional method to narrow the selection of requirements being
-        considered during resolution.
-
-        The requirement selection is defined as "The possible requirements
-        that will be resolved next." If a requirement is not part of the returned
-        iterable, it will not be considered during the next step of resolution.
+        considered during resolution. This method is called O(1) time per
+        backtrack step.
 
         :param identifiers: An iterable of `identifiers` as returned by
             ``identify()``. These identify all requirements currently being
@@ -174,19 +179,17 @@ class AbstractProvider(Generic[RT, CT, KT]):
           the requirement, or ``None`` to indicate a root requirement.
 
         Must return a non-empty subset of `identifiers`, with the default
-        implementation being to return `identifiers` unchanged.
+        implementation being to return `identifiers` unchanged. Those `identifiers`
+        will then be passed to the sort key `get_preference` to pick the most
+        prefered requirement to attempt to pin, unless `narrow_requirement_selection`
+        returns only 1 requirement, in which case that will be used without
+        calling the sort key `get_preference`.
 
-        Can be used by the provider to optimize the dependency resolution
-        process. `get_preference` will only be called for the identifiers
-        returned. If there is only one identifier returned, then `get_preference`
-        won't be called at all.
-
-        Serving a similar purpose as `get_preference`, this method allows the
-        provider to guide resolvelib through the resolution process. It should
-        be used instead of `get_preference` for logic when the provider needs
-        to consider multiple identifiers simultaneously, or when the provider
-        wants to skip checking all identifiers, e.g., because the checks are
-        prohibitively expensive.
+        This method is designed to be used by the provider to optimize the
+        dependency resolution, e.g. if a check cost is O(m) and it can be done
+        against all identifiers at once then filtering the requirement selection
+        here will cost O(m) but making it part of the sort key in `get_preference`
+        will cost O(m*n), where n is the number of `identifiers`.
 
         Returns:
             Iterable[KT]: A non-empty subset of `identifiers`.
