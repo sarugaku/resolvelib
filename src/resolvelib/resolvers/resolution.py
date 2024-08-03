@@ -430,6 +430,10 @@ class Resolution(Generic[RT, CT, KT]):
             else:
                 narrowed_unstatisfied_names = unsatisfied_names
 
+            # If there are no unsatisfied names use unsatisfied names
+            if not narrowed_unstatisfied_names:
+                raise RuntimeError("narrow_requirement_selection returned 0 names")
+
             # If there is only 1 unsatisfied name skip calling self._get_preference
             if len(narrowed_unstatisfied_names) > 1:
                 # Choose the most preferred unpinned criterion to try.
