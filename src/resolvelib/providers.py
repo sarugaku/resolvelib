@@ -40,13 +40,12 @@ class AbstractProvider(Generic[RT, CT, KT]):
     ) -> Preference:
         """Produce a sort key for given requirement based on preference.
 
-        As this is a sort key it will be called O(n) times per backtrack step,
-        where n is the number of `identifier`s. If you have a check which is
-        expensive in some sense, e.g. it needs to make O(n) checks per
-        identifier, or takes significant wall clock time but could be short
-        circuited once finding an identifier that matches the check, consider
-        using `narrow_requirement_selection` to filter the `identifier`s
-        before this sort key is called.
+        As this is a sort key it will be called O(n) times per backtrack
+        step, where n is the number of `identifier`s, if you have a check
+        which is expensive in some sense. E.g. It needs to make O(n) checks
+        per call or takes significant wall clock time, consider using
+        `narrow_requirement_selection` to filter the `identifier`s, which
+        is applied before this sort key is called.
 
         The preference is defined as "I think this requirement should be
         resolved first". The lower the return value is, the more preferred
