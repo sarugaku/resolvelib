@@ -433,9 +433,7 @@ class Resolution(Generic[RT, CT, KT]):
             # If there is only 1 unsatisfied name skip calling self._get_preference
             if len(narrowed_unstatisfied_names) > 1:
                 # Choose the most preferred unpinned criterion to try.
-                name = min(
-                    narrowed_unstatisfied_names, key=self._get_preference
-                )
+                name = min(narrowed_unstatisfied_names, key=self._get_preference)
             else:
                 name = narrowed_unstatisfied_names[0]
 
