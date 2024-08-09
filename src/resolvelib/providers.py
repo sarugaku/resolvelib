@@ -40,6 +40,13 @@ class AbstractProvider(Generic[RT, CT, KT]):
     ) -> Preference:
         """Produce a sort key for given requirement based on preference.
 
+        As this is a sort key it will be called O(n) times per backtrack
+        step, where n is the number of `identifier`s, if you have a check
+        which is expensive in some sense. E.g. It needs to make O(n) checks
+        per call or takes significant wall clock time, consider using
+        `narrow_requirement_selection` to filter the `identifier`s, which
+        is applied before this sort key is called.
+
         The preference is defined as "I think this requirement should be
         resolved first". The lower the return value is, the more preferred
         this group of arguments is.
@@ -135,3 +142,55 @@ class AbstractProvider(Generic[RT, CT, KT]):
         specifies as its dependencies.
         """
         raise NotImplementedError
+
+    def narrow_requirement_selection(
+        self,
+        identifiers: Iterable[KT],
+        resolutions: Mapping[KT, CT],
+        candidates: Mapping[KT, Iterator[CT]],
+        information: Mapping[KT, Iterator[RequirementInformation[RT, CT]]],
+        backtrack_causes: Sequence[RequirementInformation[RT, CT]],
+    ) -> Iterable[KT]:
+        """
+        An optional method to narrow the selection of requirements being
+        considered during resolution. This method is called O(1) time per
+        backtrack step.
+
+        :param identifiers: An iterable of `identifiers` as returned by
+            ``identify()``. These identify all requirements currently being
+            considered.
+        :param resolutions: A mapping of candidates currently pinned by the
+            resolver. Each key is an identifier, and the value is a candidate
+            that may conflict with requirements from ``information``.
+        :param candidates: A mapping of each dependency's possible candidates.
+            Each value is an iterator of candidates.
+        :param information: A mapping of requirement information for each package.
+            Each value is an iterator of *requirement information*.
+        :param backtrack_causes: A sequence of *requirement information* that are
+            the requirements causing the resolver to most recently
+            backtrack.
+
+        A *requirement information* instance is a named tuple with two members:
+
+        * ``requirement`` specifies a requirement contributing to the current
+          list of candidates.
+        * ``parent`` specifies the candidate that provides (is depended on for)
+          the requirement, or ``None`` to indicate a root requirement.
+
+        Must return a non-empty subset of `identifiers`, with the default
+        implementation being to return `identifiers` unchanged. Those `identifiers`
+        will then be passed to the sort key `get_preference` to pick the most
+        prefered requirement to attempt to pin, unless `narrow_requirement_selection`
+        returns only 1 requirement, in which case that will be used without
+        calling the sort key `get_preference`.
+
+        This method is designed to be used by the provider to optimize the
+        dependency resolution, e.g. if a check cost is O(m) and it can be done
+        against all identifiers at once then filtering the requirement selection
+        here will cost O(m) but making it part of the sort key in `get_preference`
+        will cost O(m*n), where n is the number of `identifiers`.
+
+        Returns:
+            Iterable[KT]: A non-empty subset of `identifiers`.
+        """
+        return identifiers

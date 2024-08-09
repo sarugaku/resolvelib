@@ -97,6 +97,9 @@ exclude = [
 	"*.pyi"
 ]
 
+[tool.ruff.lint.mccabe]
+max-complexity = 12
+
 [tool.mypy]
 warn_unused_configs = true
 
