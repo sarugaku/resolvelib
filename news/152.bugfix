@@ -1,2 +1,0 @@
-In unexpected situation where broken_state.mapping is empty, stop backtracking,
-and continue resolution (rather than throwing ResolutionImpossible)
