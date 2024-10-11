@@ -1,3 +1,61 @@
+1.1.0b1 (2024-10-01)
+====================
+
+Features
+--------
+
+- Declare supported Python version support ">= 3.7" in dist meta  `#129 <https://github.com/sarugaku/resolvelib/issues/129>`_
+  
+- Improve exception chaining when ResolutionImpossible raises during backjumping  `#133 <https://github.com/sarugaku/resolvelib/issues/133>`_
+  
+- Switch from pyi files to modern annotations based type hinting  `#135 <https://github.com/sarugaku/resolvelib/issues/135>`_
+  
+- In tests the commentjson test dependency with re.sub  `#141 <https://github.com/sarugaku/resolvelib/issues/141>`_
+  
+- Deduplicate failure causes to save memory and reduce backtracking overhead  `#143 <https://github.com/sarugaku/resolvelib/issues/143>`_
+  
+- New `narrow_requirement_selection` provider method giving option for
+  providers to reduce the number of times sort key `get_preference` is
+  called in long running backtrack  `#145 <https://github.com/sarugaku/resolvelib/issues/145>`_
+  
+- Run tests against Python 3.12, 3.13, and use latest version of CI dependencies  `#153 <https://github.com/sarugaku/resolvelib/issues/153>`_
+  
+- Update py2ndex script to use metadata files, skip 404, and support PEP 723  `#156 <https://github.com/sarugaku/resolvelib/issues/156>`_
+  
+- Replace setuptools.cfg and mypy.ini with pyproject.toml  `#157 <https://github.com/sarugaku/resolvelib/issues/157>`_
+  
+- Add tests type "unvisited" to functional Python tests to ensure backjumping
+  is correctly skipping candidates  `#158 <https://github.com/sarugaku/resolvelib/issues/158>`_
+  
+- Switch from flake8 to ruff for linting  `#160 <https://github.com/sarugaku/resolvelib/issues/160>`_
+  
+- Enable automatic TYPE_CHECK guarding for imports only used for type hinting
+  via ruff rules TCH and FA  `#166 <https://github.com/sarugaku/resolvelib/issues/166>`_
+  
+
+Bug Fixes
+---------
+
+- Fix example reporter_demo `get_preference` method which requires arg `backtrack_causes`  `#136 <https://github.com/sarugaku/resolvelib/issues/136>`_
+  
+- Clarify the docstrings for `providers.py`  `#138 <https://github.com/sarugaku/resolvelib/issues/138>`_
+  
+- Pin Black version for linting to prevent CI failures  `#150 <https://github.com/sarugaku/resolvelib/issues/150>`_
+  
+- In unexpected situation where broken_state.mapping is empty, stop backtracking,
+  and continue resolution (rather than throwing ResolutionImpossible)  `#152 <https://github.com/sarugaku/resolvelib/issues/152>`_
+  
+- During backtracking check if the current broken state is an incompatible dependency,
+  if not stop backtracking and continue resolution.  `#155 <https://github.com/sarugaku/resolvelib/issues/155>`_
+  
+- Separate AbstractResolver and Resolver into different modules  `#162 <https://github.com/sarugaku/resolvelib/issues/162>`_
+  
+- Separate resolvers into different modules  `#163 <https://github.com/sarugaku/resolvelib/issues/163>`_
+  
+- Export criterion in resolvers to keep compatibility  `#164 <https://github.com/sarugaku/resolvelib/issues/164>`_
+  
+- Enable isorting via ruff  `#165 <https://github.com/sarugaku/resolvelib/issues/165>`_
+  
 1.0.1 (2023-03-09)
 ==================
 
