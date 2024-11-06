@@ -20,7 +20,9 @@ jobs:
     name: Publish released package to pypi.org
     permissions:
       id-token: write
-    environment: release
+    environment:
+      name: release
+      url: https://pypi.org/project/resolvelib/${{ github.ref_name }}
     runs-on: ubuntu-latest
     needs: build-package
 
