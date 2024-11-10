@@ -194,3 +194,30 @@ class AbstractProvider(Generic[RT, CT, KT]):
             Iterable[KT]: A non-empty subset of `identifiers`.
         """
         return identifiers
+
+    def disjoint(
+        self, backtrack_causes: Sequence[RequirementInformation[RT, CT]]
+    ) -> Sequence[RequirementInformation[RT, CT]]:
+        """Filter backtrack causes to retain only disjoint instances.
+
+        Given a sequence of backtrack causes, return those that are disjoint.
+        This filtered sequence will attached to the resolution state, passed to
+        the provider methods `get_preference` and `narrow_requirement_selection`,
+        and the reporter method `resolving_conflicts`.
+
+        :param backtrack_causes: A sequence of *requirement information* that are
+            the requirements causing the resolver to most recently
+            backtrack.
+
+        A *requirement information* instance is a named tuple with two members:
+
+        * ``requirement`` specifies a requirement contributing to the current
+          list of candidates.
+        * ``parent`` specifies the candidate that provides (is depended on for)
+          the requirement, or ``None`` to indicate a root requirement.
+
+        Returns:
+            Sequence[RequirementInformation[RT, CT]]: A subset of at least two
+            disjoint `backtrack_causes`.
+        """
+        return backtrack_causes
