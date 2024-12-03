@@ -1,14 +1,14 @@
 __all__ = [
-    "__version__",
     "AbstractProvider",
     "AbstractResolver",
     "BaseReporter",
     "InconsistentCandidate",
-    "Resolver",
     "RequirementsConflicted",
     "ResolutionError",
     "ResolutionImpossible",
     "ResolutionTooDeep",
+    "Resolver",
+    "__version__",
 ]
 
 __version__ = "1.1.1dev0"
