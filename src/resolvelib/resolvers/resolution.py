@@ -3,7 +3,7 @@ from __future__ import annotations
 import collections
 import itertools
 import operator
-from typing import TYPE_CHECKING, Collection, Generic, Iterable, Mapping
+from typing import TYPE_CHECKING, Collection, Generic, Iterable, Mapping, Sequence
 
 from ..structs import (
     CT,
@@ -274,7 +274,7 @@ class Resolution(Generic[RT, CT, KT]):
             )
         return True
 
-    def _backjump(self, causes: list[RequirementInformation[RT, CT]]) -> bool:
+    def _backjump(self, causes: Sequence[RequirementInformation[RT, CT]]) -> bool:
         """Perform backjumping.
 
         When we enter here, the stack is like this::
@@ -365,9 +365,16 @@ class Resolution(Generic[RT, CT, KT]):
 
     def _extract_causes(
         self, criteron: list[Criterion[RT, CT]]
-    ) -> list[RequirementInformation[RT, CT]]:
+    ) -> Sequence[RequirementInformation[RT, CT]]:
         """Extract causes from list of criterion and deduplicate"""
-        return list({id(i): i for c in criteron for i in c.information}.values())
+        causes = list({id(i): i for c in criteron for i in c.information}.values())
+
+        # Two causes *should* always be disjoint, so only check for
+        # disjoint causes when there are more than two
+        if len(causes) > 2:
+            return self._p.disjoint(causes)
+
+        return causes
 
     def resolve(self, requirements: Iterable[RT], max_rounds: int) -> State[RT, CT, KT]:
         if self._states:
