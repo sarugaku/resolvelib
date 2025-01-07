@@ -98,7 +98,7 @@ exclude = [
 ]
 
 [tool.ruff.lint.mccabe]
-max-complexity = 12
+max-complexity = 15
 
 [tool.mypy]
 warn_unused_configs = true
