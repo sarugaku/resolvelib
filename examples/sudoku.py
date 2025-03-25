@@ -24,8 +24,12 @@ class Candidate:
         self._dependencies = None
 
     def _get_dependencies(self):
-        same_column = [Requirement(i, self.column, self.value) for i in range(9) if i != self.row]
-        same_row = [Requirement(self.row, i, self.value) for i in range(9) if i != self.column]
+        same_column = [
+            Requirement(i, self.column, self.value) for i in range(9) if i != self.row
+        ]
+        same_row = [
+            Requirement(self.row, i, self.value) for i in range(9) if i != self.column
+        ]
         row_start = self.row - self.row % 3
         column_start = self.column - self.column % 3
         same_box = [
@@ -47,7 +51,9 @@ class SudokuProvider(AbstractProvider):
     def identify(self, requirement_or_candidate):
         return (requirement_or_candidate.row, requirement_or_candidate.column)
 
-    def get_preference(self, identifier, resolutions, candidates, information, backtrack_causes):
+    def get_preference(
+        self, identifier, resolutions, candidates, information, backtrack_causes
+    ):
         # prefer indentifiers from the puzzle's clues
         for ri in information[identifier]:
             if isinstance(ri, ClueRequirement):
@@ -64,7 +70,8 @@ class SudokuProvider(AbstractProvider):
         for incomp in incompatibilities[identifier]:
             invalid_values.add(incomp.value)
         candidates = [
-            Candidate(row, column, value) for value in range(1, 10)
+            Candidate(row, column, value)
+            for value in range(1, 10)
             if value not in invalid_values
         ]
         return candidates
@@ -98,7 +105,7 @@ def main():
     ]
     print("Clues:")
     for i in range(9):
-        print(' '.join(str(clues[i][j]) for j in range(9)))
+        print(" ".join(str(clues[i][j]) for j in range(9)))
     requirements = [
         ClueRequirement(i, j, clues[i][j])
         for i in range(9)
@@ -108,7 +115,7 @@ def main():
     solution = resolver.resolve(requirements, max_rounds=500)
     print("Solution:")
     for i in range(9):
-        print(' '.join(str( solution.mapping[(i, j)].value) for j in range(9)))
+        print(" ".join(str(solution.mapping[(i, j)].value) for j in range(9)))
 
 
 if __name__ == "__main__":
