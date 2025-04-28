@@ -216,6 +216,6 @@ def test_resolver(provider, reporter):
                 continue
 
             unexpected_versions = set(versions).intersection(visited_versions[name])
-            assert (
-                not unexpected_versions
-            ), f"Unexpcted versions visited {name}: {', '.join(unexpected_versions)}"
+            assert not unexpected_versions, (
+                f"Unexpcted versions visited {name}: {', '.join(unexpected_versions)}"
+            )
