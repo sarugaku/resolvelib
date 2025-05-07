@@ -1,0 +1,1 @@
+Drop support for EOL Python versions 3.7 and 3.8.
