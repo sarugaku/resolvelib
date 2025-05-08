@@ -1,0 +1,58 @@
+{
+    "a": {
+        "1": {
+            "dependencies": []
+        },
+        "2": {
+            "dependencies": []
+        }
+    },
+    "b": {
+        "2": {
+            "dependencies": [
+                "d==2"
+            ]
+        },
+        "1": {
+            "dependencies": [
+                "d==1"
+            ]
+        }
+    },
+    "c": {
+        "1": {
+            "dependencies": []
+        },
+        "2": {
+            "dependencies": []
+        }
+    },
+    "d": {
+        "2": {
+            "dependencies": [
+                "a==2"
+            ]
+        },
+        "1": {
+            "dependencies": [
+                "a==1"
+            ]
+        }
+    },
+    "e": {
+        "1": {
+            "dependencies": []
+        },
+        "2": {
+            "dependencies": []
+        }
+    },
+    "f": {
+        "1": {
+            "dependencies": []
+        },
+        "2": {
+            "dependencies": []
+        }
+    }
+}
