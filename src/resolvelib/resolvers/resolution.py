@@ -26,6 +26,8 @@ from .exceptions import (
     ResolverException,
 )
 
+OPTIMISTIC_BACKJUMPING_RATIO = 0.5
+
 if TYPE_CHECKING:
     from ..providers import AbstractProvider, Preference
     from ..reporters import BaseReporter
@@ -76,6 +78,12 @@ class Resolution(Generic[RT, CT, KT]):
         self._p = provider
         self._r = reporter
         self._states: list[State[RT, CT, KT]] = []
+
+        # Optimistic backjumping variables
+        self._optimistic_backjumping = True
+        self._save_states: list[State[RT, CT, KT]] | None = None
+        self._optimistic_backjumping_start_round: int | None = None
+        self._optimistic_backjumping_ratio = OPTIMISTIC_BACKJUMPING_RATIO
 
     @property
     def state(self) -> State[RT, CT, KT]:
@@ -324,10 +332,23 @@ class Resolution(Generic[RT, CT, KT]):
                 except (IndexError, KeyError):
                     raise ResolutionImpossible(causes) from None
 
-                # Only backjump if the current broken state is
-                # an incompatible dependency
-                if name not in incompatible_deps:
+                # If optimistic backjumping has switched off only backjump
+                # when the current candidate is in the incompatible dependencies
+                safe_backjump = name in incompatible_deps
+                if not self._optimistic_backjumping and not safe_backjump:
                     break
+
+                # On the first time a non-regular backjump is done the state
+                # is saved so we can restore it later if the resolution fails
+                if not safe_backjump and self._save_states is None:
+                    self._save_states = [
+                        State(
+                            mapping=s.mapping.copy(),
+                            criteria=s.criteria.copy(),
+                            backtrack_causes=s.backtrack_causes[:],
+                        )
+                        for s in self._states
+                    ]
 
                 # If the current dependencies and the incompatible dependencies
                 # are overlapping then we have found a cause of the incompatibility
@@ -397,6 +418,22 @@ class Resolution(Generic[RT, CT, KT]):
         for round_index in range(max_rounds):
             self._r.starting_round(index=round_index)
 
+            # Check if optimistic backjumping has been running for too long
+            if (self._optimistic_backjumping 
+                and self._save_states is not None 
+                and self._optimistic_backjumping_start_round is not None):
+                remaining_rounds_at_start = max_rounds - self._optimistic_backjumping_start_round
+                max_optimistic_rounds = int(remaining_rounds_at_start * self._optimistic_backjumping_ratio)
+                optimistic_rounds_spent = round_index - self._optimistic_backjumping_start_round
+
+                if optimistic_rounds_spent > max_optimistic_rounds:
+                    self._optimistic_backjumping = False
+                    self._states = self._save_states
+                    self._save_states = None
+                    self._optimistic_backjumping_start_round = None
+                    # Continue with the next round after reverting
+                    continue
+
             unsatisfied_names = [
                 key
                 for key, criterion in self.state.criteria.items()
@@ -448,12 +485,37 @@ class Resolution(Generic[RT, CT, KT]):
                 # Backjump if pinning fails. The backjump process puts us in
                 # an unpinned state, so we can work on it in the next round.
                 self._r.resolving_conflicts(causes=causes)
-                success = self._backjump(causes)
-                self.state.backtrack_causes[:] = causes
 
-                # Dead ends everywhere. Give up.
-                if not success:
-                    raise ResolutionImpossible(self.state.backtrack_causes)
+                # If optimistic backjumping fails restore previous state
+                try:
+                    success = self._backjump(causes)
+                except ResolutionImpossible:
+                    if self._optimistic_backjumping and self._save_states:
+                        failed_optimistic_backjumping = True
+                    else:
+                        raise
+                else:
+                    failed_optimistic_backjumping = bool(
+                        not success
+                        and self._optimistic_backjumping
+                        and self._save_states
+                    )
+
+                # Record the round when optimistic backjumping starts
+                if self._optimistic_backjumping and self._save_states and self._optimistic_backjumping_start_round is None:
+                    self._optimistic_backjumping_start_round = round_index
+
+                if failed_optimistic_backjumping and self._save_states:
+                    self._optimistic_backjumping = False
+                    self._states = self._save_states
+                    self._save_states = None
+                    self._optimistic_backjumping_start_round = None
+                else:
+                    self.state.backtrack_causes[:] = causes
+
+                    # Dead ends everywhere. Give up.
+                    if not success:
+                        raise ResolutionImpossible(self.state.backtrack_causes)
             else:
                 # discard as information sources any invalidated names
                 # (unsatisfied names that were previously satisfied)
