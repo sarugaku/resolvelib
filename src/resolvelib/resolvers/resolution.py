@@ -26,6 +26,8 @@ from .exceptions import (
     ResolverException,
 )
 
+OPTIMISTIC_BACKJUMPING_RATIO = 0.5
+
 if TYPE_CHECKING:
     from ..providers import AbstractProvider, Preference
     from ..reporters import BaseReporter
@@ -80,6 +82,8 @@ class Resolution(Generic[RT, CT, KT]):
         # Optimistic backjumping variables
         self._optimistic_backjumping = True
         self._save_states: list[State[RT, CT, KT]] | None = None
+        self._optimistic_backjumping_start_round: int | None = None
+        self._optimistic_backjumping_ratio = OPTIMISTIC_BACKJUMPING_RATIO
 
     @property
     def state(self) -> State[RT, CT, KT]:
@@ -414,6 +418,22 @@ class Resolution(Generic[RT, CT, KT]):
         for round_index in range(max_rounds):
             self._r.starting_round(index=round_index)
 
+            # Check if optimistic backjumping has been running for too long
+            if (self._optimistic_backjumping 
+                and self._save_states is not None 
+                and self._optimistic_backjumping_start_round is not None):
+                remaining_rounds_at_start = max_rounds - self._optimistic_backjumping_start_round
+                max_optimistic_rounds = int(remaining_rounds_at_start * self._optimistic_backjumping_ratio)
+                optimistic_rounds_spent = round_index - self._optimistic_backjumping_start_round
+
+                if optimistic_rounds_spent > max_optimistic_rounds:
+                    self._optimistic_backjumping = False
+                    self._states = self._save_states
+                    self._save_states = None
+                    self._optimistic_backjumping_start_round = None
+                    # Continue with the next round after reverting
+                    continue
+
             unsatisfied_names = [
                 key
                 for key, criterion in self.state.criteria.items()
@@ -481,10 +501,15 @@ class Resolution(Generic[RT, CT, KT]):
                         and self._save_states
                     )
 
+                # Record the round when optimistic backjumping starts
+                if self._optimistic_backjumping and self._save_states and self._optimistic_backjumping_start_round is None:
+                    self._optimistic_backjumping_start_round = round_index
+
                 if failed_optimistic_backjumping and self._save_states:
                     self._optimistic_backjumping = False
                     self._states = self._save_states
                     self._save_states = None
+                    self._optimistic_backjumping_start_round = None
                 else:
                     self.state.backtrack_causes[:] = causes
 

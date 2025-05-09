@@ -139,6 +139,35 @@ class PythonInputProviderNarrowRequirements(PythonInputProvider):
         return identifiers
 
 
+class PythonInputProviderNoOptimisticBackjumping(PythonInputProvider):
+    """Provider that disables optimistic backjumping by setting ratio to 0.
+    
+    This provider is used to test the time-based limits for optimistic backjumping.
+    By setting the ratio to 0, we force an immediate switch from optimistic to 
+    regular backjumping, causing the resolver to visit candidates that would
+    normally be skipped.
+    """
+    def customize_resolver(self, resolver):
+        # We need to use a custom resolver subclass that sets the ratio to 0
+        # Pass the reporter from the test function
+        return NoOptimisticBackjumpingResolver(self, resolver.reporter)
+
+
+from resolvelib.resolvers.resolution import Resolution, _build_result
+
+class NoOptimisticBackjumpingResolver(Resolver):
+    """A resolver subclass that disables optimistic backjumping by setting ratio to 0."""
+    
+    def resolve(self, requirements, max_rounds=100):
+        # Create the resolution object
+        resolution = Resolution(self.provider, self.reporter)
+        # Set the ratio to 0 to force immediate fallback from optimistic backjumping
+        resolution._optimistic_backjumping_ratio = 0.0
+        # Resolve and build the result
+        state = resolution.resolve(requirements, max_rounds=max_rounds)
+        return _build_result(state)
+
+
 INPUTS_DIR = os.path.abspath(os.path.join(__file__, "..", "inputs"))
 
 CASE_DIR = os.path.join(INPUTS_DIR, "case")
@@ -167,10 +196,11 @@ def create_params(provider_class):
     params=[
         *create_params(PythonInputProvider),
         *create_params(PythonInputProviderNarrowRequirements),
+        *create_params(PythonInputProviderNoOptimisticBackjumping),
     ],
     ids=[
         f"{n[:-5]}-{cls.__name__}"
-        for cls in [PythonInputProvider, PythonInputProviderNarrowRequirements]
+        for cls in [PythonInputProvider, PythonInputProviderNarrowRequirements, PythonInputProviderNoOptimisticBackjumping]
         for n in CASE_NAMES
     ],
 )
@@ -196,6 +226,10 @@ def _format_resolution(result):
 
 def test_resolver(provider, reporter):
     resolver = Resolver(provider, reporter)
+    
+    # Allow provider to customize the resolver if needed
+    if hasattr(provider, "customize_resolver"):
+        resolver = provider.customize_resolver(resolver)
 
     if provider.expected_confliction:
         with pytest.raises(ResolutionImpossible) as ctx:
