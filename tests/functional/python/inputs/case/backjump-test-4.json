@@ -1,0 +1,24 @@
+{
+	"index": "backjump-test-4",
+	"requested": [
+		"a==1",
+		"b",
+		"c",
+		"e",
+		"f"
+	],
+	"resolved": {
+		"a": "1",
+		"b": "1",
+		"c": "2",
+		"d": "1",
+		"e": "2",
+		"f": "2"
+	},
+	"unvisited": {
+		"c": ["1"],
+		"e": ["1"],
+		"f": ["1"]
+	},
+	"needs_optimistic": true
+}

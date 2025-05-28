@@ -6,11 +6,11 @@ from collections import defaultdict
 
 import packaging.markers
 import packaging.requirements
-import packaging.specifiers
 import packaging.utils
 import packaging.version
 import pytest
 
+import resolvelib.resolvers.resolution
 from resolvelib import AbstractProvider, ResolutionImpossible, Resolver
 
 Candidate = collections.namedtuple("Candidate", "name version extras")
@@ -64,6 +64,11 @@ class PythonInputProvider(AbstractProvider):
             self.expected_unvisited = case_data["unvisited"]
         else:
             self.expected_unvisited = None
+
+        if "needs_optimistic" in case_data:
+            self.needs_optimistic = case_data["needs_optimistic"]
+        else:
+            self.needs_optimistic = False
 
     def identify(self, requirement_or_candidate):
         name = packaging.utils.canonicalize_name(requirement_or_candidate.name)
@@ -207,6 +212,41 @@ def test_resolver(provider, reporter):
         assert _format_resolution(resolution) == provider.expected_resolution
 
     if provider.expected_unvisited:
+        visited_versions = defaultdict(set)
+        for visited_candidate in reporter.visited:
+            visited_versions[visited_candidate.name].add(str(visited_candidate.version))
+
+        for name, versions in provider.expected_unvisited.items():
+            if name not in visited_versions:
+                continue
+
+            unexpected_versions = set(versions).intersection(visited_versions[name])
+            assert not unexpected_versions, (
+                f"Unexpcted versions visited {name}: {', '.join(unexpected_versions)}"
+            )
+
+
+def test_no_optimistic_backtracking_resolver(provider, reporter, monkeypatch):
+    """
+    Tests the resolver works with optimistic backtracking disabled for all
+    cases, except for skipping candidates that is known to require optimistic
+    backtracking.
+    """
+    monkeypatch.setattr(
+        resolvelib.resolvers.resolution, "_OPTIMISTIC_BACKJUMPING_RATIO", 0.0
+    )
+    resolver = Resolver(provider, reporter)
+
+    if provider.expected_confliction:
+        with pytest.raises(ResolutionImpossible) as ctx:
+            result = resolver.resolve(provider.root_requirements)
+            print(_format_resolution(result))  # Provide some debugging hints.
+        assert _format_confliction(ctx.value) == provider.expected_confliction
+    else:
+        resolution = resolver.resolve(provider.root_requirements)
+        assert _format_resolution(resolution) == provider.expected_resolution
+
+    if provider.expected_unvisited and not provider.needs_optimistic:
         visited_versions = defaultdict(set)
         for visited_candidate in reporter.visited:
             visited_versions[visited_candidate.name].add(str(visited_candidate.version))
