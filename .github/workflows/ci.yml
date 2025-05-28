@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      - run: pip install nox
+      - run: pip install nox "attrs>=24.1.0" # attrs required till next nox release: https://github.com/wntrblm/nox/issues/961
       - run: nox -s lint
   package:
     name: Package
@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      - run: pip install nox
+      - run: pip install nox "attrs>=24.1.0" # attrs required till next nox release: https://github.com/wntrblm/nox/issues/961
       - run: nox -s release -- --version '' --repo '' --prebump ''
   test:
     name: Test
@@ -40,5 +40,5 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           allow-prereleases: true
-      - run: pip install nox
+      - run: pip install nox "attrs>=24.1.0" # attrs required till next nox release: https://github.com/wntrblm/nox/issues/961
       - run: nox -s tests-${{ matrix.python }}
