@@ -1,0 +1,1 @@
+Fix pypi project page link on README.rst.
