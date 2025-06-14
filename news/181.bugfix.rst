@@ -1,1 +1,1 @@
-Fix pypi project page link on README.rst.
+Fix PyPI project page link on README.rst.
