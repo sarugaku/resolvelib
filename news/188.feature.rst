@@ -1,2 +1,2 @@
-Perform optimistic backjumping with until reaching a cutoff and then
+Perform optimistic backjumping until reaching a cutoff and then
 fallback to regular backjumping.
