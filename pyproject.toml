@@ -65,6 +65,11 @@ issue_format = '`#{issue} <https://github.com/sarugaku/resolvelib/issues/{issue}
 template = 'news/CHANGELOG.rst.jinja2'
 
 [[tool.towncrier.type]]
+directory = 'significant'
+name = 'Significant Changes'
+showcontent = true
+
+[[tool.towncrier.type]]
 directory = 'feature'
 name = 'Features'
 showcontent = true
