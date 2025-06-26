@@ -1,3 +1,32 @@
+1.2.0 (2025-06-26)
+==================
+
+Significant Changes
+-------------------
+
+- Drop support for EOL Python versions 3.7 and 3.8.  `#187 <https://github.com/sarugaku/resolvelib/issues/187>`_
+  
+
+Features
+--------
+
+- Perform optimistic backjumping until reaching a cutoff and then
+  fallback to regular backjumping.  `#188 <https://github.com/sarugaku/resolvelib/issues/188>`_
+  
+
+Bug Fixes
+---------
+
+- Include tests in sdist.  `#173 <https://github.com/sarugaku/resolvelib/issues/173>`_
+  
+- Drop `wheel` from direct build dependencies.  `#175 <https://github.com/sarugaku/resolvelib/issues/175>`_
+  
+- Display PyPI URL on GH UI when releasing from GHA.  `#177 <https://github.com/sarugaku/resolvelib/issues/177>`_
+  
+- Configure `setuptools` to produce `py3`-tagged wheels.  `#178 <https://github.com/sarugaku/resolvelib/issues/178>`_
+  
+- Fix PyPI project page link on README.rst.  `#181 <https://github.com/sarugaku/resolvelib/issues/181>`_
+  
 1.1.0 (2024-10-31)
 ==================
 

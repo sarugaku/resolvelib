@@ -1,1 +1,0 @@
-Configure `setuptools` to produce `py3`-tagged wheels.
