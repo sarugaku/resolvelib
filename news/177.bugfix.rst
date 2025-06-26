@@ -1,1 +1,0 @@
-Display PyPI URL on GH UI when releasing from GHA.
