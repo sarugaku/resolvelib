@@ -3,9 +3,11 @@ import json
 import operator
 import os
 from collections import defaultdict
+from functools import reduce
 
 import packaging.markers
 import packaging.requirements
+import packaging.specifiers
 import packaging.utils
 import packaging.version
 import pytest
@@ -92,12 +94,23 @@ class PythonInputProvider(AbstractProvider):
         name, _, _ = identifier.partition("[")
         bad_versions = {c.version for c in incompatibilities[identifier]}
         extras = {e for r in requirements[identifier] for e in r.extras}
-        for key in self.index[name]:
-            v = packaging.version.parse(key)
-            if any(v not in r.specifier for r in requirements[identifier]):
-                continue
-            if v in bad_versions:
-                continue
+
+        # Get all versions from the index, excluding bad versions
+        available_versions = (
+            v
+            for key in self.index[name]
+            if (v := packaging.version.parse(key)) not in bad_versions
+        )
+
+        # Combine all requirement specifiers using & operator
+        combined_specifier = reduce(
+            operator.and_,
+            map(operator.attrgetter("specifier"), requirements[identifier]),
+            packaging.specifiers.SpecifierSet(),
+        )
+
+        # Filter versions using the combined specifier
+        for v in combined_specifier.filter(available_versions):
             yield Candidate(name=name, version=v, extras=extras)
 
     def find_matches(self, identifier, requirements, incompatibilities):
