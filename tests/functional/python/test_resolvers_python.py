@@ -235,7 +235,7 @@ def test_resolver(provider, reporter):
 
             unexpected_versions = set(versions).intersection(visited_versions[name])
             assert not unexpected_versions, (
-                f"Unexpcted versions visited {name}: {', '.join(unexpected_versions)}"
+                f"Unexpected versions visited {name}: {', '.join(unexpected_versions)}"
             )
 
 
@@ -270,5 +270,5 @@ def test_no_optimistic_backtracking_resolver(provider, reporter, monkeypatch):
 
             unexpected_versions = set(versions).intersection(visited_versions[name])
             assert not unexpected_versions, (
-                f"Unexpcted versions visited {name}: {', '.join(unexpected_versions)}"
+                f"Unexpected versions visited {name}: {', '.join(unexpected_versions)}"
             )

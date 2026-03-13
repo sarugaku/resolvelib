@@ -26,7 +26,7 @@ def _parse_version(s):
 
 
 def _is_version_allowed(version, ranges):
-    """Check version compatibility with Sematic Versioning."""
+    """Check version compatibility with Semantic Versioning."""
     for r in ranges:
         r = _parse_version(r)
         if r[0] != version[0]:
