@@ -206,7 +206,7 @@ class Finder:
     matcher: WheelMatcher
     session: requests.Session
 
-    def collect_best_metadta_urls(self, name: str) -> dict[str, str]:
+    def collect_best_metadata_urls(self, name: str) -> dict[str, str]:
         all_dists: DistListMapping = collections.defaultdict(list)
         for index_url in self.index_urls:
             res = requests.get(f"{index_url}/{name}")
@@ -244,7 +244,7 @@ class Finder:
         return urls
 
     def iter_package_entries(self, name: str) -> Iterator[PackageEntry]:
-        for version, url in self.collect_best_metadta_urls(name).items():
+        for version, url in self.collect_best_metadata_urls(name).items():
             http_file = HttpFile(url, self.session)
             parser = email.parser.BytesParser()
             data = parser.parsebytes(http_file.read(), headersonly=True)
