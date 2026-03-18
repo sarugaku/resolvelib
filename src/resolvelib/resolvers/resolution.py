@@ -469,7 +469,8 @@ class Resolution(Generic[RT, CT, KT]):
             unsatisfied_names = [
                 key
                 for key, criterion in self.state.criteria.items()
-                if not self._is_current_pin_satisfying(key, criterion)
+                if criterion.information
+                and not self._is_current_pin_satisfying(key, criterion)
             ]
 
             # All criteria are accounted for. Nothing more to pin, we are done!

@@ -268,3 +268,73 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
     assert result.mapping["parent"][1] == Version("1")
     assert result.mapping["child"][1] == Version("1")
     assert result.mapping["grandchild"][1] == Version("1")
+
+
+def test_orphaned_criteria_not_pinned():
+    """Criteria with empty information should not be treated as unsatisfied.
+
+    1. Pin A=2.0 (depends on B). B is added to criteria but not yet pinned.
+    2. Pin C=1.0 (depends on A<2). A becomes unsatisfied.
+    3. _remove_information_from_criteria strips A as parent from B.
+       B now has empty information and is not in the mapping.
+    4. B should be skipped, not pinned.
+    """
+    Candidate = namedtuple(
+        "Candidate", ["name", "version", "requirements"]
+    )  # name, version, requirements
+    _Requirement = namedtuple("Requirement", ["name", "versions"])  # name, versions
+    a2 = Candidate("a", 2, [_Requirement("b", {1})])
+    a1 = Candidate("a", 1, [])
+    b1 = Candidate("b", 1, [])
+    c1 = Candidate("c", 1, [_Requirement("a", {1})])
+    all_candidates = {
+        "a": [a2, a1],
+        "b": [b1],
+        "c": [c1],
+    }
+
+    class PinReporter(BaseReporter):
+        def __init__(self):
+            self.pinned = []
+
+        def pinning(self, candidate):
+            self.pinned.append(candidate)
+
+    class Provider(AbstractProvider):
+        def identify(self, requirement_or_candidate):
+            return requirement_or_candidate[0]
+
+        def get_preference(
+            self, identifier, resolutions, candidates, information, backtrack_causes
+        ):
+            # a first, c second, b last: a-2.0 adds B to criteria,
+            # then c forces A unsatisfied before B gets pinned.
+            order = {"a": 0, "c": 1, "b": 2}
+            return order.get(identifier, 99)
+
+        def get_dependencies(self, candidate):
+            return candidate.requirements
+
+        def find_matches(self, identifier, requirements, incompatibilities):
+            bad_versions = {c.version for c in incompatibilities[identifier]}
+            candidates = [
+                c
+                for c in all_candidates[identifier]
+                if all(c.version in r.versions for r in requirements[identifier])
+                and c.version not in bad_versions
+            ]
+            return sorted(candidates, key=lambda c: c.version, reverse=True)
+
+        def is_satisfied_by(self, requirement, candidate):
+            return candidate.version in requirement.versions
+
+    reporter = PinReporter()
+    resolver = Resolver(Provider(), reporter)
+    result = resolver.resolve([_Requirement("a", {1, 2}), _Requirement("c", {1})])
+
+    assert set(result.mapping) == {"a", "c"}
+    assert result.mapping["a"] == a1
+    assert result.mapping["c"] == c1
+    # B should not have been pinned
+    pinned_names = [c[0] for c in reporter.pinned]
+    assert "b" not in pinned_names
