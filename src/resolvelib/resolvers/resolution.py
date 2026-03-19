@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from ..providers import AbstractProvider, Preference
     from ..reporters import BaseReporter
 
-_OPTIMISTIC_BACKJUMPING_RATIO: float = 0.1
+_OPTIMISTIC_BACKJUMPING_RATIO: float = 0.2
 
 
 def _build_result(state: State[RT, CT, KT]) -> Result[RT, CT, KT]:
