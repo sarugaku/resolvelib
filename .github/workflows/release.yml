@@ -5,21 +5,26 @@ on:
     tags:
       - "*"
 
+permissions: {}
+
 jobs:
   build-package:
     name: Build & inspect our package.
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: hynek/build-and-inspect-python-package@67230f7b8410ae0052b39c1efc89d89fff43ff10 # v3.0.2
 
   release-pypi:
     name: Publish released package to pypi.org
     permissions:
-      id-token: write
+      id-token: write # Required for PyPI trusted publishing.
     environment:
       name: release
       url: https://pypi.org/project/resolvelib/${{ github.ref_name }}
