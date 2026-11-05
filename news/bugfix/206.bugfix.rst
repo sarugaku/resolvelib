@@ -1,0 +1,1 @@
+Retry a failed resolution without skipping pins, so backjumping cannot hide a solvable graph.

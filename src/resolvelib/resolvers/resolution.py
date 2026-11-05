@@ -76,13 +76,19 @@ class Resolution(Generic[RT, CT, KT]):
         self,
         provider: AbstractProvider[RT, CT, KT],
         reporter: BaseReporter[RT, CT, KT],
+        *,
+        chronological: bool = False,
     ) -> None:
         self._p = provider
         self._r = reporter
         self._states: list[State[RT, CT, KT]] = []
+        self._chronological = chronological
 
-        # Optimistic backjumping variables
-        self._optimistic_backjumping_ratio = _OPTIMISTIC_BACKJUMPING_RATIO
+        # Optimistic backjumping variables. A chronological retry undoes one
+        # pin at a time, so the skipping heuristic stays off.
+        self._optimistic_backjumping_ratio = (
+            0.0 if chronological else _OPTIMISTIC_BACKJUMPING_RATIO
+        )
         self._save_states: list[State[RT, CT, KT]] | None = None
         self._optimistic_start_round: int | None = None
 
@@ -352,6 +358,11 @@ class Resolution(Generic[RT, CT, KT]):
                 except (IndexError, KeyError):
                     raise ResolutionImpossible(causes) from None
 
+                if self._chronological:
+                    # A skipped pin's incompatibilities do not apply to the
+                    # earlier choice. Undo this one pin and keep the rest.
+                    break
+
                 if (
                     not self._optimistic_backjumping_ratio
                     and name not in incompatible_deps
@@ -598,7 +609,17 @@ class Resolver(AbstractResolver[RT, CT, KT]):
             `max_rounds` argument.
         """
         resolution = Resolution(self.provider, self.reporter)
-        state = resolution.resolve(requirements, max_rounds=max_rounds)
+        try:
+            state = resolution.resolve(requirements, max_rounds=max_rounds)
+        except ResolutionImpossible:
+            # The first pass may skip the only pin that leads to a solution.
+            # Search again, undoing one pin at a time.
+            resolution = Resolution(
+                self.provider,
+                self.reporter,
+                chronological=True,
+            )
+            state = resolution.resolve(requirements, max_rounds=max_rounds)
         return _build_result(state)
 
 
